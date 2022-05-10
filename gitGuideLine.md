@@ -58,7 +58,7 @@ origin : 바텀 레포지토리
    1. git checkout -b develop
 6. git checkout develop
 
-- 환경 구축 후 master에 커밋
+- 환경 구축 후 master에 커밋🚀
 
 1. 핫픽스 브랜치 만들기
    1. git checkout master

@@ -22,7 +22,7 @@ origin : 미드 레포지토리
 
 요약 : 작업용 레포 (팀원당 하나씩)
 예시 : https://github.com/code-bootcamp/f6b2-team1-server-leo(자신영어이름)
-upstream : 탑 레포지토리
+upstream : 미드 레포지토리
 origin : 바텀 레포지토리
 
 # git bottom checklist
@@ -34,7 +34,7 @@ origin : 바텀 레포지토리
 3. cd <해당폴더>
 4. git remote -v
    1. upstream이 없을겁니다
-   2. git remote add upstream <탑 레포지토리>
+   2. git remote add upstream <미드 레포지토리>
    3. git remote -v 해서 확인
 5. git branch 해서 develop이 있는지 확인
    1. git checkout -b feat-<작업내용(영어만 됩니다)>

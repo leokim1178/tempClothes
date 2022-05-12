@@ -7,14 +7,16 @@ import { FeedService } from './feed.service';
 export class FeedResolver {
   constructor(private readonly feedService: FeedService) {}
 
-  // @Query(() => Feed)
-  // fetchFeedsWithTags(
-  //   @Args('feedTag')
-  //   feedTag: string[],
-  // ) {}
+  @Query(() => [Feed])
+  fetchFeedsWithTags(
+    @Args({ name: 'feedTags', type: () => [String] })
+    feedTags: string[],
+  ) {
+    return this.feedService.findWithTags({ feedTags });
+  }
 
   // @Query(() => Feed)
-  // fetchFeedsWithRank() {}
+  // fetchFeedsWithUser() {}
 
   @Mutation(() => Feed)
   createFeed(

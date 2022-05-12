@@ -18,14 +18,14 @@ export class Feed {
 
   @Column({ default: 0 })
   @Field(() => Int, { nullable: true })
-  like: number;
+  rank: number;
 
   @Column({ type: 'longtext' })
   @Field(() => String)
   detail: string;
 
   @JoinTable()
-  @ManyToMany(() => FeedTag, (feedTags) => feedTags.feeds)
+  @ManyToMany(() => FeedTag, (feedTags) => feedTags.feeds, { cascade: true })
   @Field(() => [FeedTag])
   feedTags: FeedTag[];
 

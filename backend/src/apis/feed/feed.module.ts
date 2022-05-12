@@ -6,7 +6,10 @@ import { FeedResolver } from './feed.resolver';
 import { FeedService } from './feed.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Feed, FeedTag])],
+  imports: [
+    //
+    TypeOrmModule.forFeature([Feed, FeedTag]),
+  ],
   providers: [FeedResolver, FeedService],
 })
 export class FeedModule {}

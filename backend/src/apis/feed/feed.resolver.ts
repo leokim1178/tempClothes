@@ -8,10 +8,13 @@ export class FeedResolver {
   constructor(private readonly feedService: FeedService) {}
 
   // @Query(() => Feed)
-  // fetchFeeds(
+  // fetchFeedsWithTags(
   //   @Args('feedTag')
   //   feedTag: string[],
   // ) {}
+
+  // @Query(() => Feed)
+  // fetchFeedsWithRank() {}
 
   @Mutation(() => Feed)
   createFeed(
@@ -21,6 +24,8 @@ export class FeedResolver {
     return this.feedService.create({ createFeedInput });
   }
 
-  // @Mutation(() => Boolean)
-  // deleteFeed() {}
+  @Mutation(() => Boolean)
+  deleteFeed(@Args('feedId') feedId: string) {
+    return this.feedService.delete({ feedId });
+  }
 }

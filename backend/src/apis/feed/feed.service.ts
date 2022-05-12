@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FeedTag } from '../feedTag/entities/feedTag.entity';
@@ -34,5 +34,12 @@ export class FeedService {
       region: { id: regionId },
       feedTags: tagResult,
     });
+  }
+
+  async delete({ feedId }) {
+    const feed = await this.feedRepository.findOne({ id: feedId });
+    if (!feed) throw new ConflictException('존재하지 않는 피드입니다');
+    const result = await this.feedRepository.delete({ id: feedId });
+    return result.affected ? true : false;
   }
 }

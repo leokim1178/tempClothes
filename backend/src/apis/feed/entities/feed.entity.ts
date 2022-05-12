@@ -1,5 +1,13 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { FeedTag } from 'src/apis/feedTag/entities/feedTag.entity';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 @ObjectType()
@@ -8,15 +16,20 @@ export class Feed {
   @Field(() => String)
   id: string;
 
-  @Column()
-  @Field(() => Int)
+  @Column({ default: 0 })
+  @Field(() => Int, { nullable: true })
   like: number;
 
   @Column({ type: 'longtext' })
   @Field(() => String)
   detail: string;
 
+  @JoinTable()
+  @ManyToMany(() => FeedTag, (feedTags) => feedTags.feeds)
+  @Field(() => [FeedTag])
+  feedTags: FeedTag[];
+
   //   @ManyToOne(() => Region)
   //   @Field(() => Region)
-  //   region : Region;
+  //   region: Region;
 }

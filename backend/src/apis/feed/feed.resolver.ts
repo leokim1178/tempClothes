@@ -1,5 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CreateFeedInput } from './dto/createFeedInput';
+import { UpdateFeedInput } from './dto/updateFeedInput';
 import { Feed } from './entities/feed.entity';
 import { FeedService } from './feed.service';
 
@@ -24,6 +25,16 @@ export class FeedResolver {
     createFeedInput: CreateFeedInput,
   ) {
     return this.feedService.create({ createFeedInput });
+  }
+
+  @Mutation(() => Feed)
+  updateFeed(
+    @Args('updateFeedInput')
+    updateFeedInput: UpdateFeedInput,
+    @Args('feedId')
+    feedId: string,
+  ) {
+    return this.feedService.update({ feedId, updateFeedInput });
   }
 
   @Mutation(() => Boolean)

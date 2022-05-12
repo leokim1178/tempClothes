@@ -56,17 +56,39 @@ export class FeedService {
       feedTags: tagResult,
     });
 
-    console.log(feedSaveResult.id);
-
-    console.log(tagResult);
-    for (let i = 0; i < tagResult.length; i++) {
-      const aa = await this.feedTagRepository.findOne({ id: tagResult[i].id });
-      console.log(aa.feeds);
-    }
-
     return feedSaveResult;
   }
-
+  async update({ feedId, updateFeedInput }) {
+    const lastFeed = await this.feedRepository.findOne({
+      where: {
+        id: feedId,
+      },
+    });
+    const { feedTags, regionId, ...feed } = updateFeedInput;
+    const tagResult = [];
+    for (let i = 0; i < feedTags.length; i++) {
+      const tagName = feedTags[i];
+      const prevTag = await this.feedTagRepository.findOne({
+        where: { tagName },
+      });
+      if (prevTag) {
+        tagResult.push(prevTag);
+      } else {
+        const newTag = await this.feedTagRepository.save({
+          tagName,
+          feeds: [],
+        });
+        tagResult.push(newTag);
+      }
+    }
+    const feedUpdateResult = await this.feedRepository.save({
+      ...lastFeed,
+      ...feed,
+      region: { id: regionId },
+      feedTags: tagResult,
+    });
+    return feedUpdateResult;
+  }
   async delete({ feedId }) {
     const feed = await this.feedRepository.findOne({ id: feedId });
     if (!feed) throw new ConflictException('존재하지 않는 피드입니다');

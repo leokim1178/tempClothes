@@ -12,7 +12,7 @@ import { SubCommentModule } from './apis/subComment/subComment.module';
     UserModule, // 유저 모듈
     CommentModule, // 댓글 모듈
     SubCommentModule, // 대댓글 모듈
-    // FeedModule,
+    // FeedModule, //
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: 'src/commons/graphql/schema.gql',

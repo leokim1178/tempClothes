@@ -4,10 +4,15 @@ import { UserModule } from './apis/user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ConfigModule } from '@nestjs/config';
+import { CommentModule } from './apis/comment/comment.module';
+import { SubCommentModule } from './apis/subComment/subComment.module';
 
 @Module({
   imports: [
-    UserModule, //
+    UserModule, // 유저 모듈
+    CommentModule, // 댓글 모듈
+    SubCommentModule, // 대댓글 모듈
+    // FeedModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: 'src/commons/graphql/schema.gql',

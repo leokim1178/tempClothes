@@ -8,8 +8,10 @@ import { FeedModule } from './apis/feed/feed.module';
 
 @Module({
   imports: [
+    UserModule, // 유저 모듈
+    // CommentModule, // 댓글 모듈
+    // SubCommentModule, // 대댓글 모듈
     FeedModule,
-    UserModule, //
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: 'src/commons/graphql/schema.gql',

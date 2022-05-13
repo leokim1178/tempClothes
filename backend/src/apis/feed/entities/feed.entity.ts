@@ -18,7 +18,7 @@ export class Feed {
 
   @Column({ default: 0 })
   @Field(() => Int, { nullable: true })
-  rank: number;
+  watchCount: number;
 
   @Column({ type: 'longtext' })
   @Field(() => String)

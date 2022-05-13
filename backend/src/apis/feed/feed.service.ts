@@ -26,10 +26,22 @@ export class FeedService {
     }
 
     const finalResult = [...new Set(feedResult.flat())].sort((a, b) => {
-      return a.rank - b.rank;
+      return b.watchCount - a.watchCount;
     });
 
     return finalResult;
+  }
+
+  async findWithId({ feedId }) {
+    const findFeed = await this.feedRepository.findOne({
+      id: feedId,
+    });
+    const result = await this.feedRepository.save({
+      ...findFeed,
+      watchCount: findFeed.watchCount + 1,
+    });
+
+    return result;
   }
 
   async create({ createFeedInput }) {

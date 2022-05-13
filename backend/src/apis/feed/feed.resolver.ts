@@ -8,6 +8,14 @@ import { FeedService } from './feed.service';
 export class FeedResolver {
   constructor(private readonly feedService: FeedService) {}
 
+  @Query(() => Feed)
+  fetchFeed(
+    @Args('feedId')
+    feedId: string,
+  ) {
+    return this.feedService.findWithId({ feedId });
+  }
+
   @Query(() => [Feed])
   fetchFeedsWithTags(
     @Args({ name: 'feedTags', type: () => [String] })
@@ -18,6 +26,8 @@ export class FeedResolver {
 
   // @Query(() => Feed)
   // fetchFeedsWithUser() {}
+
+  // @Mutation(() => Number)
 
   @Mutation(() => Feed)
   createFeed(

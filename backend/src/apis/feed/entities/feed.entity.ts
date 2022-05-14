@@ -1,12 +1,17 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { FeedTag } from 'src/apis/feedTag/entities/feedTag.entity';
+import { Region } from 'src/apis/region/entities/region.entity';
+import { User } from 'src/apis/user/entities/user.entity';
 import {
   Column,
+  CreateDateColumn,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -24,12 +29,27 @@ export class Feed {
   @Field(() => String)
   detail: string;
 
-  @JoinTable()
-  @ManyToMany(() => FeedTag, (feedTags) => feedTags.feeds, { cascade: true })
+  @JoinTable({})
+  @ManyToMany(() => FeedTag, (feedTags) => feedTags.feed, {
+    eager: true,
+    cascade: ['insert', 'update'],
+  })
   @Field(() => [FeedTag])
-  feedTags: FeedTag[];
+  feedTag: FeedTag[];
 
-  //   @ManyToOne(() => Region)
-  //   @Field(() => Region)
-  //   region: Region;
+  @ManyToOne(() => Region)
+  @Field(() => Region)
+  region: Region;
+
+  @ManyToOne(() => User)
+  @Field(() => User)
+  user: User;
+
+  @CreateDateColumn()
+  @Field(() => Date)
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  @Field(() => Date)
+  updatedAt: Date;
 }

@@ -9,5 +9,5 @@ export class CreateFeedInput {
   regionId: string;
 
   @Field(() => [String])
-  feedTags: string[];
+  feedTag: string[];
 }

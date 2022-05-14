@@ -13,7 +13,7 @@ export class FeedTag {
   @Field(() => String)
   tagName: string;
 
-  @ManyToMany(() => Feed, (feeds) => feeds.feedTags)
+  @ManyToMany(() => Feed, (feeds) => feeds.feedTag)
   @Field(() => [Feed])
-  feeds: Feed[];
+  feed: Feed[];
 }

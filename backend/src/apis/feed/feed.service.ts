@@ -1,6 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Any, In, Repository } from 'typeorm';
+import { FeedImg } from '../feedImg/entities/feedImg.entity';
 import { FeedTag } from '../feedTag/entities/feedTag.entity';
 import { Region } from '../region/entities/region.entity';
 import { User } from '../user/entities/user.entity';
@@ -17,6 +18,8 @@ export class FeedService {
     private readonly regionRepository: Repository<Region>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(FeedImg)
+    private readonly feedImgRepository: Repository<FeedImg>,
   ) {}
 
   async findWithTags({ feedTags, regionId }) {
@@ -25,9 +28,10 @@ export class FeedService {
       .leftJoinAndSelect('Feed.region', 'region')
       .where({ region: regionId })
       .leftJoinAndSelect('Feed.feedTag', 'feedTag')
-      .andWhere('feedTag.tagname IN (:tagName)', {
+      .andWhere('feedTag.tagName IN (:tagName)', {
         tagName: feedTags,
       })
+      .leftJoinAndSelect('Feed.feedImg', 'feedImg')
       .orderBy('Feed.watchCount', 'DESC')
       .getMany();
 
@@ -35,22 +39,27 @@ export class FeedService {
   }
 
   async findWithUser({ userId }) {
-    const result = await this.feedRepository.find({
-      where: {
-        user: userId,
-      },
-      order: { watchCount: 'DESC' },
-    });
+    const result = await this.feedRepository
+      .createQueryBuilder('Feed')
+      .leftJoinAndSelect('Feed.user', 'user')
+      .where({ user: userId })
+      .leftJoinAndSelect('Feed.feedImg', 'feedImg')
+      .orderBy('Feed.watchCount', 'DESC')
+      .getMany();
+    console.log(result);
+
     return result;
   }
 
   async findWithFeedId({ feedId }) {
-    const findFeed = await this.feedRepository.findOne({
-      id: feedId,
-    });
+    const feed = await this.feedRepository
+      .createQueryBuilder('Feed')
+      .where({ id: feedId })
+      .leftJoinAndSelect('Feed.feedImg', 'feedImg')
+      .getOne();
     const result = await this.feedRepository.save({
-      ...findFeed,
-      watchCount: findFeed.watchCount + 1,
+      ...feed,
+      watchCount: feed.watchCount + 1,
     });
 
     return result;
@@ -94,6 +103,7 @@ export class FeedService {
         id: feedId,
       },
     });
+    if (!lastFeed) throw new ConflictException('등록되지 않은 피드입니다 ');
 
     const { feedTag, regionId, ...feed } = updateFeedInput;
     const tagResult = [];
@@ -127,6 +137,14 @@ export class FeedService {
   async delete({ feedId }) {
     const feed = await this.feedRepository.findOne({ id: feedId });
     if (!feed) throw new ConflictException('존재하지 않는 피드입니다');
+    const imgs = await this.feedImgRepository.find({ where: { feed: feedId } });
+
+    await Promise.all(
+      imgs.map((el) => {
+        this.feedImgRepository.delete({ id: el.id });
+      }),
+    );
+
     const result = await this.feedRepository.delete({ id: feedId });
     return result.affected ? true : false;
   }

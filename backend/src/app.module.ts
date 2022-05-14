@@ -7,13 +7,15 @@ import { ConfigModule } from '@nestjs/config';
 import { FeedModule } from './apis/feed/feed.module';
 import { SubCommentModule } from './apis/subComment/subComment.module';
 import { CommentModule } from './apis/comment/comment.module';
+import { FeedImgModule } from './apis/feedImg/feedImg.module';
 
 @Module({
   imports: [
     UserModule, // 유저 모듈
     CommentModule, // 댓글 모듈
     SubCommentModule, // 대댓글 모듈
-    FeedModule,
+    FeedModule, // 피드 모듈
+    FeedImgModule, // 피드 이미지 모듈
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: 'src/commons/graphql/schema.gql',

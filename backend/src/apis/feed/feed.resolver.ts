@@ -18,6 +18,14 @@ export class FeedResolver {
   }
 
   @Query(() => [Feed])
+  fetchFeedsWithRegion(
+    @Args('regionId')
+    regionId: string,
+  ) {
+    return this.feedService.findWithRegion({ regionId });
+  }
+
+  @Query(() => [Feed])
   fetchFeedsWithTags(
     @Args({ name: 'feedTags', type: () => [String] })
     feedTags: string[],

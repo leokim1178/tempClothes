@@ -22,6 +22,19 @@ export class FeedService {
     private readonly feedImgRepository: Repository<FeedImg>,
   ) {}
 
+  async findWithRegion({ regionId }) {
+    const result = await this.feedRepository
+      .createQueryBuilder('Feed')
+      .leftJoinAndSelect('Feed.region', 'region')
+      .where({ region: regionId })
+      .leftJoinAndSelect('Feed.feedTag', 'feedTag')
+      .leftJoinAndSelect('Feed.feedImg', 'feedImg')
+      .orderBy('Feed.watchCount', 'DESC')
+      .getMany();
+
+    return result;
+  }
+
   async findWithTags({ feedTags, regionId }) {
     const result = await this.feedRepository
       .createQueryBuilder('Feed')
@@ -65,8 +78,14 @@ export class FeedService {
     return result;
   }
 
-  async create({ createFeedInput, userId }) {
-    const { feedTag, regionId, ...feed } = createFeedInput;
+  async create({ userId, createFeedInput }) {
+    const { feedTag, regionName, ...feed } = createFeedInput;
+
+    const region = await this.regionRepository.findOne({
+      name: regionName,
+    });
+    if (!region) throw new ConflictException('등록되지 않은 지역명입니다');
+
     const tagResult = [];
     for (let i = 0; i < feedTag.length; i++) {
       const tagName = feedTag[i];
@@ -82,11 +101,7 @@ export class FeedService {
         tagResult.push(newTag);
       }
     }
-    const region = await this.regionRepository.save({
-      id: regionId,
-      location_name: regionId,
-    });
-    console.log(region);
+
     const user = await this.userRepository.findOne({ where: { userId } });
     const feedSaveResult = await this.feedRepository.save({
       ...feed,
@@ -97,6 +112,7 @@ export class FeedService {
 
     return feedSaveResult;
   }
+
   async update({ feedId, updateFeedInput }) {
     const lastFeed = await this.feedRepository.findOne({
       where: {
@@ -105,7 +121,7 @@ export class FeedService {
     });
     if (!lastFeed) throw new ConflictException('등록되지 않은 피드입니다 ');
 
-    const { feedTag, regionId, ...feed } = updateFeedInput;
+    const { feedTag, regionName, ...feed } = updateFeedInput;
     const tagResult = [];
 
     for (let i = 0; i < feedTag.length; i++) {
@@ -123,7 +139,7 @@ export class FeedService {
       }
     }
     const region = await this.regionRepository.findOne({
-      where: { id: regionId },
+      where: { name: regionName },
     });
     const feedUpdateResult = await this.feedRepository.save({
       ...lastFeed,

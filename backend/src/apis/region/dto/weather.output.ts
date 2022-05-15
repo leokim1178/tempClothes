@@ -13,12 +13,16 @@ export class WeatherOutPut {
 
   @Field(() => Float)
   temp: number;
+
   @Field(() => Float)
   tempMin: number;
+
   @Field(() => Float)
   tempMax: number;
+
   @Field(() => Float)
   humidity: number;
+
   @Field(() => Float)
   feelsLike: number;
 }

@@ -36,4 +36,12 @@ export class FeedImgResolver {
       imgURLs,
     });
   }
+
+  @Mutation(() => Boolean)
+  deleteFeedImgs(
+    @Args('feedImgId')
+    feedImgId: string,
+  ) {
+    return this.feedImgService.delete({ feedImgId });
+  }
 }

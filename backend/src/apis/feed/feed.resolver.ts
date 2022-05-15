@@ -9,7 +9,7 @@ import { FeedService } from './feed.service';
 export class FeedResolver {
   constructor(private readonly feedService: FeedService) {}
 
-  @Query(() => Feed)
+  @Query(() => Feed) // 피드 아이디로 피드 내용 조회
   fetchFeed(
     @Args('feedId')
     feedId: string,
@@ -17,7 +17,7 @@ export class FeedResolver {
     return this.feedService.findWithFeedId({ feedId });
   }
 
-  @Query(() => [Feed])
+  @Query(() => [Feed]) // 지역정보로 피드 조회
   fetchFeedsWithRegion(
     @Args('regionId')
     regionId: string,
@@ -25,7 +25,7 @@ export class FeedResolver {
     return this.feedService.findWithRegion({ regionId });
   }
 
-  @Query(() => [Feed])
+  @Query(() => [Feed]) // 태그들로 피드 조회
   fetchFeedsWithTags(
     @Args({ name: 'feedTags', type: () => [String] })
     feedTags: string[],
@@ -35,35 +35,35 @@ export class FeedResolver {
     return this.feedService.findWithTags({ feedTags, regionId });
   }
 
-  @Query(() => [Feed])
+  @Query(() => [Feed]) // 유저 정보로 피드 조회
   fetchFeedsWithUser(
     @Args('userId')
-    userId: string, // currentUser 로 대체 예정
+    userId: string, // currentUser payload 로 대체 예정
   ) {
     return this.feedService.findWithUser({ userId });
   }
 
-  @Mutation(() => Feed)
+  @Mutation(() => Feed) // 피드 생성
   createFeed(
     @Args('createFeedInput')
     createFeedInput: CreateFeedInput,
     @Args('userId')
-    userId: string,
+    userId: string, // currentUser payload 로 대체 예정
   ) {
     return this.feedService.create({ createFeedInput, userId });
   }
 
-  @Mutation(() => Feed)
+  @Mutation(() => Feed) // 피드 업데이트
   updateFeed(
     @Args('updateFeedInput')
     updateFeedInput: UpdateFeedInput,
     @Args('feedId')
-    feedId: string, //// currentUser 로 대체 예정
+    feedId: string, //// currentUser payload 로 대체 예정
   ) {
     return this.feedService.update({ feedId, updateFeedInput });
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => Boolean) // 피드 삭제
   deleteFeed(@Args('feedId') feedId: string) {
     return this.feedService.delete({ feedId });
   }

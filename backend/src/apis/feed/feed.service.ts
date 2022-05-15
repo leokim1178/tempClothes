@@ -1,6 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Any, In, Repository } from 'typeorm';
+import { Comment } from '../comment/entities/comment.entity';
 import { FeedImg } from '../feedImg/entities/feedImg.entity';
 import { FeedTag } from '../feedTag/entities/feedTag.entity';
 import { Region } from '../region/entities/region.entity';
@@ -20,16 +21,18 @@ export class FeedService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(FeedImg)
     private readonly feedImgRepository: Repository<FeedImg>,
+    @InjectRepository(Comment)
+    private readonly commentRepository: Repository<Comment>,
   ) {}
 
   async findWithRegion({ regionId }) {
     const result = await this.feedRepository
       .createQueryBuilder('Feed')
-      .leftJoinAndSelect('Feed.region', 'region')
-      .where({ region: regionId })
-      .leftJoinAndSelect('Feed.feedTag', 'feedTag')
-      .leftJoinAndSelect('Feed.feedImg', 'feedImg')
-      .orderBy('Feed.watchCount', 'DESC')
+      .leftJoinAndSelect('Feed.region', 'region') // 지역정보를 조인하고 'region'으로 명명
+      .where({ region: regionId }) // 지역정보 필터링 조건 추가
+      .leftJoinAndSelect('Feed.feedTag', 'feedTag') // 피드 태그들 조인
+      .leftJoinAndSelect('Feed.feedImg', 'feedImg') // 피드 이미지들 조인
+      .orderBy('Feed.watchCount', 'DESC') // 조회수 기준으로 내림차순으로 정렬
       .getMany();
 
     return result;
@@ -38,14 +41,14 @@ export class FeedService {
   async findWithTags({ feedTags, regionId }) {
     const result = await this.feedRepository
       .createQueryBuilder('Feed')
-      .leftJoinAndSelect('Feed.region', 'region')
-      .where({ region: regionId })
-      .leftJoinAndSelect('Feed.feedTag', 'feedTag')
+      .leftJoinAndSelect('Feed.region', 'region') // 지역정보를 조인하고 'region'으로 명명
+      .where({ region: regionId }) // 지역정보 필터링 조건 추가
+      .leftJoinAndSelect('Feed.feedTag', 'feedTag') // 피드 태그들을 조인하고 'feedTag'로 명명
       .andWhere('feedTag.tagName IN (:tagName)', {
         tagName: feedTags,
-      })
-      .leftJoinAndSelect('Feed.feedImg', 'feedImg')
-      .orderBy('Feed.watchCount', 'DESC')
+      }) // andWhere로 조건 추가 태그들이 들어간 feedTags로 IN 조회
+      .leftJoinAndSelect('Feed.feedImg', 'feedImg') //피드 이미지들 조인
+      .orderBy('Feed.watchCount', 'DESC') // 조회수 기준으로 내림차순으로 정렬
       .getMany();
 
     return result;
@@ -54,10 +57,10 @@ export class FeedService {
   async findWithUser({ userId }) {
     const result = await this.feedRepository
       .createQueryBuilder('Feed')
-      .leftJoinAndSelect('Feed.user', 'user')
-      .where({ user: userId })
-      .leftJoinAndSelect('Feed.feedImg', 'feedImg')
-      .orderBy('Feed.watchCount', 'DESC')
+      .leftJoinAndSelect('Feed.user', 'user') // 유저정보 조인하고 'user'로 명명
+      .where({ user: userId }) // 유저정보 필터링 조건 추가
+      .leftJoinAndSelect('Feed.feedImg', 'feedImg') // 피드 이미지들 조인
+      .orderBy('Feed.watchCount', 'DESC') // 조회수 기준으로 내림차순으로 정렬
       .getMany();
     console.log(result);
 
@@ -67,12 +70,13 @@ export class FeedService {
   async findWithFeedId({ feedId }) {
     const feed = await this.feedRepository
       .createQueryBuilder('Feed')
-      .where({ id: feedId })
-      .leftJoinAndSelect('Feed.feedImg', 'feedImg')
+      .where({ id: feedId }) // id로 조회
+      .leftJoinAndSelect('Feed.feedImg', 'feedImg') // 피드 이미지들 조인
+      .leftJoinAndSelect('Feed.comment', 'feedComment') // 피드 댓글들 조인
       .getOne();
     const result = await this.feedRepository.save({
       ...feed,
-      watchCount: feed.watchCount + 1,
+      watchCount: feed.watchCount + 1, // 조회 수 증가
     });
 
     return result;
@@ -93,12 +97,12 @@ export class FeedService {
         where: { tagName },
       });
       if (prevTag) {
-        tagResult.push(prevTag);
+        tagResult.push(prevTag); // tag가 이미 존재하면 저장하지 않고 추가
       } else {
         const newTag = await this.feedTagRepository.save({
           tagName,
         });
-        tagResult.push(newTag);
+        tagResult.push(newTag); // 없으면 db에 저장 후 추가
       }
     }
 
@@ -130,12 +134,12 @@ export class FeedService {
         where: { tagName },
       });
       if (prevTag) {
-        tagResult.push(prevTag);
+        tagResult.push(prevTag); // tag가 이미 존재하면 저장하지 않고 추가
       } else {
         const newTag = await this.feedTagRepository.save({
           tagName,
         });
-        tagResult.push(newTag);
+        tagResult.push(newTag); // 없으면 db에 저장 후 추가
       }
     }
     const region = await this.regionRepository.findOne({
@@ -153,13 +157,24 @@ export class FeedService {
   async delete({ feedId }) {
     const feed = await this.feedRepository.findOne({ id: feedId });
     if (!feed) throw new ConflictException('존재하지 않는 피드입니다');
+
     const imgs = await this.feedImgRepository.find({ where: { feed: feedId } });
 
     await Promise.all(
       imgs.map((el) => {
         this.feedImgRepository.delete({ id: el.id });
       }),
-    );
+    ); // 피드 삭제시 이미지 먼저 삭제
+
+    const comments = await this.commentRepository.find({
+      where: { feed: feedId },
+    });
+
+    await Promise.all(
+      comments.map((el) => {
+        this.commentRepository.delete({ id: el.id });
+      }),
+    ); // 피드 삭제시 댓글 먼저 삭제
 
     const result = await this.feedRepository.delete({ id: feedId });
     return result.affected ? true : false;

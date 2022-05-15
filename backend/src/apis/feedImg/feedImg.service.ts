@@ -124,12 +124,16 @@ export class FeedImgService {
     );
 
     // 6. feed에 해당되는 이미지 다시 추출 후 전송
-
     const saveResult = await this.feedImgRepository.find({
       where: { feed },
       relations: ['feed'],
     });
 
     return saveResult;
+  }
+
+  async delete({ feedImgId }) {
+    const result = await this.feedImgRepository.delete({ id: feedImgId });
+    return result.affected ? true : false;
   }
 }

@@ -3,7 +3,9 @@ import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth-guard';
 import { CurrentUser } from 'src/commons/auth/gql-user.param';
 import { CommentService } from './comment.service';
+import { createCommentInput } from './dto/createComment.input';
 import { Comment } from './entities/comment.entity';
+import { updateCommentInput } from './dto/updateComment.input';
 
 @Resolver()
 export class CommentResolver {
@@ -20,11 +22,10 @@ export class CommentResolver {
   @Mutation(() => Comment)
   createComment(
     // @CurrentUser() currentUser: any, // 로그인 구현 되면 열기
-    @Args('mainDetail') mainDetail: string, //
-    @Args('feedId') feedId: string,
-    @Args('userId') userId: string,
+    @Args('userId') userId: string, //
+    @Args('createCommentInput') createCommentInput: createCommentInput,
   ) {
-    return this.commentService.create({ mainDetail, feedId, userId });
+    return this.commentService.create({ userId, createCommentInput });
   }
 
   // @UseGuards(GqlAuthAccessGuard)
@@ -32,18 +33,21 @@ export class CommentResolver {
   updateComment(
     // @CurrentUser() currentUser: any, // 로그인 구현 되면 열기
     @Args('userId') userId: string,
-    @Args('mainDetail') mainDetail: string,
     @Args('commentId') commentId: string,
+    @Args('updateCommentInput') updateCommentInput: updateCommentInput,
   ) {
-    return this.commentService.update({ mainDetail, commentId, userId });
+    return this.commentService.update({
+      commentId,
+      userId,
+      updateCommentInput,
+    });
   }
 
   // @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
   deleteComment(
-    @Args('commentId') commentId: string,
-    @Args('userId') userId: string,
+    @Args('commentId') commentId: string, //
   ) {
-    return this.commentService.delete({ userId, commentId }); // feedId 추가해야함
+    return this.commentService.delete({ commentId }); // feedId 추가해야함
   }
 }

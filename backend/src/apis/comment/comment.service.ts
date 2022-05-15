@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Feed } from '../feed/entities/feed.entity';
+import { User } from '../user/entities/user.entity';
 import { Comment } from './entities/comment.entity';
 
 @Injectable()
@@ -8,44 +10,73 @@ export class CommentService {
   constructor(
     @InjectRepository(Comment)
     private readonly commentRepository: Repository<Comment>,
+
+    @InjectRepository(Feed)
+    private readonly feedRepository: Repository<Feed>,
+
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   async findOne({ feedId }) {
-    return await this.commentRepository.findOne({
-      where: { id: feedId },
+    const result = await this.commentRepository.findOne({
+      where: { feed: feedId },
       relations: ['feed'],
     });
+    console.log(result);
+
+    return result;
   }
 
-  async create({ mainDetail, feedId, userId }) {
-    console.log(feedId, '피드아이디');
+  async create({ userId, createCommentInput }) {
     console.log(userId, '유저아이디');
-    console.log(mainDetail, '댓글내용');
+    console.log('댓글내용');
+    const { p_commentId, feedId, comment } = createCommentInput;
+    let parentComment;
+    if (p_commentId) {
+      parentComment = await this.commentRepository.findOne({
+        where: { id: p_commentId },
+      });
+    }
+    console.log(parentComment, '부모댓글');
+
+    const comUser = await this.userRepository.findOne({
+      where: { userId: userId }, // 유저아이디 값 찾을때 헷갈리지 말것!!
+    });
+
+    console.log(comUser);
+
     return await this.commentRepository.save({
-      mainDetail: mainDetail,
-      feed: { id: feedId },
-      comUser: { userId }, // id 자체가 유저아이디이기 때문
+      user: comUser,
+      feed: feedId,
+      comment: comment,
+      p_comment: parentComment,
     });
   }
 
-  async update({ mainDetail, commentId, userId }) {
+  async update({ commentId, userId, updateCommentInput }) {
     const result = await this.commentRepository.findOne({
-      where: { id: commentId, comUser: userId }, // 가능한지 테스트 해봐야 할듯
-      relations: ['comUser'],
+      where: { id: commentId },
     });
-    console.log(result, '댓글 업데이트');
-
+    console.log(result);
     return await this.commentRepository.save({
       ...result,
-      mainDetail,
+      user: userId,
+      ...updateCommentInput,
     });
   }
 
-  async delete({ userId, commentId }) {
+  async delete({ commentId }) {
+    const result2 = await this.commentRepository.delete({
+      p_comment: commentId,
+    });
+
     const result = await this.commentRepository.delete({
       id: commentId,
     });
 
+    console.log(result, '댓글삭제');
+    console.log(result2, '대댓글삭제');
     return result.affected ? true : false;
   }
 }

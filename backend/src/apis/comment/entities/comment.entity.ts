@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
 import {
   Column,
   Entity,
@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from 'src/apis/user/entities/user.entity';
-// import { Feed } from 'src/apis/feed/entities/feed.entity';
+import { Feed } from 'src/apis/feed/entities/feed.entity';
 
 @Entity()
 @ObjectType()
@@ -19,15 +19,19 @@ export class Comment {
 
   @Column()
   @Field(() => String)
-  mainDetail: string;
+  comment: string;
 
-  // @ManyToOne(() => Feed) // 피드
-  // @Field(() => Feed)
-  // feed: Feed;
+  @ManyToOne(() => Feed)
+  @Field(() => Feed)
+  feed: Feed;
 
-  @ManyToOne(() => User) // 유저
+  @ManyToOne(() => User)
   @Field(() => User)
-  comUser: User;
+  user: User;
+
+  @ManyToOne(() => Comment) // 자기참조
+  @Field(() => Comment)
+  p_comment: Comment;
 
   @CreateDateColumn()
   createdAt: Date;

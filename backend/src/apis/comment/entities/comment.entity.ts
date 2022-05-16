@@ -21,7 +21,7 @@ export class Comment {
   @Field(() => String)
   comment: string;
 
-  @ManyToOne(() => Feed)
+  @ManyToOne(() => Feed, (feed) => feed.comment)
   @Field(() => Feed)
   feed: Feed;
 

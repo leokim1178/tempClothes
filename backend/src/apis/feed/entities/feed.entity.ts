@@ -1,5 +1,7 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Comment } from 'src/apis/comment/entities/comment.entity';
 import { FeedImg } from 'src/apis/feedImg/entities/feedImg.entity';
+import { FeedLike } from 'src/apis/feedLike/entities/feedLike.entity';
 import { FeedTag } from 'src/apis/feedTag/entities/feedTag.entity';
 import { Region } from 'src/apis/region/entities/region.entity';
 import { User } from 'src/apis/user/entities/user.entity';
@@ -30,6 +32,10 @@ export class Feed {
   @Field(() => String)
   detail: string;
 
+  @Column({ default: 0, nullable: true })
+  @Field(() => Int, { nullable: true })
+  likeCount: number;
+
   @JoinTable({})
   @ManyToMany(() => FeedTag, (feedTags) => feedTags.feed, {
     eager: true,
@@ -46,6 +52,24 @@ export class Feed {
   })
   @Field(() => [FeedImg])
   feedImg: FeedImg[];
+
+  @OneToMany(() => Comment, (comment) => comment.feed, {
+    cascade: ['remove'],
+    onDelete: 'CASCADE',
+    orphanedRowAction: 'delete',
+    createForeignKeyConstraints: true,
+  })
+  @Field(() => [Comment])
+  comment: Comment[];
+
+  @OneToMany(() => FeedLike, (feedLike) => feedLike.feed, {
+    cascade: ['remove'],
+    onDelete: 'CASCADE',
+    orphanedRowAction: 'delete',
+    createForeignKeyConstraints: true,
+  })
+  @Field(() => [FeedLike])
+  feedLike: FeedLike[];
 
   @ManyToOne(() => Region)
   @Field(() => Region)

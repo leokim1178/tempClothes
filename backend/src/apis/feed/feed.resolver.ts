@@ -43,6 +43,16 @@ export class FeedResolver {
     return this.feedService.findWithUser({ userId });
   }
 
+  @Mutation(() => Boolean) // 좋아요 누르기
+  toggleLikeFeed(
+    @Args('userId')
+    userId: string, // currentUser payload 로 대체 예정
+    @Args('feedId')
+    feedId: string,
+  ) {
+    return this.feedService.like({ userId, feedId });
+  }
+
   @Mutation(() => Feed) // 피드 생성
   createFeed(
     @Args('createFeedInput')

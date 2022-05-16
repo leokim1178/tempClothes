@@ -38,7 +38,7 @@ export class RegionResolver {
     const tempMin = data.main.temp_min; // 최저기온
     const tempMax = data.main.temp_max; // 최고기온
     const humidity = data.main.humidity; // 습도
-
+    console.log(data);
     const weatherResult: WeatherOutPut = {
       // 아웃풋 클래스로 타입지정
       status,

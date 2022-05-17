@@ -2,10 +2,14 @@ import { Query, Resolver, Args, Mutation } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
 import { createUserInput } from './dto/createUser.input';
+import { updateUserInput } from './dto/updateUser.input';
 import { UseGuards } from '@nestjs/common';
-import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth-guard';
+import {
+  GqlAuthAccessGuard,
+  GqlAuthRefreshGuard,
+} from 'src/commons/auth/gql-auth-guard';
 import * as bcrypt from 'bcrypt';
-import { CurrentUser } from 'src/commons/auth/gql-user.param';
+import { CurrentUser, ICurrentUser } from '../../commons/auth/gql-user.param';
 
 @Resolver()
 export class UserResolver {
@@ -21,17 +25,23 @@ export class UserResolver {
   @UseGuards(GqlAuthAccessGuard) // 로그인한 유저
   @Query(() => User) // 마이페이지 조회
   fetchUser(
-    // @CurrentUser() currentUser: any, // payload값 콘솔 찍고 확인 하고, 활성하기
-    @Args('userId') userId: string, //
+    @CurrentUser() currentUser: ICurrentUser, //
   ) {
-    return this.userService.findOne({ userId });
+    return this.userService.fetch({ userId: currentUser.userId });
   }
 
   @Query(() => String) // 아이디 중복 확인
-  fetchOverlap(
+  fetchOverlapId(
     @Args('userId') userId: string, //
   ) {
-    return this.userService.overLap({ userId });
+    return this.userService.overLapId({ userId });
+  }
+
+  @Query(() => String) // 닉네임 중복 확인
+  fetchOverlapNic(
+    @Args('nickname') nickname: string, //
+  ) {
+    return this.userService.overLapNic({ nickname });
   }
 
   @Mutation(() => User) // 유저 회원가입
@@ -45,14 +55,20 @@ export class UserResolver {
     });
   }
 
-  @UseGuards(GqlAuthAccessGuard) // 로그인한 유저, 인증 부분 확실해지면, 다시 확인.
+  @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => User)
   async updateUser(
-    // @CurrentUser() // payload값 콘솔 찍고 확인 하고, 활성하기
-    @Args('userId') userId: string,
-    @Args('password') password: string, // 한솔님 오시면, 다시 수정
+    @CurrentUser() currentUser: ICurrentUser,
+    @Args('password') password: string,
+    @Args('updateUserInput') updateUserInput: updateUserInput,
   ) {
-    return '수정완료';
+    const currentUserId = currentUser.userId;
+    console.log(currentUserId, '커랜트 유저아이디');
+    return await this.userService.update({
+      currentUserId,
+      updateUserInput,
+      password,
+    });
   }
 
   @UseGuards(GqlAuthAccessGuard) // 로그인한 유저

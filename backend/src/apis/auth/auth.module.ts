@@ -12,11 +12,26 @@ import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
 import { Region } from '../region/entities/region.entity';
 import { JwtAcessStrategy } from 'src/commons/auth/jwt-access.strategy';
+import { UserResolver } from '../user/user.resolver';
+import { FeedService } from '../feed/feed.service';
+import { Feed } from '../feed/entities/feed.entity';
+import { FeedTag } from '../feedTag/entities/feedTag.entity';
+import { FeedImg } from '../feedImg/entities/feedImg.entity';
+import { Comment } from '../comment/entities/comment.entity';
+import { FeedLike } from '../feedLike/entities/feedLike.entity';
 
 @Module({
   imports: [
     JwtModule.register({}), //
-    TypeOrmModule.forFeature([User, Region]),
+    TypeOrmModule.forFeature([
+      User,
+      Region,
+      Feed,
+      FeedTag,
+      FeedImg,
+      Comment,
+      FeedLike,
+    ]),
   ],
   providers: [
     JwtRefreshStrategy,
@@ -27,6 +42,8 @@ import { JwtAcessStrategy } from 'src/commons/auth/jwt-access.strategy';
     AuthResolver, //
     AuthService,
     UserService,
+    UserResolver,
+    FeedService,
   ],
   controllers: [
     // AuthController, //

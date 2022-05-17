@@ -19,12 +19,13 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
 
   async validate(req, payload) {
     console.log(req, '123');
-    console.log('payload 확인(access)', payload);
+    console.log('payload 확인(refresh)', payload);
+    console.log('payload 확인(headers)', payload.headers);
     const result = await req.headers.cookie.split('=')[1];
-    console.log(result, 'MMMMMM=========');
+    console.log(result, '리프레시 쿠키 값');
     const result1 = `refreshToken:${result}`;
     const exist = await this.cacheManager.get(result1); // 키 자체가 토큰 값이 되있기 때문.
-    console.log(exist, '321321');
+    console.log(exist, 'exist토큰 값');
     // req에서 보내 온것이 이미 저장되어 있는 redis랑 같으면 오류지,, 이미 로그아웃한 토큰이니까
     if (exist) {
       throw new UnauthorizedException();

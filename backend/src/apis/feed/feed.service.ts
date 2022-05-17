@@ -191,10 +191,10 @@ export class FeedService {
   }
 
   async create({ userId, createFeedInput }) {
-    const { feedTag, regionName, ...feed } = createFeedInput;
+    const { feedTag, regionId, ...feed } = createFeedInput;
 
     const region = await this.regionRepository.findOne({
-      name: regionName,
+      id: regionId,
     });
     if (!region) throw new ConflictException('등록되지 않은 지역명입니다');
 
@@ -233,7 +233,7 @@ export class FeedService {
     });
     if (!lastFeed) throw new ConflictException('등록되지 않은 피드입니다 ');
 
-    const { feedTag, regionName, ...feed } = updateFeedInput;
+    const { feedTag, regionId, ...feed } = updateFeedInput;
     const tagResult = [];
 
     for (let i = 0; i < feedTag.length; i++) {
@@ -251,7 +251,7 @@ export class FeedService {
       }
     }
     const region = await this.regionRepository.findOne({
-      where: { name: regionName },
+      where: { id: regionId },
     });
     const feedUpdateResult = await this.feedRepository.save({
       ...lastFeed,

@@ -12,17 +12,17 @@ export class WeatherOutPut {
   weatherIcon: string;
 
   @Field(() => Float)
+  rainAmount: number;
+
+  @Field(() => Float)
+  rainRate: number;
+
+  @Field(() => Float)
   temp: number;
 
   @Field(() => Float)
-  tempMin: number;
-
-  @Field(() => Float)
-  tempMax: number;
-
-  @Field(() => Float)
-  humidity: number;
-
-  @Field(() => Float)
   feelsLike: number;
+
+  @Field(() => Float)
+  uvi: number;
 }

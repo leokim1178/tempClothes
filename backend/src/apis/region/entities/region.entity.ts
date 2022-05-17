@@ -4,13 +4,9 @@ import { Column, Entity, PrimaryGeneratedColumn, PrimaryColumn } from 'typeorm';
 @Entity()
 @ObjectType() // DB에 지역 값 미리 저장하기
 export class Region {
-  @PrimaryGeneratedColumn('increment')
-  @Field(() => Int)
-  id: number;
-
-  @Column()
+  @PrimaryColumn()
   @Field(() => String)
-  name: string;
+  id: string;
 
   @Column()
   @Field(() => String)

@@ -6,7 +6,7 @@ export class CreateFeedInput {
   detail: string;
 
   @Field(() => String)
-  regionName: string;
+  regionId: string;
 
   @Field(() => [String])
   feedTag: string[];

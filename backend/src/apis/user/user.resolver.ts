@@ -1,13 +1,11 @@
 import { Query, Resolver, Args, Mutation } from '@nestjs/graphql';
 import { UserService } from './user.service';
+import { FeedService } from '../feed/feed.service';
 import { User } from './entities/user.entity';
 import { createUserInput } from './dto/createUser.input';
 import { updateUserInput } from './dto/updateUser.input';
 import { UseGuards } from '@nestjs/common';
-import {
-  GqlAuthAccessGuard,
-  GqlAuthRefreshGuard,
-} from 'src/commons/auth/gql-auth-guard';
+import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth-guard';
 import * as bcrypt from 'bcrypt';
 import { CurrentUser, ICurrentUser } from '../../commons/auth/gql-user.param';
 
@@ -74,10 +72,9 @@ export class UserResolver {
   @UseGuards(GqlAuthAccessGuard) // 로그인한 유저
   @Mutation(() => Boolean) // 회원탈퇴 API
   deleteUser(
-    // @CurrentUser() currentUser: any, //
-    @Args('userId') userId: string, //
-    @Args('password') password: string,
+    @CurrentUser() currentUser: ICurrentUser, //
   ) {
-    return this.userService.delete({ userId, password });
+    const currentUserId = currentUser.userId;
+    return this.userService.delete({ currentUserId }); // 피드서비스의 delete끌어옴.
   }
 }

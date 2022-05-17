@@ -25,11 +25,11 @@ export class Comment {
   @Field(() => Feed)
   feed: Feed;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { cascade: ['remove'], onDelete: 'CASCADE' })
   @Field(() => User)
   user: User;
 
-  @ManyToOne(() => Comment) // 자기참조
+  @ManyToOne(() => Comment, { cascade: ['remove'] }) // 자기참조
   @Field(() => Comment)
   pComment: Comment;
 

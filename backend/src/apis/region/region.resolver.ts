@@ -26,31 +26,32 @@ export class RegionResolver {
     const appId = process.env.OPEN_WEATHER_APP_ID; // openWeather API appId
 
     const result = await axios({
-      url: `https://api.openweathermap.org/data/2.5/weather?units=metric&lat=${region.lat}&lon=${region.lon}&appid=${appId}`,
+      url: `https://api.openweathermap.org/data/2.5/onecall?lat=${region.lat}&lon=${region.lon}&units=metric&exclude=hourly&appid=${appId}`,
     }); // openWeatherAPI 호출
+    console.log(new Date(1652751121));
 
     const data = result.data; // 전체 데이터
-    const weatherIcon = data.weather[0].icon; // 기상상태 아이콘
-    const status = data.weather[0].main; // 기상상태
-    const weatherDetail = data.weather[0].description; // 기상상태상세
-    const feelsLike = data.main.feels_like; // 체감온도
-    const temp = data.main.temp; // 현재기온
-    const tempMin = data.main.temp_min; // 최저기온
-    const tempMax = data.main.temp_max; // 최고기온
-    const humidity = data.main.humidity; // 습도
+    // const weatherIcon = data.weather[0].icon; // 기상상태 아이콘
+    // const status = data.weather[0].main; // 기상상태
+    // const weatherDetail = data.weather[0].description; // 기상상태상세
+    // const feelsLike = data.main.feels_like; // 체감온도
+    // const temp = data.main.temp; // 현재기온
+    // const tempMin = data.main.temp_min; // 최저기온
+    // const tempMax = data.main.temp_max; // 최고기온
+    // const humidity = data.main.humidity; // 습도
     console.log(data);
-    const weatherResult: WeatherOutPut = {
-      // 아웃풋 클래스로 타입지정
-      status,
-      weatherDetail,
-      weatherIcon,
-      temp,
-      tempMin,
-      tempMax,
-      humidity,
-      feelsLike,
-    };
-    return weatherResult;
+    // const weatherResult: WeatherOutPut = {
+    //   // 아웃풋 클래스로 타입지정
+    //   status,
+    //   weatherDetail,
+    //   weatherIcon,
+    //   temp,
+    //   tempMin,
+    //   tempMax,
+    //   humidity,
+    //   feelsLike,
+    // };
+    // return weatherResult;
   }
 
   @Mutation(() => Region) // 지역 정보 생성

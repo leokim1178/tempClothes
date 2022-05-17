@@ -75,28 +75,21 @@ export class FeedService {
   }
 
   async findWithFeedId({ feedId }) {
-    const queryRunner = await this.connection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction('SERIALIZABLE');
-    try {
-      const feed = await this.feedRepository
-        .createQueryBuilder('Feed')
-        .where({ id: feedId }) // id로 조회
-        .leftJoinAndSelect('Feed.feedImg', 'feedImg') // 피드 이미지들 조인
-        .leftJoinAndSelect('Feed.comment', 'feedComment') // 피드 댓글들 조인
-        .leftJoinAndSelect('Feed.feedLike', 'feedLike') // 좋아요 테이블 조인
-        .leftJoinAndSelect('Feed.feedTag', 'feedTag') // 피드 태그들 조인
-        .leftJoinAndSelect('Feed.region', 'region')
-        .getOne();
-      const result = await this.feedRepository.save({
-        ...feed,
-        watchCount: feed.watchCount + 1, // 조회 수 증가
-      });
+    const feed = await this.feedRepository
+      .createQueryBuilder('Feed')
+      .where({ id: feedId }) // id로 조회
+      .leftJoinAndSelect('Feed.feedImg', 'feedImg') // 피드 이미지들 조인
+      .leftJoinAndSelect('Feed.comment', 'feedComment') // 피드 댓글들 조인
+      .leftJoinAndSelect('Feed.feedLike', 'feedLike') // 좋아요 테이블 조인
+      .leftJoinAndSelect('Feed.feedTag', 'feedTag') // 피드 태그들 조인
+      .leftJoinAndSelect('Feed.region', 'region')
+      .getOne();
+    const result = await this.feedRepository.save({
+      ...feed,
+      watchCount: feed.watchCount + 1, // 조회 수 증가
+    });
 
-      return result;
-    } catch (error) {
-    } finally {
-    }
+    return result;
   }
 
   async like({ userId, feedId }) {
@@ -272,6 +265,15 @@ export class FeedService {
   async delete({ feedId }) {
     const feed = await this.feedRepository.findOne({ id: feedId });
     if (!feed) throw new ConflictException('존재하지 않는 피드입니다');
+    const feedLike = await this.feedLikeRepository.find({
+      where: { feed: feedId },
+    });
+
+    await Promise.all(
+      feedLike.map((el) => {
+        this.feedLikeRepository.delete({ id: el.id });
+      }),
+    );
 
     const imgs = await this.feedImgRepository.find({ where: { feed: feedId } });
 

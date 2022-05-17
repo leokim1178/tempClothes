@@ -31,11 +31,11 @@ export class CommentService {
   async create({ userId, createCommentInput }) {
     console.log(userId, '유저아이디');
     console.log('댓글내용');
-    const { p_commentId, feedId, comment } = createCommentInput;
+    const { pCommentId, feedId, comment } = createCommentInput;
     let parentComment;
-    if (p_commentId) {
+    if (pCommentId) {
       parentComment = await this.commentRepository.findOne({
-        where: { id: p_commentId },
+        where: { id: pCommentId },
       });
     }
     console.log(parentComment, '부모댓글');
@@ -50,7 +50,7 @@ export class CommentService {
       user: comUser,
       feed: feedId,
       comment: comment,
-      p_comment: parentComment,
+      pComment: parentComment,
     });
   }
 
@@ -68,7 +68,7 @@ export class CommentService {
 
   async delete({ commentId }) {
     const result2 = await this.commentRepository.delete({
-      p_comment: commentId,
+      pComment: commentId,
     });
 
     const result = await this.commentRepository.delete({

@@ -31,7 +31,7 @@ export class Comment {
 
   @ManyToOne(() => Comment) // 자기참조
   @Field(() => Comment)
-  p_comment: Comment;
+  pComment: Comment;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -11,6 +11,8 @@ import { FeedImgModule } from './apis/feedImg/feedImg.module';
 import { RegionModule } from './apis/region/region.module';
 import * as redisStore from 'cache-manager-redis-store';
 import type { RedisClientOptions } from 'redis';
+import { AppController } from './apis/app/app.controller';
+import { AppService } from './apis/app/app.service';
 
 @Module({
   imports: [
@@ -25,15 +27,19 @@ import type { RedisClientOptions } from 'redis';
       driver: ApolloDriver,
       autoSchemaFile: 'src/commons/graphql/schema.gql',
       context: ({ req, res }) => ({ req, res }),
+      cors: {
+        origin: 'http://localhost:3000',
+        credentials: true,
+      },
     }),
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'my-database',
+      host: '10.82.224.4',
       port: 3306,
       username: 'root',
       password: '1234',
-      database: 'team01-database',
+      database: 'team-01-database',
       entities: [__dirname + '/apis/**/**/*.entity.*'],
       synchronize: true,
       logging: true,
@@ -42,11 +48,11 @@ import type { RedisClientOptions } from 'redis';
     }),
     CacheModule.register<RedisClientOptions>({
       store: redisStore,
-      url: 'redis://my-redis:6379',
+      url: 'redis://PcJvL6Vw@10.178.0.10:6379',
       isGlobal: true,
     }),
   ],
-  // controllers: [AppController],
-  // providers: [AppService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

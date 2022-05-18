@@ -18,7 +18,10 @@ export class AuthService {
     );
 
     // 쿠키 저장 설정
-    res.setHeader('Set-Cookie', `refreshToken=${refreshToken}; path=/;`);
+    res.setHeader(
+      'Set-Cookie',
+      `refreshToken=${refreshToken}; path=/; domain=localhost; SameSite=None; Secure; httpOnly;`,
+    );
   }
 
   getAccessToken({ user }) {

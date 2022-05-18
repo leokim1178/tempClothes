@@ -3,6 +3,7 @@ import {
   Column,
   Entity,
   PrimaryColumn,
+  DeleteDateColumn,
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
@@ -39,6 +40,10 @@ export class User {
   @Field(() => String)
   nickname: string;
 
+  @Column({ nullable: true })
+  @Field(() => String, { nullable: true })
+  userImgURL: string;
+
   @Column({ default: 0 }) // boolean형 일때는 true/false
   @Field(() => Int)
   button: number;
@@ -52,4 +57,8 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @DeleteDateColumn({ nullable: true })
+  @Field(() => Date, { nullable: true })
+  deletedAt: Date;
 }

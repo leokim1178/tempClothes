@@ -2,11 +2,10 @@ import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request, Response } from 'express';
 import { User } from '../user/entities/user.entity';
-import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
 
 interface IOAuthUser {
-  user: Pick<User, 'email' | 'password'>;
+  user: Pick<User, 'email' | 'password' | 'nickname' | 'userImgURL'>;
 }
 
 @Controller()

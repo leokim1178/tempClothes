@@ -1,13 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { createUserInput } from '../user/dto/createUser.input';
-import { UserService } from '../user/user.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService, //
-    private readonly userService: UserService,
   ) {}
 
   setRefreshToken({ user, res }) {
@@ -32,50 +29,28 @@ export class AuthService {
     );
   }
 
-  //   async socialLogin({ req, res }) { // 소셜로그인 할때 만지기
-  //     // 1.가입확인
-  //     let user = await this.userService.findOne({ email: req.user.email });
-
-  // 2. 회원가입
-
-  // if (!user) {
-  //   const createUser = new createRentUserInput();
-  //   console.log(createUser);
-
-  //   user = await this.rentUserService.create({
-  //     // 위에 유저에서 유저가 없다면, 값을 넣어줘야 하기 때문에 user = 로 설정 해줌.
-  //     createRentUserInput: req.user,
-  //   });
-  // }
-
-  //   // 3. 로그인
-  //   this.setRefreshToken({ user, res }); //authService를 지정 안해도 되는 이유는 자기 자신 안에 있기 때문에, 지정을 해줄 필요가 없다.
-
-  //   res.redirect(
-  //     'http://localhost:5500/homework/main-project/frontend/login/index.html',
-  //   );
-  // }
-
   async socialLogin({ req, res }) {
     //1. 가입확인
-    const user = await this.userService.findOne({ userId: req.user.userId });
+    console.log(req.user);
+
     // const hashedPW = //
     //     await bcrypt.hash(req.user.password, 10).then((res) => res);
+
     //2. 회원가입
-    if (!user) {
-      // const newUser: createUserInput = {
-      //   userId: '소셜 로그인',
-      //   email: req.user.email,
-      //   password: req.user.password,
-      //   nickname: req.user.name,
-      // };
-      // // const result = await this.userService.create({ newUser });
-    }
+    // if (!user) {
+    // const newUser: createUserInput = {
+    //   userId: '소셜 로그인',
+    //   email: req.user.email,
+    //   password: req.user.password,
+    //   nickname: req.user.name,
+    // };
+    // // const result = await this.userService.create({ newUser });
+    // }
 
     //3. 로그인
-    //로그인 시키는 것 : access와 refresh 두개 던지기
-    this.setRefreshToken({ user, res });
+    // //로그인 시키는 것 : access와 refresh 두개 던지기
+    // this.setRefreshToken({ user, res });
 
-    res.redirect('http://localhost:3000/tempClothes');
+    res.redirect('https://naver.com');
   }
 }

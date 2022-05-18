@@ -7,11 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { Region } from '../region/entities/region.entity';
-import { CurrentUser } from 'src/commons/auth/gql-user.param';
 import * as bcrypt from 'bcrypt';
-import { FeedService } from '../feed/feed.service';
-import { Feed } from '../feed/entities/feed.entity';
-import { Comment } from '../comment/entities/comment.entity';
 
 @Injectable()
 export class UserService {
@@ -20,11 +16,6 @@ export class UserService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Region)
     private readonly regionRepository: Repository<Region>,
-    @InjectRepository(Feed)
-    private readonly feedRepository: Repository<Feed>,
-    @InjectRepository(Comment)
-    private readonly commentRepository: Repository<Comment>,
-    private readonly feedService: FeedService,
   ) {}
 
   async findAll() {
@@ -122,34 +113,7 @@ export class UserService {
     // const user = await this.userRepository.findOne({
     //   where: { userId: currentUserId },
     // });
-    // const feed = await this.feedRepository.find({
-    //   where: { user: currentUserId },
-    // });
-    // console.log(user, '유저정보');
-    // console.log(feed, '피드 정보');
-    // console.log(feed[0]['id'], '피드 아이디');
-
-    // const deleteResult = await Promise.all(
-    //   // 피드 삭제
-    //   feed.map((el) => this.feedService.delete({ feedId: el.id })),
-    // );
-    // console.log(deleteResult);
-
     // console.log('ddd');
-
-    // const comments = await this.commentRepository.find({
-    //   // 댓글 삭제
-    //   where: { user: currentUserId },
-    // });
-    // console.log(comments, 'AAA');
-
-    // await Promise.all(
-    //   comments.map((el) => {
-    //     console.log(el);
-    //     this.commentRepository.delete({ id: el.id });
-    //   }),
-    // );
-    // console.log('BBB');
 
     // 일단 Softdelete로 대체;
     const result = await this.userRepository.softDelete({

@@ -19,7 +19,7 @@ import { UserService } from '../user/user.service';
 @Resolver()
 export class AuthResolver {
   constructor(
-    private readonly userService: UserService, //
+    private readonly userService: UserService,
     private readonly authService: AuthService,
 
     @Inject(CACHE_MANAGER)

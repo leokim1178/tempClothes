@@ -37,6 +37,7 @@ export class FeedService {
       .leftJoinAndSelect('Feed.feedTag', 'feedTag') // 피드 태그들 조인
       .leftJoinAndSelect('Feed.feedImg', 'feedImg') // 피드 이미지들 조인
       .leftJoinAndSelect('Feed.feedLike', 'feedLike') // 좋아요 테이블 조인
+      .leftJoinAndSelect('Feed.user', 'user') // 유저 테이블 조인
       .orderBy('Feed.watchCount', 'DESC') // 조회수 기준으로 내림차순으로 정렬
       .getMany();
 
@@ -49,6 +50,7 @@ export class FeedService {
       .leftJoinAndSelect('Feed.region', 'region') // 지역정보를 조인하고 'region'으로 명명
       .where({ region: regionId }) // 지역정보 필터링 조건 추가
       .leftJoinAndSelect('Feed.feedTag', 'feedTag') // 피드 태그들을 조인하고 'feedTag'로 명명
+      .leftJoinAndSelect('Feed.user', 'user') // 유저 테이블 조인
       .andWhere('feedTag.tagName IN (:tagName)', {
         tagName: feedTags,
       }) // andWhere로 조건 추가 태그들이 들어간 feedTags로 IN 조회
@@ -82,7 +84,8 @@ export class FeedService {
       .leftJoinAndSelect('Feed.comment', 'feedComment') // 피드 댓글들 조인
       .leftJoinAndSelect('Feed.feedLike', 'feedLike') // 좋아요 테이블 조인
       .leftJoinAndSelect('Feed.feedTag', 'feedTag') // 피드 태그들 조인
-      .leftJoinAndSelect('Feed.region', 'region')
+      .leftJoinAndSelect('Feed.region', 'region') // 지역 테이블 조인
+      .leftJoinAndSelect('Feed.user', 'user') // 유저 테이블 조인
       .getOne();
     const result = await this.feedRepository.save({
       ...feed,

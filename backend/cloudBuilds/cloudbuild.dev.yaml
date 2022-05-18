@@ -17,7 +17,7 @@ steps:
         'set',
         'image',
         'deployment/my-backend',
-        'f6b2-backend-sha256-1=asia.gcr.io/team-01-dreamers/f6b2-backend:0.1.2',
+        'f6b2-backend-sha256-1=asia.gcr.io/team-01-dreamers/f6b2-backend:0.1.5',
       ]
     env:
       - CLOUDSDK_COMPUTE_ZONE=asia-northeast3

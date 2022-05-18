@@ -12,6 +12,7 @@ import { RegionModule } from './apis/region/region.module';
 import * as redisStore from 'cache-manager-redis-store';
 import type { RedisClientOptions } from 'redis';
 import { PaymentModule } from './apis/payment/payment.module';
+
 import { AppController } from './apis/app/app.controller';
 import { AppService } from './apis/app/app.service';
 
@@ -37,11 +38,11 @@ import { AppService } from './apis/app/app.service';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: '10.82.224.4',
+      host: 'my-database',
       port: 3306,
       username: 'root',
       password: '1234',
-      database: 'team-01-database',
+      database: 'team01-database',
       entities: [__dirname + '/apis/**/**/*.entity.*'],
       synchronize: true,
       logging: true,
@@ -50,7 +51,7 @@ import { AppService } from './apis/app/app.service';
     }),
     CacheModule.register<RedisClientOptions>({
       store: redisStore,
-      url: 'redis://PcJvL6Vw@10.178.0.10:6379',
+      url: 'redis://my-redis:6379',
       isGlobal: true,
     }),
   ],

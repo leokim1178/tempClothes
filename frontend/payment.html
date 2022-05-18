@@ -49,7 +49,7 @@
                 {
                   query: `
                       mutation {
-                        createButton(imp_uid: "${rsp.imp_uid}", button: ${rsp.paid_amount}) { 
+                        createButton(imp_uid: "${rsp.imp_uid}", amount: ${rsp.paid_amount}) { 
                           id
                         }
                       }
@@ -58,7 +58,7 @@
                 {
                   headers: {
                     Authorization:
-                      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImtvamFlMjQyM0BuYXZlci5jb20xMiIsInN1YiI6ImI5YWFiM2Q2LTlhNDQtNGZlNS04NDIwLTBmZmIxMmEwNzFlYyIsImlhdCI6MTY1MDI5NzM1NiwiZXhwIjoxNjUwMzAwOTU2fQ.rIDepBjEtZIyDKOhoRCj982FAA5FD2TZQHJ-tkkR6Yk',
+                      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJrbzE1ODYiLCJzdWIiOiJrb2phZTI0MjNAbmF2ZXIuY29tIiwiaWF0IjoxNjUyODc2NzcyLCJleHAiOjE2NTI5MTI3NzJ9.-kI2i44lgaWJ7xANKcEu6ZCwLQnP6yHX9KeeG2ZxgRI',
                   },
                 },
               );

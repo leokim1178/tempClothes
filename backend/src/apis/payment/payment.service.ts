@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Connection } from 'typeorm';
 import {
@@ -19,7 +23,7 @@ export class PaymentButtonService {
     private readonly connection: Connection,
   ) {}
 
-  async buy({ impUid, amount, currentUser }) {
+  async buy({ imp_uid, amount, currentUser }) {
     // 트랜잭션
     const queryRunner = await this.connection.createQueryRunner();
     await queryRunner.connect(); // 쿼리러너 커넥트
@@ -30,9 +34,9 @@ export class PaymentButtonService {
     try {
       // 1. 테이블에 거래기록 1줄 생성
       const buttonTransaction = await this.paymentButtonRepository.create({
-        impUid: impUid,
+        imp_uid: imp_uid,
         amount: amount,
-        user: currentUser,
+        user: currentUser.userId, // 유저 아이디 저장
         status: PAYMENT_BUTTON_STATUS_ENUM.PAYMENT,
       });
 
@@ -62,6 +66,70 @@ export class PaymentButtonService {
       await queryRunner.rollbackTransaction();
     } finally {
       // 트랜잭션 연결 종료
+      await queryRunner.release();
+    }
+  }
+
+  async checkOverlap({ imp_uid }) {
+    // 아임포트 imp_uid 중복 찾기
+    const result = await this.paymentButtonRepository.findOne({ imp_uid });
+    if (result) throw new ConflictException('이미 결제가 완료되었습니다.');
+  }
+
+  async checkAlreadyCanceled({ imp_uid }) {
+    const result = await this.paymentButtonRepository.findOne({
+      imp_uid,
+      status: PAYMENT_BUTTON_STATUS_ENUM.CANCEL, // 어려운거 없이 이 status로 취소 됐는지 확인 가능
+    });
+    if (result) throw new ConflictException('이미 취소된 결제건입니다.');
+  }
+
+  async checklist({ imp_uid, currentUser }) {
+    const result = await this.paymentButtonRepository.findOne({
+      imp_uid,
+      user: { userId: currentUser.userId },
+      status: PAYMENT_BUTTON_STATUS_ENUM.PAYMENT, // 어려운거 없이 이 status로 취소 됐는지 확인 가능
+    });
+    if (!result)
+      throw new UnprocessableEntityException('결제기록이 존재하지 않습니다.');
+  }
+
+  async cancel({ imp_uid, amount, currentUser }) {
+    const queryRunner = await this.connection.createQueryRunner();
+    await queryRunner.connect();
+
+    await queryRunner.startTransaction('SERIALIZABLE');
+
+    try {
+      // 검증 후 DB저장하기
+      const user = await this.userRepository.findOne({
+        where: { userId: currentUser.userId },
+      });
+      console.log(user, 'cancel 유저정보');
+
+      const updateUser = this.userRepository.create({
+        // 환불 한 후 유저 남은 단추 업데이트
+        ...user,
+        button: user.button - amount,
+      });
+      console.log(updateUser, 'cancel 유저단추 업데이트');
+      await queryRunner.manager.save(updateUser); // 재충전 후 저장
+
+      const result = await this.paymentButtonRepository.create({
+        imp_uid,
+        amount: -amount,
+        user: { userId: currentUser.userId },
+        status: PAYMENT_BUTTON_STATUS_ENUM.CANCEL,
+      });
+
+      await queryRunner.manager.save(result);
+
+      await queryRunner.commitTransaction();
+
+      return result;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+    } finally {
       await queryRunner.release();
     }
   }

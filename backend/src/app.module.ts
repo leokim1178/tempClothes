@@ -11,6 +11,7 @@ import { FeedImgModule } from './apis/feedImg/feedImg.module';
 import { RegionModule } from './apis/region/region.module';
 import * as redisStore from 'cache-manager-redis-store';
 import type { RedisClientOptions } from 'redis';
+import { PaymentModule } from './apis/payment/payment.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import type { RedisClientOptions } from 'redis';
     FeedImgModule, // 피드 이미지 모듈
     AuthModule, // 로그인 모듈
     RegionModule, // 지역 & 날씨 모듈
+    PaymentModule, // 결제 모듈
 
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,

@@ -12,6 +12,8 @@ import { RegionModule } from './apis/region/region.module';
 import * as redisStore from 'cache-manager-redis-store';
 import type { RedisClientOptions } from 'redis';
 import { PaymentModule } from './apis/payment/payment.module';
+import { AppController } from './apis/app/app.controller';
+import { AppService } from './apis/app/app.service';
 
 @Module({
   imports: [

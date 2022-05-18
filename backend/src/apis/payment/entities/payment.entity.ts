@@ -1,9 +1,11 @@
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { User } from 'src/apis/user/entities/user.entity';
@@ -26,7 +28,7 @@ export class PaymentButton {
 
   @Column()
   @Field(() => String)
-  impUid: string;
+  imp_uid: string;
 
   @Column()
   @Field(() => Int)
@@ -43,4 +45,12 @@ export class PaymentButton {
   @CreateDateColumn()
   @Field(() => Date)
   createdAt: Date;
+
+  @UpdateDateColumn()
+  @Field(() => Date)
+  updatedAt: Date;
+
+  @DeleteDateColumn()
+  @Field(() => Date)
+  deletedAt: Date;
 }

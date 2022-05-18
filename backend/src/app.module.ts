@@ -38,11 +38,11 @@ import { AppService } from './apis/app/app.service';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'my-database',
+      host: '10.82.224.4',
       port: 3306,
       username: 'root',
       password: '1234',
-      database: 'team01-database',
+      database: 'team-01-database',
       entities: [__dirname + '/apis/**/**/*.entity.*'],
       synchronize: true,
       logging: true,
@@ -51,7 +51,7 @@ import { AppService } from './apis/app/app.service';
     }),
     CacheModule.register<RedisClientOptions>({
       store: redisStore,
-      url: 'redis://my-redis:6379',
+      url: 'redis://PcJvL6Vw@10.178.0.10:6379',
       isGlobal: true,
     }),
   ],

@@ -28,15 +28,15 @@ export class UserResolver {
     return this.userService.fetch({ userId: currentUser.userId });
   }
 
-  @Query(() => String) // 아이디 중복 확인
-  fetchOverlapId(
+  @Mutation(() => String) // 아이디 중복 확인
+  confirmOverlapId(
     @Args('userId') userId: string, //
   ) {
     return this.userService.overLapId({ userId });
   }
 
-  @Query(() => String) // 닉네임 중복 확인
-  fetchOverlapNic(
+  @Mutation(() => String) // 닉네임 중복 확인
+  confirmOverlapNic(
     @Args('nickname') nickname: string, //
   ) {
     return this.userService.overLapNic({ nickname });

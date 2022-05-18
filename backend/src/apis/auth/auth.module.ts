@@ -20,9 +20,9 @@ import { FeedImg } from '../feedImg/entities/feedImg.entity';
 import { Comment } from '../comment/entities/comment.entity';
 import { FeedLike } from '../feedLike/entities/feedLike.entity';
 import { AuthController } from './auth.controller';
-import { JwtNaverStrategy } from 'src/commons/auth/jwt-social-naver.strategy';
-import { JwtKakaoStrategy } from 'src/commons/auth/jwt-social-kakao.strategy';
-import { JwtGoogleStrategy } from 'src/commons/auth/jwt-social-google.strategy';
+// import { JwtNaverStrategy } from 'src/commons/auth/jwt-social-naver.strategy';
+// import { JwtKakaoStrategy } from 'src/commons/auth/jwt-social-kakao.strategy';
+// import { JwtGoogleStrategy } from 'src/commons/auth/jwt-social-google.strategy';
 
 @Module({
   imports: [
@@ -40,9 +40,9 @@ import { JwtGoogleStrategy } from 'src/commons/auth/jwt-social-google.strategy';
   providers: [
     JwtRefreshStrategy,
     JwtAcessStrategy,
-    JwtGoogleStrategy,
-    JwtKakaoStrategy,
-    JwtNaverStrategy,
+    // JwtGoogleStrategy,
+    // JwtKakaoStrategy,
+    // JwtNaverStrategy,
     AuthResolver,
     AuthService,
     UserService,

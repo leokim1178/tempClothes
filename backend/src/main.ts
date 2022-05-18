@@ -8,7 +8,7 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
   app.enableCors({
     credentials: true,
-    origin: 'http://localhost:3000',
+    origin: true,
   });
   app.use(graphqlUploadExpress());
   await app.listen(3000);

@@ -39,9 +39,9 @@ export class User {
   @Field(() => String)
   nickname: string;
 
-  // @Column()
-  // @Field(() => String)
-  // button: string;
+  @Column({ default: 0 }) // boolean형 일때는 true/false
+  @Field(() => Int)
+  button: number;
 
   @ManyToOne(() => Region)
   @Field(() => Region)

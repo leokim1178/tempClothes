@@ -24,7 +24,7 @@ export class AuthService {
   getAccessToken({ user }) {
     return this.jwtService.sign(
       { userId: user.userId, sub: user.email },
-      { secret: process.env.ACCESS_TOKEN_KEY, expiresIn: '1h' }, // 테스트 하려고  15s로 해놓음,, 나중에 바꿔놓자
+      { secret: process.env.ACCESS_TOKEN_KEY, expiresIn: '10h' }, // 테스트 하려고  15s로 해놓음,, 나중에 바꿔놓자
     );
   }
 

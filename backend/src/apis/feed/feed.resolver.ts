@@ -1,20 +1,35 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { CurrentUser } from 'src/commons/auth/gql-user.param';
+import { Args, Float, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+
 import { CreateFeedInput } from './dto/createFeedInput';
 import { UpdateFeedInput } from './dto/updateFeedInput';
 import { Feed } from './entities/feed.entity';
+import { Cache } from 'cache-manager';
+
 import { FeedService } from './feed.service';
+import { CACHE_MANAGER, Inject } from '@nestjs/common';
 
 @Resolver()
 export class FeedResolver {
-  constructor(private readonly feedService: FeedService) {}
+  constructor(
+    private readonly feedService: FeedService,
+    @Inject(CACHE_MANAGER)
+    private readonly cachManager: Cache,
+  ) {}
 
   @Query(() => Feed) // 피드 아이디로 피드 내용 조회
-  fetchFeed(
+  async fetchFeed(
     @Args('feedId')
     feedId: string,
   ) {
-    return this.feedService.findWithFeedId({ feedId });
+    const exist = await this.cachManager.get(feedId); // 키 자체가 토큰 값이 되있기 때문.
+    console.log(exist, 'redis');
+    if (exist) return exist;
+    else {
+      const result = await this.feedService.findWithFeedId({ feedId });
+      await this.cachManager.set(feedId, result.id, { ttl: 900 });
+      console.log('db에서 서치한 데이터');
+      return result;
+    }
   }
 
   @Query(() => [Feed]) // 지역정보로 피드 조회

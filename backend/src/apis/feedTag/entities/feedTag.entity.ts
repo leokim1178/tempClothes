@@ -1,6 +1,12 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Feed } from 'src/apis/feed/entities/feed.entity';
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  DeleteDateColumn,
+  Entity,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 @ObjectType()
@@ -16,4 +22,8 @@ export class FeedTag {
   @ManyToMany(() => Feed, (feeds) => feeds.feedTag)
   @Field(() => [Feed])
   feed: Feed[];
+
+  @DeleteDateColumn()
+  @Field(() => Date)
+  deletedAt: Date;
 }

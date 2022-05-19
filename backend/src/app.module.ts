@@ -4,7 +4,7 @@ import { UserModule } from './apis/user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ConfigModule } from '@nestjs/config';
-import { FeedModule } from './apis/feed/feed.module';
+
 import { AuthModule } from './apis/auth/auth.module';
 import { CommentModule } from './apis/comment/comment.module';
 import { FeedImgModule } from './apis/feedImg/feedImg.module';
@@ -15,6 +15,8 @@ import { PaymentModule } from './apis/payment/payment.module';
 
 import { AppController } from './apis/app/app.controller';
 import { AppService } from './apis/app/app.service';
+import { FeedModule } from './apis/feed/feed.module';
+import { FileModule } from './apis/file/file.module';
 
 @Module({
   imports: [
@@ -25,7 +27,7 @@ import { AppService } from './apis/app/app.service';
     AuthModule, // 로그인 모듈
     RegionModule, // 지역 & 날씨 모듈
     PaymentModule, // 결제 모듈
-
+    FileModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: 'src/commons/graphql/schema.gql',
@@ -51,7 +53,7 @@ import { AppService } from './apis/app/app.service';
     }),
     CacheModule.register<RedisClientOptions>({
       store: redisStore,
-      url: 'redis://PcJvL6Vw@10.178.0.10:6379',
+      url: 'redis://:fQrnzb8N@10.140.0.3:6379',
       isGlobal: true,
     }),
   ],

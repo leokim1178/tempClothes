@@ -1,16 +1,9 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FileUpload } from 'graphql-upload';
+
 import { Repository } from 'typeorm';
 import { Feed } from '../feed/entities/feed.entity';
 import { FeedImg } from './entities/feedImg.entity';
-import { v4 as uuidv4 } from 'uuid';
-import { getToday } from 'src/commons/libraries/utils';
-import { Storage } from '@google-cloud/storage';
-
-interface IFeedImg {
-  imgs: FileUpload[];
-}
 
 @Injectable()
 export class FeedImgService {
@@ -20,33 +13,6 @@ export class FeedImgService {
     @InjectRepository(Feed)
     private readonly feedRepository: Repository<Feed>,
   ) {}
-
-  async upload({ imgs }: IFeedImg) {
-    const storage = new Storage({
-      keyFilename: process.env.STORAGE_KEY_FILENAME,
-      projectId: process.env.STORAGE_PROJECT_ID,
-    }).bucket(process.env.STORAGE_BUCKET);
-
-    const waitedImgs = await Promise.all(imgs);
-
-    console.log('hi');
-    const results = await Promise.all(
-      waitedImgs.map((el) => {
-        const uuid = uuidv4();
-        return new Promise((resolve, reject) => {
-          const imgName = `${getToday()}/${uuid}/origin/${el.filename}`;
-          el.createReadStream()
-            .pipe(storage.file(imgName).createWriteStream())
-            .on('finish', () =>
-              resolve(`${process.env.STORAGE_BUCKET}/${imgName}`),
-            )
-            .on('error', () => reject());
-        });
-      }),
-    );
-
-    return results;
-  }
 
   async create({ feedId, imgURLs }) {
     const feed = await this.feedRepository.findOne({ id: feedId });

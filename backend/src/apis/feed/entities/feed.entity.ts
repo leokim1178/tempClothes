@@ -8,6 +8,7 @@ import { User } from 'src/apis/user/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinTable,
   ManyToMany,
@@ -36,6 +37,18 @@ export class Feed {
   @Field(() => Int, { nullable: true })
   likeCount: number;
 
+  @Column({ nullable: true, default: null })
+  @Field(() => String, { nullable: true })
+  top: string;
+
+  @Column({ nullable: true, default: null })
+  @Field(() => String, { nullable: true })
+  bottom: string;
+
+  @Column({ nullable: true, default: null })
+  @Field(() => String, { nullable: true })
+  outer: string;
+
   @JoinTable({})
   @ManyToMany(() => FeedTag, (feedTags) => feedTags.feed, {
     eager: true,
@@ -54,7 +67,7 @@ export class Feed {
   feedImg: FeedImg[];
 
   @OneToMany(() => Comment, (comment) => comment.feed, {
-    cascade: ['remove'],
+    cascade: ['soft-remove'],
     onDelete: 'CASCADE',
     orphanedRowAction: 'delete',
     createForeignKeyConstraints: true,
@@ -63,7 +76,7 @@ export class Feed {
   comment: Comment[];
 
   @OneToMany(() => FeedLike, (feedLike) => feedLike.feed, {
-    cascade: ['remove'],
+    cascade: ['soft-remove'],
     onDelete: 'CASCADE',
     orphanedRowAction: 'delete',
     createForeignKeyConstraints: true,
@@ -78,6 +91,10 @@ export class Feed {
   @ManyToOne(() => User)
   @Field(() => User)
   user: User;
+
+  @DeleteDateColumn()
+  @Field(() => Date)
+  deletedAt: Date;
 
   @CreateDateColumn()
   @Field(() => Date)

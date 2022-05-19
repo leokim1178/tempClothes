@@ -1,7 +1,13 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Feed } from 'src/apis/feed/entities/feed.entity';
 import { User } from 'src/apis/user/entities/user.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  DeleteDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 @ObjectType()
@@ -14,11 +20,15 @@ export class FeedLike {
   @Field(() => Boolean, { defaultValue: false })
   isLike: boolean;
 
-  @ManyToOne(() => Feed)
+  @ManyToOne(() => Feed, { onDelete: 'CASCADE' })
   @Field(() => Feed)
   feed: Feed;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @Field(() => User)
   user: User;
+
+  @DeleteDateColumn()
+  @Field(() => Date)
+  deletedAt: Date;
 }

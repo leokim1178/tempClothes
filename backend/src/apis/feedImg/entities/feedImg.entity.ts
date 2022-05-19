@@ -3,6 +3,7 @@ import { Feed } from 'src/apis/feed/entities/feed.entity';
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -20,9 +21,13 @@ export class FeedImg {
   @Field()
   imgURL: string;
 
-  @ManyToOne(() => Feed, (feed) => feed.feedImg)
+  @ManyToOne(() => Feed, (feed) => feed.feedImg, { onDelete: 'CASCADE' })
   @Field(() => Feed)
   feed: Feed;
+
+  @DeleteDateColumn()
+  @Field(() => Date)
+  deletedAt: Date;
 
   @CreateDateColumn()
   @Field(() => Date)

@@ -25,7 +25,7 @@ export class Comment {
   @Field(() => Feed)
   feed: Feed;
 
-  @ManyToOne(() => User, { cascade: ['remove'], onDelete: 'CASCADE' })
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @Field(() => User)
   user: User;
 

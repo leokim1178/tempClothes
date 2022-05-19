@@ -16,9 +16,10 @@ export class AuthService {
     );
 
     // 쿠키 저장 설정
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
     res.setHeader(
       'Set-Cookie',
-      `refreshToken=${refreshToken}; path=/; domain=team01-leo3179.shop.graphql; SameSite=None; Secure; httpsOnly;`,
+      `refreshToken=${refreshToken}; path=/; domain=team01.leo3179.shop; SameSite=None; Secure; httpOnly;`,
     );
   }
 

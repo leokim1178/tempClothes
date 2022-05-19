@@ -49,14 +49,14 @@ export class AuthResolver {
     // 5. 일치하는 유저가 있으면? accessToken(JWT)을  만들어서 프론트엔트한테 주기
     return this.authService.getAccessToken({ user });
   }
-
+  @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => String)
   async logout(
     @Context() context: any, //
   ) {
     console.log(context, 'context');
     const access = context.req.headers.authorization.split(' ')[1];
-    const refresh = context.req.headers.cookie.split(' ')[1].split('=')[1]; // 시간 남으면 리펙토링
+    const refresh = context.req.headers.cookie.split('=')[1]; // 시간 남으면 리펙토링
     console.log(refresh, 'refresh토큰');
     try {
       const accessResult = jwt.verify(access, process.env.ACCESS_TOKEN_KEY);

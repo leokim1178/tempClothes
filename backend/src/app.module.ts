@@ -11,12 +11,12 @@ import { RegionModule } from './apis/region/region.module';
 import * as redisStore from 'cache-manager-redis-store';
 import type { RedisClientOptions } from 'redis';
 import { PaymentModule } from './apis/payment/payment.module';
-import { ChatModule } from './apis/socketio/chat.module'
+import { ChatModule } from './apis/chat/chat.module';
 import { AppController } from './apis/app/app.controller';
 import { AppService } from './apis/app/app.service';
 import { FeedModule } from './apis/feed/feed.module';
 import { FileModule } from './apis/file/file.module';
-import { ChatGateway } from './apis/socketio/chat.gateway';
+import { ChatGateway } from './apis/chat/chat.gateway';
 
 @Module({
   imports: [
@@ -41,11 +41,11 @@ import { ChatGateway } from './apis/socketio/chat.gateway';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'my-database',
+      host: '10.82.224.4',
       port: 3306,
       username: 'root',
       password: '1234',
-      database: 'team01-database',
+      database: 'team-01-database',
       entities: [__dirname + '/apis/**/**/*.entity.*'],
       synchronize: true,
       logging: true,
@@ -54,7 +54,7 @@ import { ChatGateway } from './apis/socketio/chat.gateway';
     }),
     CacheModule.register<RedisClientOptions>({
       store: redisStore,
-      url: 'redis://my-redis:6379',
+      url: 'redis://:fQrnzb8N@10.140.0.3:6379',
       isGlobal: true,
     }),
   ],

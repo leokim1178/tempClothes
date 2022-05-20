@@ -19,4 +19,7 @@ export class CreateFeedInput {
 
   @Field(() => String, { nullable: true })
   outer: string;
+
+  @Field(() => String, { nullable: true })
+  etc: string;
 }

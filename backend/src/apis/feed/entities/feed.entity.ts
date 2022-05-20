@@ -33,7 +33,7 @@ export class Feed {
   @Field(() => String)
   detail: string;
 
-  @Column({ default: 0, nullable: true })
+  @Column({ nullable: true, default: 0 })
   @Field(() => Int, { nullable: true })
   likeCount: number;
 
@@ -49,6 +49,10 @@ export class Feed {
   @Field(() => String, { nullable: true })
   outer: string;
 
+  @Column({ nullable: true, default: null })
+  @Field(() => String, { nullable: true })
+  etc: string;
+
   @JoinTable({})
   @ManyToMany(() => FeedTag, (feedTags) => feedTags.feed, {
     eager: true,
@@ -58,7 +62,7 @@ export class Feed {
   feedTag: FeedTag[];
 
   @OneToMany(() => FeedImg, (feedImg) => feedImg.feed, {
-    cascade: ['remove'],
+    cascade: ['soft-remove'],
     onDelete: 'CASCADE',
     orphanedRowAction: 'delete',
     createForeignKeyConstraints: true,

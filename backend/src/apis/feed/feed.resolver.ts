@@ -1,4 +1,4 @@
-import { Args, Float, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import { CreateFeedInput } from './dto/createFeedInput';
 import { UpdateFeedInput } from './dto/updateFeedInput';
@@ -6,7 +6,9 @@ import { Feed } from './entities/feed.entity';
 import { Cache } from 'cache-manager';
 
 import { FeedService } from './feed.service';
-import { CACHE_MANAGER, Inject } from '@nestjs/common';
+import { CACHE_MANAGER, Inject, UseGuards } from '@nestjs/common';
+import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth-guard';
+import { CurrentUser, ICurrentUser } from 'src/commons/auth/gql-user.param';
 
 @Resolver()
 export class FeedResolver {
@@ -16,6 +18,7 @@ export class FeedResolver {
     private readonly cachManager: Cache,
   ) {}
 
+  @UseGuards(GqlAuthAccessGuard)
   @Query(() => Feed) // 피드 아이디로 피드 내용 조회
   async fetchFeed(
     @Args('feedId')
@@ -42,42 +45,41 @@ export class FeedResolver {
 
   @Query(() => [Feed]) // 태그들로 피드 조회
   fetchFeedsWithTags(
-    @Args({ name: 'feedTags', type: () => [String] })
-    feedTags: string[],
     @Args('regionId')
     regionId: string,
+    @Args({ name: 'feedTags', type: () => [String] })
+    feedTags?: string[],
   ) {
     return this.feedService.findWithTags({ feedTags, regionId });
   }
 
+  @UseGuards(GqlAuthAccessGuard)
   @Query(() => [Feed]) // 유저 정보로 피드 조회
-  fetchFeedsWithUser(
-    @Args('userId')
-    userId: string, // currentUser payload 로 대체 예정
-  ) {
-    return this.feedService.findWithUser({ userId });
+  fetchMyFeeds(@CurrentUser() currentUser: ICurrentUser) {
+    return this.feedService.findWithUser({ currentUser });
   }
 
+  @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean) // 좋아요 누르기
   toggleLikeFeed(
-    @Args('userId')
-    userId: string, // currentUser payload 로 대체 예정
+    @CurrentUser() currentUser: ICurrentUser,
     @Args('feedId')
     feedId: string,
   ) {
-    return this.feedService.like({ userId, feedId });
+    return this.feedService.like({ currentUser, feedId });
   }
 
+  @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Feed) // 피드 생성
   createFeed(
     @Args('createFeedInput')
     createFeedInput: CreateFeedInput,
-    @Args('userId')
-    userId: string, // currentUser payload 로 대체 예정
+    @CurrentUser() currentUser: ICurrentUser,
   ) {
-    return this.feedService.create({ createFeedInput, userId });
+    return this.feedService.create({ createFeedInput, currentUser });
   }
 
+  @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Feed) // 피드 업데이트
   updateFeed(
     @Args('updateFeedInput')
@@ -88,6 +90,7 @@ export class FeedResolver {
     return this.feedService.update({ feedId, updateFeedInput });
   }
 
+  @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean) // 피드 삭제
   deleteFeed(@Args('feedId') feedId: string) {
     return this.feedService.delete({ feedId });

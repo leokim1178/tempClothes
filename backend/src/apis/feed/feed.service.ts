@@ -63,11 +63,11 @@ export class FeedService {
     return result;
   }
 
-  async findWithUser({ userId }) {
+  async findWithUser({ currentUser }) {
     const result = await this.feedRepository
       .createQueryBuilder('Feed')
       .leftJoinAndSelect('Feed.user', 'user') // 유저정보 조인하고 'user'로 명명
-      .where({ user: userId }) // 유저정보 필터링 조건 추가
+      .where({ user: currentUser }) // 유저정보 필터링 조건 추가
       .leftJoinAndSelect('Feed.feedImg', 'feedImg') // 피드 이미지들 조인
       .leftJoinAndSelect('Feed.feedLike', 'feedLike') // 좋아요 테이블 조인
       .orderBy('Feed.watchCount', 'DESC') // 조회수 기준으로 내림차순으로 정렬
@@ -96,7 +96,7 @@ export class FeedService {
     return result;
   }
 
-  async like({ userId, feedId }) {
+  async like({ currentUser, feedId }) {
     const queryRunner = await this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction('SERIALIZABLE');
@@ -107,14 +107,14 @@ export class FeedService {
       // });
       const feedLike = await queryRunner.manager.findOne(
         FeedLike, //
-        { user: userId, feed: feedId },
+        { feed: feedId },
         { lock: { mode: 'pessimistic_write' } },
       );
       // 1. 유저정보와 피드 정보 조회
       //유저 정보 조회(일반 findOne으로 해도 무관)
 
       const user = await this.userRepository.findOne({
-        userId,
+        email: currentUser.email,
       }); // 유저 정보 조회
       //피드 정보 조회
       const feed = await queryRunner.manager.findOne(
@@ -194,7 +194,7 @@ export class FeedService {
     }
   }
 
-  async create({ userId, createFeedInput }) {
+  async create({ currentUser, createFeedInput }) {
     const { feedTag, regionId, ...feed } = createFeedInput;
 
     const region = await this.regionRepository.findOne({
@@ -218,7 +218,9 @@ export class FeedService {
       }
     }
 
-    const user = await this.userRepository.findOne({ where: { userId } });
+    const user = await this.userRepository.findOne({
+      where: { email: currentUser.email },
+    });
     const feedSaveResult = await this.feedRepository.save({
       ...feed,
       region: region,

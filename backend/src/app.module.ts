@@ -4,7 +4,6 @@ import { UserModule } from './apis/user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ConfigModule } from '@nestjs/config';
-
 import { AuthModule } from './apis/auth/auth.module';
 import { CommentModule } from './apis/comment/comment.module';
 import { FeedImgModule } from './apis/feedImg/feedImg.module';
@@ -12,11 +11,12 @@ import { RegionModule } from './apis/region/region.module';
 import * as redisStore from 'cache-manager-redis-store';
 import type { RedisClientOptions } from 'redis';
 import { PaymentModule } from './apis/payment/payment.module';
-
+import { ChatModule } from './apis/socketio/chat.module'
 import { AppController } from './apis/app/app.controller';
 import { AppService } from './apis/app/app.service';
 import { FeedModule } from './apis/feed/feed.module';
 import { FileModule } from './apis/file/file.module';
+import { ChatGateway } from './apis/socketio/chat.gateway';
 
 @Module({
   imports: [
@@ -28,6 +28,7 @@ import { FileModule } from './apis/file/file.module';
     RegionModule, // 지역 & 날씨 모듈
     PaymentModule, // 결제 모듈
     FileModule,
+    ChatModule, // 채팅 시스템
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: 'src/commons/graphql/schema.gql',
@@ -40,11 +41,11 @@ import { FileModule } from './apis/file/file.module';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: '10.82.224.4',
+      host: 'my-database',
       port: 3306,
       username: 'root',
       password: '1234',
-      database: 'team-01-database',
+      database: 'team01-database',
       entities: [__dirname + '/apis/**/**/*.entity.*'],
       synchronize: true,
       logging: true,
@@ -53,11 +54,11 @@ import { FileModule } from './apis/file/file.module';
     }),
     CacheModule.register<RedisClientOptions>({
       store: redisStore,
-      url: 'redis://:fQrnzb8N@10.140.0.3:6379',
+      url: 'redis://my-redis:6379',
       isGlobal: true,
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ChatGateway], // 채팅 게이트웨이 넣기
 })
 export class AppModule {}

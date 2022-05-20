@@ -26,7 +26,7 @@ export class FeedResolver {
     if (exist) return exist;
     else {
       const result = await this.feedService.findWithFeedId({ feedId });
-      await this.cachManager.set(feedId, result.id, { ttl: 900 });
+      await this.cachManager.set(feedId, result, { ttl: 900 });
       console.log('db에서 서치한 데이터');
       return result;
     }

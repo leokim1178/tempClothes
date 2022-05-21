@@ -28,8 +28,8 @@ export class CommentService {
     return result;
   }
 
-  async create({ userId, createCommentInput }) {
-    console.log(userId, '유저아이디');
+  async create({ email, createCommentInput }) {
+    console.log(email, '유저아이디');
     console.log('댓글내용');
     const { pCommentId, feedId, comment } = createCommentInput;
     let parentComment;
@@ -41,7 +41,7 @@ export class CommentService {
     console.log(parentComment, '부모댓글');
 
     const comUser = await this.userRepository.findOne({
-      where: { userId: userId }, // 유저아이디 값 찾을때 헷갈리지 말것!!
+      where: { email: email },
     });
 
     console.log(comUser);
@@ -54,14 +54,14 @@ export class CommentService {
     });
   }
 
-  async update({ commentId, userId, updateCommentInput }) {
+  async update({ commentId, email, updateCommentInput }) {
     const result = await this.commentRepository.findOne({
       where: { id: commentId },
     });
     console.log(result);
     return await this.commentRepository.save({
       ...result,
-      user: userId,
+      user: email,
       ...updateCommentInput,
     });
   }

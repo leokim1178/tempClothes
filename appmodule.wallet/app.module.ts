@@ -11,19 +11,19 @@ import { RegionModule } from './apis/region/region.module';
 import * as redisStore from 'cache-manager-redis-store';
 import type { RedisClientOptions } from 'redis';
 import { PaymentModule } from './apis/payment/payment.module';
-import { ChatModule } from './apis/chat/chat.module'
+import { ChatModule } from './apis/socketio/chat.module'
 import { AppController } from './apis/app/app.controller';
 import { AppService } from './apis/app/app.service';
-// import { FeedModule } from './apis/feed/feed.module';
+import { FeedModule } from './apis/feed/feed.module';
 import { FileModule } from './apis/file/file.module';
-import { ChatGateway } from './apis/chat/chat.gateway';
+import { ChatGateway } from './apis/socketio/chat.gateway';
 
 @Module({
   imports: [
     UserModule, // 유저 모듈
     CommentModule, // 댓글 모듈
-    // FeedModule, // 피드 모듈
-    // FeedImgModule, // 피드 이미지 모듈
+    FeedModule, // 피드 모듈
+    FeedImgModule, // 피드 이미지 모듈
     AuthModule, // 로그인 모듈
     RegionModule, // 지역 & 날씨 모듈
     PaymentModule, // 결제 모듈

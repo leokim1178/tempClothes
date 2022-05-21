@@ -22,23 +22,23 @@ export class CommentResolver {
   @Mutation(() => Comment)
   createComment(
     // @CurrentUser() currentUser: any, // 로그인 구현 되면 열기
-    @Args('userId') userId: string, //
+    @Args('email') email: string, //
     @Args('createCommentInput') createCommentInput: createCommentInput,
   ) {
-    return this.commentService.create({ userId, createCommentInput });
+    return this.commentService.create({ email, createCommentInput });
   }
 
   // @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Comment)
   updateComment(
     // @CurrentUser() currentUser: any, // 로그인 구현 되면 열기
-    @Args('userId') userId: string,
+    @Args('email') email: string,
     @Args('commentId') commentId: string,
     @Args('updateCommentInput') updateCommentInput: updateCommentInput,
   ) {
     return this.commentService.update({
       commentId,
-      userId,
+      email,
       updateCommentInput,
     });
   }

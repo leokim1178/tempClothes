@@ -2,20 +2,20 @@ import { Field, ObjectType, Int } from '@nestjs/graphql';
 import {
   Column,
   Entity,
-  PrimaryColumn,
   DeleteDateColumn,
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Region } from 'src/apis/region/entities/region.entity';
 
 @Entity()
 @ObjectType()
 export class User {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn('uuid')
   @Field(() => String)
-  userId: string;
+  id: string;
 
   @Column()
   @Field(() => String)
@@ -24,7 +24,7 @@ export class User {
   @Column() // 패스워드는 반환이 되면 안됨
   password: string;
 
-  @Column()
+  @Column({ nullable: false })
   @Field(() => String)
   phone: string;
 

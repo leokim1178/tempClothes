@@ -11,10 +11,10 @@ import { RegionModule } from './apis/region/region.module';
 import * as redisStore from 'cache-manager-redis-store';
 import type { RedisClientOptions } from 'redis';
 import { PaymentModule } from './apis/payment/payment.module';
-import { ChatModule } from './apis/chat/chat.module'
+import { ChatModule } from './apis/chat/chat.module';
 import { AppController } from './apis/app/app.controller';
 import { AppService } from './apis/app/app.service';
-// import { FeedModule } from './apis/feed/feed.module';
+import { FeedModule } from './apis/feed/feed.module';
 import { FileModule } from './apis/file/file.module';
 import { ChatGateway } from './apis/chat/chat.gateway';
 
@@ -22,8 +22,8 @@ import { ChatGateway } from './apis/chat/chat.gateway';
   imports: [
     UserModule, // 유저 모듈
     CommentModule, // 댓글 모듈
-    // FeedModule, // 피드 모듈
-    // FeedImgModule, // 피드 이미지 모듈
+    FeedModule, // 피드 모듈
+    FeedImgModule, // 피드 이미지 모듈
     AuthModule, // 로그인 모듈
     RegionModule, // 지역 & 날씨 모듈
     PaymentModule, // 결제 모듈
@@ -41,11 +41,11 @@ import { ChatGateway } from './apis/chat/chat.gateway';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'my-database',
+      host: '10.82.224.4',
       port: 3306,
       username: 'root',
       password: '1234',
-      database: 'team01-database',
+      database: 'team-01-database',
       entities: [__dirname + '/apis/**/**/*.entity.*'],
       synchronize: true,
       logging: true,
@@ -54,7 +54,7 @@ import { ChatGateway } from './apis/chat/chat.gateway';
     }),
     CacheModule.register<RedisClientOptions>({
       store: redisStore,
-      url: 'redis://my-redis:6379',
+      url: 'redis://:fQrnzb8N@10.140.0.3:6379',
       isGlobal: true,
     }),
   ],

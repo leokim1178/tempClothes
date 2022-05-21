@@ -36,7 +36,7 @@ export class PaymentButtonService {
       const buttonTransaction = await this.paymentButtonRepository.create({
         imp_uid: imp_uid,
         amount: amount,
-        user: currentUser.userId, // 유저 아이디 저장
+        user: currentUser.email, // 유저 아이디 저장
         status: PAYMENT_BUTTON_STATUS_ENUM.PAYMENT,
       });
 
@@ -45,7 +45,7 @@ export class PaymentButtonService {
       // 2. 유저의 돈 조회하기
       const user = await queryRunner.manager.findOne(
         User, // 찾을 위치
-        { userId: currentUser.userId }, // 조건
+        { email: currentUser.email }, // 조건
         { lock: { mode: 'pessimistic_write' } }, // 비관적락_쓰기(입력) 락 걸기
       );
 
@@ -87,7 +87,7 @@ export class PaymentButtonService {
   async checklist({ imp_uid, currentUser }) {
     const result = await this.paymentButtonRepository.findOne({
       imp_uid,
-      user: { userId: currentUser.userId },
+      user: { email: currentUser.email },
       status: PAYMENT_BUTTON_STATUS_ENUM.PAYMENT, // 어려운거 없이 이 status로 취소 됐는지 확인 가능
     });
     if (!result)
@@ -103,7 +103,7 @@ export class PaymentButtonService {
     try {
       // 검증 후 DB저장하기
       const user = await this.userRepository.findOne({
-        where: { userId: currentUser.userId },
+        where: { email: currentUser.email },
       });
       console.log(user, 'cancel 유저정보');
 
@@ -118,7 +118,7 @@ export class PaymentButtonService {
       const result = await this.paymentButtonRepository.create({
         imp_uid,
         amount: -amount,
-        user: { userId: currentUser.userId },
+        user: { email: currentUser.email },
         status: PAYMENT_BUTTON_STATUS_ENUM.CANCEL,
       });
 

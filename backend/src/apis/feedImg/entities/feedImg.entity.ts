@@ -21,7 +21,11 @@ export class FeedImg {
   @Field()
   imgURL: string;
 
-  @ManyToOne(() => Feed, (feed) => feed.feedImg, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Feed, (feed) => feed.feedImg, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+    orphanedRowAction: 'delete',
+  })
   @Field(() => Feed)
   feed: Feed;
 

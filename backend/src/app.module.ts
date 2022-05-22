@@ -11,7 +11,7 @@ import { RegionModule } from './apis/region/region.module';
 import * as redisStore from 'cache-manager-redis-store';
 import type { RedisClientOptions } from 'redis';
 import { PaymentModule } from './apis/payment/payment.module';
-import { ChatModule } from './apis/chat/chat.module'
+import { ChatModule } from './apis/chat/chat.module';
 import { AppController } from './apis/app/app.controller';
 import { AppService } from './apis/app/app.service';
 // import { FeedModule } from './apis/feed/feed.module';
@@ -41,11 +41,15 @@ import { ChatGateway } from './apis/chat/chat.gateway';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'my-database',
+      // host: '10.118.112.4', // prod
+      host: '10.82.224.4', // dev
+      // host: 'my-database', // local
       port: 3306,
       username: 'root',
       password: '1234',
-      database: 'team01-database',
+      // database: 't1', //prod
+      database: 'team-01-database', // dev
+      // database: 'team01-database',//local
       entities: [__dirname + '/apis/**/**/*.entity.*'],
       synchronize: true,
       logging: true,
@@ -54,7 +58,9 @@ import { ChatGateway } from './apis/chat/chat.gateway';
     }),
     CacheModule.register<RedisClientOptions>({
       store: redisStore,
-      url: 'redis://my-redis:6379',
+      // url: 'redis://:dmCfbZ8b@10.140.0.4:6379', // prod
+      url: 'redis://:fQrnzb8N@10.140.0.3:6379', // dev
+      // url: 'redis://my-redis:6379', // local
       isGlobal: true,
     }),
   ],

@@ -33,33 +33,36 @@ export class Feed {
   @Field(() => String)
   detail: string;
 
-  @Column({ default: 0, nullable: true })
+  @Column({ nullable: true, default: 0 })
   @Field(() => Int, { nullable: true })
   likeCount: number;
 
   @Column({ nullable: true, default: null })
   @Field(() => String, { nullable: true })
-  top: string;
+  top?: string;
 
   @Column({ nullable: true, default: null })
   @Field(() => String, { nullable: true })
-  bottom: string;
+  bottom?: string;
 
   @Column({ nullable: true, default: null })
   @Field(() => String, { nullable: true })
-  outer: string;
+  outer?: string;
+
+  @Column({ nullable: true, default: null })
+  @Field(() => String, { nullable: true })
+  etc?: string;
 
   @JoinTable({})
   @ManyToMany(() => FeedTag, (feedTags) => feedTags.feed, {
     eager: true,
-    cascade: ['insert', 'update'],
+    cascade: true,
   })
   @Field(() => [FeedTag])
   feedTag: FeedTag[];
 
   @OneToMany(() => FeedImg, (feedImg) => feedImg.feed, {
-    cascade: ['remove'],
-    onDelete: 'CASCADE',
+    cascade: ['remove', 'update'],
     orphanedRowAction: 'delete',
     createForeignKeyConstraints: true,
   })
@@ -67,8 +70,7 @@ export class Feed {
   feedImg: FeedImg[];
 
   @OneToMany(() => Comment, (comment) => comment.feed, {
-    cascade: ['soft-remove'],
-    onDelete: 'CASCADE',
+    cascade: ['remove', 'update'],
     orphanedRowAction: 'delete',
     createForeignKeyConstraints: true,
   })
@@ -76,8 +78,7 @@ export class Feed {
   comment: Comment[];
 
   @OneToMany(() => FeedLike, (feedLike) => feedLike.feed, {
-    cascade: ['soft-remove'],
-    onDelete: 'CASCADE',
+    cascade: ['remove', 'update'],
     orphanedRowAction: 'delete',
     createForeignKeyConstraints: true,
   })
@@ -88,7 +89,9 @@ export class Feed {
   @Field(() => Region)
   region: Region;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, {
+    onDelete: 'CASCADE',
+  })
   @Field(() => User)
   user: User;
 

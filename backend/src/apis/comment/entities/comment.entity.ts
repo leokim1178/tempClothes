@@ -6,6 +6,7 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { User } from 'src/apis/user/entities/user.entity';
 import { Feed } from 'src/apis/feed/entities/feed.entity';
@@ -21,17 +22,27 @@ export class Comment {
   @Field(() => String)
   comment: string;
 
-  @ManyToOne(() => Feed, (feed) => feed.comment)
+  @ManyToOne(() => Feed, (feed) => feed.comment, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   @Field(() => Feed)
   feed: Feed;
 
-  @ManyToOne(() => User, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, {
+    onDelete: 'CASCADE', //
+    onUpdate: 'CASCADE',
+  })
   @Field(() => User)
   user: User;
 
-  @ManyToOne(() => Comment, { cascade: ['remove'] }) // 자기참조
+  @ManyToOne(() => Comment, { cascade: true, onDelete: 'CASCADE' }) // 자기참조
   @Field(() => Comment)
   pComment: Comment;
+
+  @DeleteDateColumn()
+  @Field(() => Date)
+  deletedAt: Date;
 
   @CreateDateColumn()
   createdAt: Date;

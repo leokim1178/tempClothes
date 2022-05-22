@@ -17,17 +17,18 @@ import { AppService } from './apis/app/app.service';
 // import { FeedModule } from './apis/feed/feed.module';
 import { FileModule } from './apis/file/file.module';
 import { ChatGateway } from './apis/chat/chat.gateway';
+import { FeedModule } from './apis/feed/feed.module';
 
 @Module({
   imports: [
     UserModule, // 유저 모듈
     CommentModule, // 댓글 모듈
-    // FeedModule, // 피드 모듈
-    // FeedImgModule, // 피드 이미지 모듈
+    FeedModule, // 피드 모듈
+    FeedImgModule, // 피드 이미지 모듈
     AuthModule, // 로그인 모듈
     RegionModule, // 지역 & 날씨 모듈
     PaymentModule, // 결제 모듈
-    FileModule,
+    FileModule, // 파일 모듈
     ChatModule, // 채팅 시스템
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,

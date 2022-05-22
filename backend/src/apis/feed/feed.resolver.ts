@@ -1,4 +1,4 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import { CreateFeedInput } from './dto/createFeedInput';
 import { UpdateFeedInput } from './dto/updateFeedInput';
@@ -9,6 +9,7 @@ import { FeedService } from './feed.service';
 import { CACHE_MANAGER, Inject, UseGuards } from '@nestjs/common';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth-guard';
 import { CurrentUser, ICurrentUser } from 'src/commons/auth/gql-user.param';
+import { fetchFeedOutput } from './dto/fetchFeedOutput';
 
 @Resolver()
 export class FeedResolver {
@@ -29,28 +30,24 @@ export class FeedResolver {
     if (exist) return exist;
     else {
       const result = await this.feedService.findWithFeedId({ feedId });
-      await this.cachManager.set(feedId, result, { ttl: 900 });
+      await this.cachManager.set(feedId, result, { ttl: 30 });
       console.log('db에서 서치한 데이터');
       return result;
     }
   }
 
-  @Query(() => [Feed]) // 지역정보로 피드 조회
-  fetchFeedsWithRegion(
-    @Args('regionId')
-    regionId: string,
-  ) {
-    return this.feedService.findWithRegion({ regionId });
-  }
-
-  @Query(() => [Feed]) // 태그들로 피드 조회
+  @Query(() => fetchFeedOutput) // 태그들로 피드 조회
   fetchFeedsWithTags(
     @Args('regionId')
-    regionId: string,
-    @Args({ name: 'feedTags', type: () => [String] })
-    feedTags?: string[],
+    region: string,
+    @Args({ name: 'feedTags', type: () => [String], nullable: true })
+    feedTags: string[],
+    @Args('page', { nullable: true, defaultValue: 1 })
+    page: number,
+    @Args('count', { nullable: true, defaultValue: 10 })
+    count: number,
   ) {
-    return this.feedService.findWithTags({ feedTags, regionId });
+    return this.feedService.findWithTags({ feedTags, region, count, page });
   }
 
   @UseGuards(GqlAuthAccessGuard)
@@ -85,7 +82,7 @@ export class FeedResolver {
     @Args('updateFeedInput')
     updateFeedInput: UpdateFeedInput,
     @Args('feedId')
-    feedId: string, //// currentUser payload 로 대체 예정
+    feedId: string,
   ) {
     return this.feedService.update({ feedId, updateFeedInput });
   }

@@ -12,14 +12,14 @@ export class CreateFeedInput {
   feedTag: string[];
 
   @Field(() => String, { nullable: true })
-  top: string;
+  top?: string;
 
   @Field(() => String, { nullable: true })
-  bottom: string;
+  bottom?: string;
 
   @Field(() => String, { nullable: true })
-  outer: string;
+  outer?: string;
 
   @Field(() => String, { nullable: true })
-  etc: string;
+  etc?: string;
 }

@@ -7,6 +7,7 @@ import { FeedLike } from '../feedLike/entities/feedLike.entity';
 import { FeedTag } from '../feedTag/entities/feedTag.entity';
 import { Region } from '../region/entities/region.entity';
 import { User } from '../user/entities/user.entity';
+import { fetchFeedOutput } from './dto/fetchFeedOutput';
 import { Feed } from './entities/feed.entity';
 
 @Injectable()
@@ -29,38 +30,41 @@ export class FeedService {
     private readonly connection: Connection,
   ) {}
 
-  async findWithRegion({ regionId }) {
-    const result = await this.feedRepository
+  async findWithTags({ region, feedTags, page, count }) {
+    const qb = this.feedRepository
       .createQueryBuilder('Feed')
       .leftJoinAndSelect('Feed.region', 'region') // 지역정보를 조인하고 'region'으로 명명
-      .where({ region: regionId }) // 지역정보 필터링 조건 추가
-      .leftJoinAndSelect('Feed.feedTag', 'feedTag') // 피드 태그들 조인
-      .leftJoinAndSelect('Feed.feedImg', 'feedImg') // 피드 이미지들 조인
-      .leftJoinAndSelect('Feed.feedLike', 'feedLike') // 좋아요 테이블 조인
-      .leftJoinAndSelect('Feed.user', 'user') // 유저 테이블 조인
-      .orderBy('Feed.watchCount', 'DESC') // 조회수 기준으로 내림차순으로 정렬
-      .getMany();
-
-    return result;
-  }
-
-  async findWithTags({ feedTags, regionId }) {
-    const result = await this.feedRepository
-      .createQueryBuilder('Feed')
-      .leftJoinAndSelect('Feed.region', 'region') // 지역정보를 조인하고 'region'으로 명명
-      .where({ region: regionId }) // 지역정보 필터링 조건 추가
+      .where({ region: region }) // 지역정보 필터링 조건 추가
       .leftJoinAndSelect('Feed.user', 'user') // 유저 테이블 조인
       .leftJoinAndSelect('Feed.feedTag', 'feedTag') // 피드 태그들을 조인하고 'feedTag'로 명명
-      .andWhere('feedTag.tagName IN (:tagName)', {
-        tagName: feedTags,
-      }) // andWhere로 조건 추가 태그들이 들어간 feedTags로 IN 조회
       .leftJoinAndSelect('Feed.feedImg', 'feedImg') //피드 이미지들 조인
-      .leftJoinAndSelect('Feed.feedLike', 'feedLike') // 좋아요 테이블 조인
-      .orderBy('Feed.watchCount', 'DESC') // 조회수 기준으로 내림차순으로 정렬
-      .getMany();
-    console.log(result);
+      .leftJoinAndSelect('Feed.feedLike', 'feedLike'); // 좋아요 테이블 조인
+    if (!feedTags) {
+      const result = await qb
+        .orderBy('Feed.watchCount', 'DESC') // 조회수 기준으로 내림차순으로 정렬
+        .take(count)
+        .skip((page - 1) * count)
+        .getManyAndCount();
+      const [feeds, total] = result;
+      const output: fetchFeedOutput = { feeds, total, count, page };
+      console.log('지역으로 조회');
 
-    return result;
+      return output;
+    } else {
+      const result = await qb
+        .andWhere('feedTag.tagName IN (:tags)', {
+          tags: feedTags,
+        }) // andWhere로 조건 추가 태그들이 들어간 feedTags로 IN 조회
+        .orderBy('Feed.watchCount', 'DESC') // 조회수 기준으로 내림차순으로 정렬
+        .take(count)
+        .skip((page - 1) * count)
+        .getManyAndCount();
+      console.log('지역 + 태그로 조회');
+      const [feeds, total] = result;
+      const output: fetchFeedOutput = { feeds, total, count, page };
+
+      return output;
+    }
   }
 
   async findWithUser({ currentUser }) {
@@ -116,6 +120,7 @@ export class FeedService {
       const user = await this.userRepository.findOne({
         email: currentUser.email,
       }); // 유저 정보 조회
+      console.log(currentUser);
       //피드 정보 조회
       const feed = await queryRunner.manager.findOne(
         Feed,
@@ -130,7 +135,7 @@ export class FeedService {
       //   id: feedId,
       // }); //피드 정보 조회
 
-      if (!user || !feed) throw new ConflictException('잘못된 요청입니다');
+      if (!feed || !user) throw Error;
       //유저 정보가 없거나 피드 정보가 없을 경우 에러 쓰로잉
 
       if (!feedLike) {
@@ -189,6 +194,7 @@ export class FeedService {
       }
     } catch (error) {
       await queryRunner.rollbackTransaction();
+      throw new ConflictException('잘못된 요청입니다');
     } finally {
       await queryRunner.release();
     }
@@ -201,6 +207,11 @@ export class FeedService {
       id: regionId,
     });
     if (!region) throw new ConflictException('등록되지 않은 지역명입니다');
+
+    const user = await this.userRepository.findOne({
+      email: currentUser.email,
+    });
+    if (!user) throw new ConflictException('등록되지 않은 유저입니다');
 
     const tagResult = [];
     for (let i = 0; i < feedTag.length; i++) {
@@ -218,9 +229,6 @@ export class FeedService {
       }
     }
 
-    const user = await this.userRepository.findOne({
-      where: { email: currentUser.email },
-    });
     const feedSaveResult = await this.feedRepository.save({
       ...feed,
       region: region,
@@ -271,35 +279,8 @@ export class FeedService {
   async delete({ feedId }) {
     const feed = await this.feedRepository.findOne({ id: feedId });
     if (!feed) throw new ConflictException('존재하지 않는 피드입니다');
-    const feedLike = await this.feedLikeRepository.find({
-      where: { feed: feedId },
-    });
 
-    // await Promise.all(
-    //   feedLike.map((el) => {
-    //     this.feedLikeRepository.delete({ id: el.id });
-    //   }),
-    // );
-
-    // const imgs = await this.feedImgRepository.find({ where: { feed: feedId } });
-
-    // await Promise.all(
-    //   imgs.map((el) => {
-    //     this.feedImgRepository.delete({ id: el.id });
-    //   }),
-    // ); // 피드 삭제시 이미지 먼저 삭제
-
-    // const comments = await this.commentRepository.find({
-    //   where: { feed: feedId },
-    // });
-
-    // await Promise.all(
-    //   comments.map((el) => {
-    //     this.commentRepository.delete({ id: el.id });
-    //   }),
-    // ); // 피드 삭제시 댓글 먼저 삭제
-
-    const result = await this.feedRepository.softDelete({ id: feedId });
+    const result = await this.feedRepository.delete({ id: feedId });
     return result.affected ? true : false;
   }
 }

@@ -1,5 +1,7 @@
 import {
+  CACHE_MANAGER,
   ConflictException,
+  Inject,
   Injectable,
   UnprocessableEntityException,
 } from '@nestjs/common';
@@ -8,6 +10,9 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { Region } from '../region/entities/region.entity';
 import * as bcrypt from 'bcrypt';
+import axios from 'axios';
+import { Cache } from 'cache-manager';
+import { getToday } from './utils/date';
 
 @Injectable()
 export class UserService {
@@ -16,6 +21,8 @@ export class UserService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Region)
     private readonly regionRepository: Repository<Region>,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
   async findAll() {
@@ -24,21 +31,10 @@ export class UserService {
     });
   }
 
-  async findOne({ userId }) {
-    const result = await this.userRepository.findOne({
-      where: { userId },
-      relations: ['region'],
-    });
-
-    console.log(result, '유저정보 찾기1');
-
-    return result;
-  }
-
-  async fetch({ userId }) {
+  async fetch({ email }) {
     // 유저 조회(피드와 유저 합치기)
     const result = await this.userRepository.findOne({
-      where: { userId: userId },
+      where: { email: email },
       relations: ['region'],
     });
 
@@ -47,9 +43,13 @@ export class UserService {
     return result;
   }
 
-  async overLapId({ userId }) {
-    const result = await this.userRepository.findOne({ userId });
-    if (result) throw new ConflictException('중복된 이메일입니다.');
+  async overLapEmail({ email }) {
+    const result = await this.userRepository.findOne({ email });
+    if (result) {
+      throw new ConflictException('중복된 이메일입니다.')
+    } else if (email === undefined || !email.includes("@")) {
+      throw new UnprocessableEntityException('이메일이 올바르지 않습니다.')
+    }
 
     return '사용가능한 이메일입니다.';
   }
@@ -62,24 +62,60 @@ export class UserService {
   }
 
   async create({ createUserInput }) {
-    const { regionId, ...userInfo } = createUserInput;
-    console.log('정보');
+    const { regionId, nickname, ...userInfo } = createUserInput;
     console.log(userInfo);
-    console.log('지역', regionId);
+    console.log(nickname,'닉네임')
+    console.log(userInfo.email,'이메일')
     const region = await this.regionRepository.findOne({
       where: { id: regionId },
     });
+    const emailBody = // 이메일 내용
+      `
+          <html>
+              <body>
+                  <h1>온도衣 가입에 감사합니다!</h1>
+                  <hr />
+                  <div>${nickname}님의 가입을 축하드립니다. 많은 활동 부탁드립니다 </div>
+                  <div>가입일: ${getToday()}</div>
+              </body>
+          </html>
+      `
+    
+    console.log("AAA")
+    console.log(emailBody)
 
+    const appKey = process.env.EMAIL_APP_KEY
+    const XSecretKey = process.env.EMAIL_X_SECRET_KEY
+    const sender = process.env.EMAIL_SENDER
+    console.log(sender,'sender')
+    const emailSend = await axios.post(
+      `https://api-mail.cloud.toast.com/email/v2.0/appKeys/${appKey}/sender/mail`, 
+    {
+      senderAddress: sender,
+      title: "온도衣 가입을 환영합니다!",
+      body: emailBody,
+      receiverList: [{receiveMailAddr: userInfo.email, receiveType: "MRT0" }]
+    },
+    {
+        headers: {
+          "Content-Type": "application/json;charset=UTF-8", // 가운데 - 이게 들어가 문자열로 감싸줘야함. 원래는 안해도 됨.
+          "X-Secret-Key": XSecretKey
+      }
+    })
+    console.log(emailSend, '전송')
+    console.log("BBB")
+    
     return await this.userRepository.save({
       ...userInfo,
       region,
+      nickname
     });
   }
 
-  async update({ currentUserId, updateUserInput, password }) {
+  async update({ currentEmail, updateUserInput, password }) {
     const nic = await this.userRepository.find(); // 유저 정보 파인드
     const updateUser = await this.userRepository.findOne({
-      where: { userId: currentUserId },
+      where: { email: currentEmail },
     });
 
     console.log(nic, '모든 유저 정보');
@@ -109,18 +145,61 @@ export class UserService {
     return await this.userRepository.save(newUser);
   }
 
-  async delete({ currentUserId }) {
+  async delete({ currentUserEmail }) {
     // const user = await this.userRepository.findOne({
     //   where: { userId: currentUserId },
     // });
     // console.log('ddd');
 
     // 일단 Softdelete로 대체;
-    const result = await this.userRepository.softDelete({
-      userId: currentUserId,
+    const result = await this.userRepository.delete({
+      email: currentUserEmail,
     });
     console.log(result, 'aaa');
 
     return result.affected ? true : false;
+  }
+
+  async send({ phone }){ // 휴대폰 번호 인증 전송
+    if( phone.length !== 10 && phone.length !== 11 ) // 핸드폰 번호 길이 검증
+      throw new UnprocessableEntityException('핸드폰 번호가 알맞지 않습니다.')
+      
+    let tokenCount = 6;
+      // 인증번호 토큰 발급
+      const token = String(Math.floor(Math.random() * 10**tokenCount)).padStart(tokenCount, "0")
+      console.log(token, '인증번호 생성AAA')
+      
+      await this.cacheManager.set(`${token}`, token,{ // redis 저장
+        ttl: 180
+      })
+
+    const appKey = process.env.SMS_APP_KEY
+    const XSecretKey = process.env.SMS_X_SECRET_KEY
+    const sender = process.env.SMS_SENDER
+
+    const sendSms = await axios.post(`https://api-sms.cloud.toast.com/sms/v3.0/appKeys/${appKey}/sender/sms`,
+    {
+      body: `[온도衣]본인확인 인증번호[${token}]입니다. "타인 노출 금지"`,
+      sendNo: sender,
+      recipientList: [{ internationalRecipientNo: phone }]
+    },
+    {
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+        "X-Secret-Key": XSecretKey
+      }
+    })
+
+    return '전송완료'
+  }
+
+  async confirm({ authNumber }) {
+    const result = await this.cacheManager.get(`${authNumber}`); // redis에 있는 인증번호 확인하기
+    console.log(result, 'redis 저장 확인')
+    if( result === authNumber ) {
+      return '인증완료'
+    } else {
+      return '인증번호를 다시 확인해 주세요.'
+    }
   }
 }

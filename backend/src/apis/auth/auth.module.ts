@@ -14,7 +14,7 @@ import { User } from '../user/entities/user.entity';
 import { Region } from '../region/entities/region.entity';
 import { Feed } from '../feed/entities/feed.entity';
 import { Comment } from '../comment/entities/comment.entity';
-import { FeedService } from '../feed/feed.service';
+// import { FeedService } from '../feed/feed.service';
 import { FeedTag } from '../feedTag/entities/feedTag.entity';
 import { FeedImg } from '../feedImg/entities/feedImg.entity';
 import { FeedLike } from '../feedLike/entities/feedLike.entity';
@@ -25,11 +25,11 @@ import { FeedLike } from '../feedLike/entities/feedLike.entity';
     TypeOrmModule.forFeature([
       User,
       Region,
-      Feed,
+      // Feed,
       Comment,
-      FeedTag,
-      FeedImg,
-      FeedLike,
+      // FeedTag,
+      // FeedImg,
+      // FeedLike,
     ]),
   ],
   providers: [
@@ -41,7 +41,7 @@ import { FeedLike } from '../feedLike/entities/feedLike.entity';
     AuthResolver,
     AuthService,
     UserService,
-    FeedService,
+    // FeedService,
   ],
   controllers: [AuthController],
 })

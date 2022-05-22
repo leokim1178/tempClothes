@@ -32,7 +32,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
     } else {
       // 저장되어 있지 않아 유효한 토큰인 경우
       return {
-        userId: payload.userId,
+        id: payload.id,
         email: payload.email,
       };
     }

@@ -1,6 +1,6 @@
-import { Query, Resolver, Args, Mutation } from '@nestjs/graphql';
+import { Query, Resolver, Args, Mutation, Int } from '@nestjs/graphql';
 import { UserService } from './user.service';
-import { FeedService } from '../feed/feed.service';
+// import { FeedService } from '../feed/feed.service';
 import { User } from './entities/user.entity';
 import { createUserInput } from './dto/createUser.input';
 import { updateUserInput } from './dto/updateUser.input';
@@ -25,14 +25,14 @@ export class UserResolver {
   fetchUser(
     @CurrentUser() currentUser: ICurrentUser, //
   ) {
-    return this.userService.fetch({ userId: currentUser.userId });
+    return this.userService.fetch({ email: currentUser.email });
   }
 
-  @Mutation(() => String) // 아이디 중복 확인
-  confirmOverlapId(
-    @Args('userId') userId: string, //
+  @Mutation(() => String) // 이메일 중복 확인
+  confirmOverlapEmail(
+    @Args('email') email: string, //
   ) {
-    return this.userService.overLapId({ userId });
+    return this.userService.overLapEmail({ email });
   }
 
   @Mutation(() => String) // 닉네임 중복 확인
@@ -60,10 +60,10 @@ export class UserResolver {
     @Args('password') password: string,
     @Args('updateUserInput') updateUserInput: updateUserInput,
   ) {
-    const currentUserId = currentUser.userId;
-    console.log(currentUserId, '커랜트 유저아이디');
+    const currentEmail = currentUser.email;
+    console.log(currentEmail, '커랜트 유저이메일');
     return await this.userService.update({
-      currentUserId,
+      currentEmail,
       updateUserInput,
       password,
     });
@@ -74,7 +74,21 @@ export class UserResolver {
   deleteUser(
     @CurrentUser() currentUser: ICurrentUser, //
   ) {
-    const currentUserId = currentUser.userId;
-    return this.userService.delete({ currentUserId }); // 피드서비스의 delete끌어옴.
+    const currentUserEmail = currentUser.email;
+    return this.userService.delete({ currentUserEmail }); // 피드서비스의 delete끌어옴.
+  }
+
+  @Mutation(() => String) // 인증번호 발송
+  createPhoneAuth(
+    @Args('phone') phone: string, //
+  ){
+    return this.userService.send({ phone })
+  }
+
+  @Mutation(() => String) // 인증번호 확인
+  confirmAuthNumber(
+    @Args('authNumber') authNumber: string, //
+  ){
+    return this.userService.confirm({ authNumber })
   }
 }

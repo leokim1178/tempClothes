@@ -28,12 +28,12 @@ export class AuthResolver {
 
   @Mutation(() => String)
   async login(
-    @Args('userId') userId: string, // 아이디로 로그인하기
+    @Args('email') email: string, // 이메일로 로그인하기
     @Args('password') password: string,
     @Context() context: any,
   ) {
     // 1. 로그인(이메일과 비밀번호가 일치하는 유저 찾기)
-    const user = await this.userService.findOne({ userId });
+    const user = await this.userService.fetch({ email });
     // 2. 일치하는 유저가 없으면 에러!
     console.log(user, '유저정보');
     if (!user)
@@ -81,6 +81,6 @@ export class AuthResolver {
   restoreAccessToken(
     @CurrentUser() currentUser: ICurrentUser, //
   ) {
-    return this.authService.getAccessToken({ user: currentUser.userId });
+    return this.authService.getAccessToken({ user: currentUser.email });
   }
 }

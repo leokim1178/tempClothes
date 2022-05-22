@@ -27,7 +27,7 @@ export class JwtAcessStrategy extends PassportStrategy(Strategy, 'access') {
     } else {
       // 저장되어 있지 않아 유효한 토큰인 경우
       return {
-        id: payload.id,
+        id: payload.sub,
         email: payload.email,
       };
     }

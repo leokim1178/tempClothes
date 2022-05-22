@@ -25,19 +25,18 @@ export class FeedResolver {
     @Args('feedId')
     feedId: string,
   ) {
-    const exist = await this.cachManager.get(feedId); // 키 자체가 토큰 값이 되있기 때문.
-    console.log(exist, 'redis');
-    if (exist) return exist;
+    const redis = await this.cachManager.get(feedId); // 키 자체가 토큰 값이 되있기 때문.
+    if (redis) return redis;
     else {
       const result = await this.feedService.findWithFeedId({ feedId });
-      await this.cachManager.set(feedId, result, { ttl: 30 });
+      await this.cachManager.set(feedId, result, { ttl: 15 });
       console.log('db에서 서치한 데이터');
       return result;
     }
   }
 
   @Query(() => fetchFeedOutput) // 태그들로 피드 조회
-  fetchFeedsWithTags(
+  async fetchFeeds(
     @Args('regionId')
     region: string,
     @Args({ name: 'feedTags', type: () => [String], nullable: true })
@@ -47,13 +46,34 @@ export class FeedResolver {
     @Args('count', { nullable: true, defaultValue: 10 })
     count: number,
   ) {
-    return this.feedService.findWithTags({ feedTags, region, count, page });
+    const redisInput = JSON.stringify({ region, feedTags, page, count });
+    const redis = await this.cachManager.get(redisInput);
+
+    if (redis) return redis;
+    else {
+      const result = await this.feedService.findWithTags({
+        feedTags,
+        region,
+        count,
+        page,
+      });
+      await this.cachManager.set(redisInput, result, { ttl: 15 });
+      console.log('db에서 서치한 데이터');
+      return result;
+    }
   }
 
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => [Feed]) // 유저 정보로 피드 조회
-  fetchMyFeeds(@CurrentUser() currentUser: ICurrentUser) {
-    return this.feedService.findWithUser({ currentUser });
+  async fetchMyFeeds(@CurrentUser() currentUser: ICurrentUser) {
+    const redis = await this.cachManager.get(currentUser.email);
+    if (redis) return redis;
+    else {
+      const result = await this.feedService.findWithUser({ currentUser });
+      await this.cachManager.set(currentUser.email, result, { ttl: 15 });
+      console.log('db에서 서치한 데이터');
+      return result;
+    }
   }
 
   @UseGuards(GqlAuthAccessGuard)

@@ -1,0 +1,24 @@
+steps:
+  - name: docker/compose:1.29.0
+    args:
+      - -f
+      - backend/docker-compose.prod.yaml
+      - build
+
+  - name: docker/compose:1.29.0
+    args:
+      - -f
+      - backend/docker-compose.prod.yaml
+      - push
+
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
+      [
+        'set',
+        'image',
+        'deployment/t1-backend',
+        't1-backend-sha256-1=asia.gcr.io/f6b2t1-master/t1-backend:0.0.2',
+      ]
+    env:
+      - CLOUDSDK_COMPUTE_ZONE=asia-northeast3
+      - CLOUDSDK_CONTAINER_CLUSTER=t1-cluster

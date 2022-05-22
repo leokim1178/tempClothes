@@ -9,7 +9,10 @@ export class CreateFeedInput {
   regionId: string;
 
   @Field(() => [String])
-  feedTag: string[];
+  feedTags: string[];
+
+  @Field(() => [String])
+  imgURLs: string[];
 
   @Field(() => String, { nullable: true })
   top?: string;

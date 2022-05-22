@@ -23,8 +23,6 @@ export class FeedService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(FeedImg)
     private readonly feedImgRepository: Repository<FeedImg>,
-    @InjectRepository(Comment)
-    private readonly commentRepository: Repository<Comment>,
     @InjectRepository(FeedLike)
     private readonly feedLikeRepository: Repository<FeedLike>,
     private readonly connection: Connection,
@@ -42,6 +40,7 @@ export class FeedService {
     if (!feedTags) {
       const result = await qb
         .orderBy('Feed.watchCount', 'DESC') // 조회수 기준으로 내림차순으로 정렬
+        .orderBy('Feed.createdAt', 'ASC') // 작성일 기준으로 오름차순 정렬
         .take(count)
         .skip((page - 1) * count)
         .getManyAndCount();
@@ -56,6 +55,7 @@ export class FeedService {
           tags: feedTags,
         }) // andWhere로 조건 추가 태그들이 들어간 feedTags로 IN 조회
         .orderBy('Feed.watchCount', 'DESC') // 조회수 기준으로 내림차순으로 정렬
+        .orderBy('Feed.createdAt', 'ASC') // 작성일 기준으로 오름차순 정렬
         .take(count)
         .skip((page - 1) * count)
         .getManyAndCount();
@@ -75,6 +75,7 @@ export class FeedService {
       .leftJoinAndSelect('Feed.feedImg', 'feedImg') // 피드 이미지들 조인
       .leftJoinAndSelect('Feed.feedLike', 'feedLike') // 좋아요 테이블 조인
       .orderBy('Feed.watchCount', 'DESC') // 조회수 기준으로 내림차순으로 정렬
+      .orderBy('Feed.createdAt', 'ASC') // 작성일 기준으로 오름차순 정렬
       .getMany();
     console.log(result);
 
@@ -98,6 +99,96 @@ export class FeedService {
     });
 
     return result;
+  }
+
+  async create({ currentUser, createFeedInput }) {
+    const { feedTags, regionId, imgURLs, ...feed } = createFeedInput;
+
+    const region = await this.regionRepository.findOne({
+      id: regionId,
+    });
+    if (!region) throw new ConflictException('등록되지 않은 지역명입니다');
+
+    const user = await this.userRepository.findOne({
+      email: currentUser.email,
+    });
+    if (!user) throw new ConflictException('등록되지 않은 유저입니다');
+
+    const tagResult = [];
+    for (let i = 0; i < feedTags.length; i++) {
+      const tagName = feedTags[i];
+      const prevTag = await this.feedTagRepository.findOne({
+        where: { tagName },
+      });
+      if (prevTag) {
+        tagResult.push(prevTag); // tag가 이미 존재하면 저장하지 않고 추가
+      } else {
+        const newTag = await this.feedTagRepository.save({
+          tagName,
+        });
+        tagResult.push(newTag); // 없으면 db에 저장 후 추가
+      }
+    }
+
+    const feedResult = await this.feedRepository.save({
+      ...feed,
+      feedTag: tagResult,
+      region,
+      user,
+    });
+
+    await Promise.all(
+      imgURLs.map((el) => {
+        return this.feedImgRepository.save({ imgURL: el, feed: feedResult });
+      }),
+    );
+
+    return feedResult;
+  }
+
+  async update({ feedId, updateFeedInput }) {
+    const lastFeed = await this.feedRepository.findOne({
+      where: {
+        id: feedId,
+      },
+    });
+    if (!lastFeed) throw new ConflictException('등록되지 않은 피드입니다 ');
+
+    const { feedTag, regionId, ...feed } = updateFeedInput;
+    const tagResult = [];
+
+    for (let i = 0; i < feedTag.length; i++) {
+      const tagName = feedTag[i];
+      const prevTag = await this.feedTagRepository.findOne({
+        where: { tagName },
+      });
+      if (prevTag) {
+        tagResult.push(prevTag); // tag가 이미 존재하면 저장하지 않고 추가
+      } else {
+        const newTag = await this.feedTagRepository.save({
+          tagName,
+        });
+        tagResult.push(newTag); // 없으면 db에 저장 후 추가
+      }
+    }
+    const region = await this.regionRepository.findOne({
+      where: { id: regionId },
+    });
+    const feedUpdateResult = await this.feedRepository.save({
+      ...lastFeed,
+      ...feed,
+      region,
+      feedTag: tagResult,
+    });
+    return feedUpdateResult;
+  }
+
+  async delete({ feedId }) {
+    const feed = await this.feedRepository.findOne({ id: feedId });
+    if (!feed) throw new ConflictException('존재하지 않는 피드입니다');
+
+    const result = await this.feedRepository.delete({ id: feedId });
+    return result.affected ? true : false;
   }
 
   async like({ currentUser, feedId }) {
@@ -198,89 +289,5 @@ export class FeedService {
     } finally {
       await queryRunner.release();
     }
-  }
-
-  async create({ currentUser, createFeedInput }) {
-    const { feedTag, regionId, ...feed } = createFeedInput;
-
-    const region = await this.regionRepository.findOne({
-      id: regionId,
-    });
-    if (!region) throw new ConflictException('등록되지 않은 지역명입니다');
-
-    const user = await this.userRepository.findOne({
-      email: currentUser.email,
-    });
-    if (!user) throw new ConflictException('등록되지 않은 유저입니다');
-
-    const tagResult = [];
-    for (let i = 0; i < feedTag.length; i++) {
-      const tagName = feedTag[i];
-      const prevTag = await this.feedTagRepository.findOne({
-        where: { tagName },
-      });
-      if (prevTag) {
-        tagResult.push(prevTag); // tag가 이미 존재하면 저장하지 않고 추가
-      } else {
-        const newTag = await this.feedTagRepository.save({
-          tagName,
-        });
-        tagResult.push(newTag); // 없으면 db에 저장 후 추가
-      }
-    }
-
-    const feedSaveResult = await this.feedRepository.save({
-      ...feed,
-      region: region,
-      feedTag: tagResult,
-      user,
-    });
-
-    return feedSaveResult;
-  }
-
-  async update({ feedId, updateFeedInput }) {
-    const lastFeed = await this.feedRepository.findOne({
-      where: {
-        id: feedId,
-      },
-    });
-    if (!lastFeed) throw new ConflictException('등록되지 않은 피드입니다 ');
-
-    const { feedTag, regionId, ...feed } = updateFeedInput;
-    const tagResult = [];
-
-    for (let i = 0; i < feedTag.length; i++) {
-      const tagName = feedTag[i];
-      const prevTag = await this.feedTagRepository.findOne({
-        where: { tagName },
-      });
-      if (prevTag) {
-        tagResult.push(prevTag); // tag가 이미 존재하면 저장하지 않고 추가
-      } else {
-        const newTag = await this.feedTagRepository.save({
-          tagName,
-        });
-        tagResult.push(newTag); // 없으면 db에 저장 후 추가
-      }
-    }
-    const region = await this.regionRepository.findOne({
-      where: { id: regionId },
-    });
-    const feedUpdateResult = await this.feedRepository.save({
-      ...lastFeed,
-      ...feed,
-      region: region,
-      feedTag: tagResult,
-    });
-    return feedUpdateResult;
-  }
-
-  async delete({ feedId }) {
-    const feed = await this.feedRepository.findOne({ id: feedId });
-    if (!feed) throw new ConflictException('존재하지 않는 피드입니다');
-
-    const result = await this.feedRepository.delete({ id: feedId });
-    return result.affected ? true : false;
   }
 }

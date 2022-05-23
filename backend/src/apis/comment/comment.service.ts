@@ -61,13 +61,14 @@ export class CommentService {
     const result = await this.commentRepository.findOne({
       where: { id: commentId },
     });
-    const user = await this.userRepository.findOne({
-      where: { email },
+    const comUser = await this.userRepository.findOne({
+      where: { email: email },
     });
+
     console.log(result);
     return await this.commentRepository.save({
       ...result,
-      user,
+      user: comUser,
       ...updateCommentInput,
     });
   }

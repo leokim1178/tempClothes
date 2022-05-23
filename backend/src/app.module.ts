@@ -17,6 +17,7 @@ import { AppService } from './apis/app/app.service';
 import { FileModule } from './apis/file/file.module';
 import { ChatGateway } from './apis/chat/chat.gateway';
 import { FeedModule } from './apis/feed/feed.module';
+import { CronModule } from './apis/cron/cron.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { FeedModule } from './apis/feed/feed.module';
     PaymentModule, // 결제 모듈
     FileModule, // 파일 모듈
     ChatModule, // 채팅 시스템
+    CronModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: 'src/commons/graphql/schema.gql',
@@ -49,7 +51,7 @@ import { FeedModule } from './apis/feed/feed.module';
       password: '1234',
       // database: 't1', //prod
       database: 'team-01-database', // dev
-      // database: 'team01-database',//local
+      // database: 'team01-database', //local
       entities: [__dirname + '/apis/**/**/*.entity.*'],
       synchronize: true,
       logging: true,

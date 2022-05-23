@@ -6,7 +6,7 @@ export class createCommentInput {
   pCommentId: string;
 
   @Field(() => String)
-  comment: string;
+  commentDetail: string;
 
   @Field(() => String)
   feedId: string;

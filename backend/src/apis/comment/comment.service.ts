@@ -31,7 +31,7 @@ export class CommentService {
   async create({ email, createCommentInput }) {
     console.log(email, '유저아이디');
     console.log('댓글내용');
-    const { pCommentId, feedId, comment } = createCommentInput;
+    const { pCommentId, feedId, commentDetail } = createCommentInput;
     let parentComment;
     if (pCommentId) {
       parentComment = await this.commentRepository.findOne({
@@ -49,7 +49,7 @@ export class CommentService {
     return await this.commentRepository.save({
       user: comUser,
       feed: feedId,
-      comment: comment,
+      comment: commentDetail,
       pComment: parentComment,
     });
   }

@@ -14,7 +14,7 @@ import { Feed } from 'src/apis/feed/entities/feed.entity';
 @Entity()
 @ObjectType()
 export class Comment {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn('increment')
   @Field(() => String)
   id: string;
 

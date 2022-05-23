@@ -36,8 +36,8 @@ export class Comment {
   @Field(() => User)
   user: User;
 
-  @ManyToOne(() => Comment, { cascade: true, onDelete: 'CASCADE' }) // 자기참조
-  @Field(() => Comment)
+  @ManyToOne(() => Comment, { cascade: true, onDelete: 'CASCADE', nullable: true }) // 자기참조
+  @Field(() => Comment, { nullable: true })
   pComment: Comment;
 
   @DeleteDateColumn()

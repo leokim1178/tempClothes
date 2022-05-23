@@ -38,8 +38,6 @@ export class UserService {
       relations: ['region'],
     });
 
-    console.log(result, '유저정보 찾기2');
-
     return result;
   }
 
@@ -63,9 +61,6 @@ export class UserService {
 
   async create({ createUserInput }) {
     const { regionId, nickname, ...userInfo } = createUserInput;
-    console.log(userInfo);
-    console.log(nickname,'닉네임')
-    console.log(userInfo.email,'이메일')
     const region = await this.regionRepository.findOne({
       where: { id: regionId },
     });
@@ -80,14 +75,10 @@ export class UserService {
               </body>
           </html>
       `
-    
-    console.log("AAA")
-    console.log(emailBody)
-
     const appKey = process.env.EMAIL_APP_KEY
     const XSecretKey = process.env.EMAIL_X_SECRET_KEY
     const sender = process.env.EMAIL_SENDER
-    console.log(sender,'sender')
+  
     const emailSend = await axios.post(
       `https://api-mail.cloud.toast.com/email/v2.0/appKeys/${appKey}/sender/mail`, 
     {
@@ -102,9 +93,6 @@ export class UserService {
           "X-Secret-Key": XSecretKey
       }
     })
-    console.log(emailSend, '전송')
-    console.log("BBB")
-    
     return await this.userRepository.save({
       ...userInfo,
       region,
@@ -117,11 +105,8 @@ export class UserService {
     const updateUser = await this.userRepository.findOne({
       where: { email: currentEmail },
     });
-
-    console.log(nic, '모든 유저 정보');
-
     const isAuthNic = updateUserInput.nickname;
-    console.log(isAuthNic);
+    
     for (let i = 0; i < nic.length; i++) {
       // 닉네임 중복 확인
       if (isAuthNic === nic[i]['nickname']) {
@@ -146,16 +131,10 @@ export class UserService {
   }
 
   async delete({ currentUserEmail }) {
-    // const user = await this.userRepository.findOne({
-    //   where: { userId: currentUserId },
-    // });
-    // console.log('ddd');
 
-    // 일단 Softdelete로 대체;
     const result = await this.userRepository.delete({
       email: currentUserEmail,
     });
-    console.log(result, 'aaa');
 
     return result.affected ? true : false;
   }
@@ -167,7 +146,6 @@ export class UserService {
     let tokenCount = 6;
       // 인증번호 토큰 발급
       const token = String(Math.floor(Math.random() * 10**tokenCount)).padStart(tokenCount, "0")
-      console.log(token, '인증번호 생성AAA')
       
       await this.cacheManager.set(`${token}`, token,{ // redis 저장
         ttl: 180
@@ -195,7 +173,7 @@ export class UserService {
 
   async confirm({ authNumber }) {
     const result = await this.cacheManager.get(`${authNumber}`); // redis에 있는 인증번호 확인하기
-    console.log(result, 'redis 저장 확인')
+
     if( result === authNumber ) {
       return '인증완료'
     } else {

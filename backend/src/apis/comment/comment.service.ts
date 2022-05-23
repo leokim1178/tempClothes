@@ -44,12 +44,15 @@ export class CommentService {
       where: { email: email },
     });
 
+    const feed = await this.feedRepository.findOne({
+      where: { id: feedId },
+    });
     console.log(comUser);
 
     return await this.commentRepository.save({
       user: comUser,
-      feed: feedId,
-      comment: commentDetail,
+      feed,
+      commentDetail,
       pComment: parentComment,
     });
   }
@@ -58,10 +61,13 @@ export class CommentService {
     const result = await this.commentRepository.findOne({
       where: { id: commentId },
     });
+    const user = await this.userRepository.findOne({
+      where: { email },
+    });
     console.log(result);
     return await this.commentRepository.save({
       ...result,
-      user: email,
+      user,
       ...updateCommentInput,
     });
   }

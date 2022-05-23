@@ -20,7 +20,7 @@ export class Comment {
 
   @Column()
   @Field(() => String)
-  comment: string;
+  commentDetail: string;
 
   @ManyToOne(() => Feed, (feed) => feed.comment, {
     onDelete: 'CASCADE',

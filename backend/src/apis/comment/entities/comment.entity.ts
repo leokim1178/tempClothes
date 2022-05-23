@@ -14,7 +14,7 @@ import { Feed } from 'src/apis/feed/entities/feed.entity';
 @Entity()
 @ObjectType()
 export class Comment {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn('increment')
   @Field(() => String)
   id: string;
 
@@ -40,13 +40,15 @@ export class Comment {
   @Field(() => Comment, { nullable: true })
   pComment: Comment;
 
-  @DeleteDateColumn()
-  @Field(() => Date)
-  deletedAt: Date;
-
   @CreateDateColumn()
+  @Field(() => Date)
   createdAt: Date;
 
   @UpdateDateColumn()
+  @Field(() => Date)
   updatedAt: Date;
+
+  @DeleteDateColumn()
+  @Field(() => Date)
+  deletedAt: Date;
 }

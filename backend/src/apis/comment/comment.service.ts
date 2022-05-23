@@ -18,12 +18,12 @@ export class CommentService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async findOne({ commentId }) {
-    const result = await this.commentRepository.findOne({
-      where: { id: commentId },
-      relations: ['user', 'pComment'],
+  async findAll({ feedId }) {
+    const result = await this.commentRepository.find({
+      where: { feed: feedId },
+      relations: ['pComment','user']
     });
-    console.log(result);
+    console.log(result, 'ccc')
 
     return result;
   }

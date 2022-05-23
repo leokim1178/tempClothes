@@ -40,13 +40,15 @@ export class Comment {
   @Field(() => Comment, { nullable: true })
   pComment: Comment;
 
-  @DeleteDateColumn()
-  @Field(() => Date)
-  deletedAt: Date;
-
   @CreateDateColumn()
+  @Field(() => Date)
   createdAt: Date;
 
   @UpdateDateColumn()
+  @Field(() => Date)
   updatedAt: Date;
+
+  @DeleteDateColumn()
+  @Field(() => Date)
+  deletedAt: Date;
 }

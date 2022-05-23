@@ -38,48 +38,73 @@ export class FeedService {
       .leftJoinAndSelect('Feed.feedImg', 'feedImg') //피드 이미지들 조인
       .leftJoinAndSelect('Feed.feedLike', 'feedLike'); // 좋아요 테이블 조인
     if (!feedTags) {
-      const result = await qb
-        .orderBy('Feed.watchCount', 'DESC') // 조회수 기준으로 내림차순으로 정렬
-        .orderBy('Feed.createdAt', 'ASC') // 작성일 기준으로 오름차순 정렬
-        .take(count)
-        .skip((page - 1) * count)
-        .getManyAndCount();
-      const [feeds, total] = result;
-      const output: fetchFeedOutput = { feeds, total, count, page };
-      console.log('지역으로 조회');
-
-      return output;
+      const paging = qb.orderBy('Feed.watchCount', 'DESC'); // 조회수 기준으로 내림차순으로 정렬
+      // .orderBy('Feed.createdAt', 'ASC') // 작성일 기준으로 오름차순 정렬
+      if (page && count) {
+        const result = await paging
+          .take(count)
+          .skip((page - 1) * count)
+          .getManyAndCount();
+        const [feeds, total] = result;
+        const output: fetchFeedOutput = { feeds, total, count, page };
+        console.log('지역으로 조회');
+        return output;
+      } else {
+        const result = await paging.getManyAndCount();
+        const [feeds, total] = result;
+        const output: fetchFeedOutput = { feeds, total };
+        return output;
+      }
     } else {
-      const result = await qb
+      const paging = qb
         .andWhere('feedTag.tagName IN (:tags)', {
           tags: feedTags,
         }) // andWhere로 조건 추가 태그들이 들어간 feedTags로 IN 조회
-        .orderBy('Feed.watchCount', 'DESC') // 조회수 기준으로 내림차순으로 정렬
-        .orderBy('Feed.createdAt', 'ASC') // 작성일 기준으로 오름차순 정렬
-        .take(count)
-        .skip((page - 1) * count)
-        .getManyAndCount();
-      console.log('지역 + 태그로 조회');
-      const [feeds, total] = result;
-      const output: fetchFeedOutput = { feeds, total, count, page };
+        .orderBy('Feed.watchCount', 'DESC'); // 조회수 기준으로 내림차순으로 정렬
+      // .orderBy('Feed.createdAt', 'ASC') // 작성일 기준으로 오름차순 정렬
 
-      return output;
+      if (page && count) {
+        const result = await paging
+          .take(count)
+          .skip((page - 1) * count)
+          .getManyAndCount();
+        console.log('지역 + 태그로 조회');
+        const [feeds, total] = result;
+        const output: fetchFeedOutput = { feeds, total, count, page };
+
+        return output;
+      } else {
+        const result = await paging.getManyAndCount();
+        const [feeds, total] = result;
+        const output: fetchFeedOutput = { feeds, total };
+        return output;
+      }
     }
   }
 
-  async findWithUser({ currentUser }) {
-    const result = await this.feedRepository
+  async findWithUser({ currentUser, page, count }) {
+    const qb = this.feedRepository
       .createQueryBuilder('Feed')
       .leftJoinAndSelect('Feed.user', 'user') // 유저정보 조인하고 'user'로 명명
       .where({ user: currentUser }) // 유저정보 필터링 조건 추가
       .leftJoinAndSelect('Feed.feedImg', 'feedImg') // 피드 이미지들 조인
       .leftJoinAndSelect('Feed.feedLike', 'feedLike') // 좋아요 테이블 조인
-      .orderBy('Feed.watchCount', 'DESC') // 조회수 기준으로 내림차순으로 정렬
-      .orderBy('Feed.createdAt', 'ASC') // 작성일 기준으로 오름차순 정렬
-      .getMany();
-    console.log(result);
-
-    return result;
+      .orderBy('Feed.watchCount', 'DESC'); // 조회수 기준으로 내림차순으로 정렬
+    if (page && count) {
+      const result = await qb
+        .take(count)
+        .skip((page - 1) * count)
+        .getManyAndCount();
+      console.log(result);
+      const [feeds, total] = result;
+      const output: fetchFeedOutput = { feeds, total, page, count };
+      return output;
+    } else {
+      const result = await qb.getManyAndCount();
+      const [feeds, total] = result;
+      const output: fetchFeedOutput = { feeds, total };
+      return output;
+    }
   }
 
   async findWithFeedId({ feedId }) {
@@ -87,7 +112,9 @@ export class FeedService {
       .createQueryBuilder('Feed')
       .where({ id: feedId }) // id로 조회
       .leftJoinAndSelect('Feed.feedImg', 'feedImg') // 피드 이미지들 조인
-      .leftJoinAndSelect('Feed.comment', 'feedComment') // 피드 댓글들 조인
+      .leftJoinAndSelect('Feed.comment', 'comment') // 피드 댓글들 조인
+      .leftJoinAndSelect('comment.pComment', 'pComment')
+      .leftJoinAndSelect('comment.user', 'user')
       .leftJoinAndSelect('Feed.feedLike', 'feedLike') // 좋아요 테이블 조인
       .leftJoinAndSelect('Feed.feedTag', 'feedTag') // 피드 태그들 조인
       .leftJoinAndSelect('Feed.region', 'region') // 지역 테이블 조인

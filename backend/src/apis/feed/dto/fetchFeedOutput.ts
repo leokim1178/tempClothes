@@ -7,11 +7,11 @@ export class fetchFeedOutput {
   feeds: Feed[];
 
   @Field(() => Int)
-  count: number;
-
-  @Field(() => Int)
   total: number;
 
-  @Field(() => Int)
-  page: number;
+  @Field(() => Int, { nullable: true })
+  count?: number;
+
+  @Field(() => Int, { nullable: true })
+  page?: number;
 }

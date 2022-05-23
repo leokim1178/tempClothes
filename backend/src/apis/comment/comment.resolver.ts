@@ -13,10 +13,13 @@ export class CommentResolver {
     private readonly commentService: CommentService, //
   ) {}
 
-  @Query(() => Comment)
-  fetchComment(@Args('feedId') commentId: string) {
-    return this.commentService.findOne({ commentId });
+  @Query(() => [Comment])
+  fetchComment(
+    @Args('feedId') feedId: string, //
+  ) {
+    return this.commentService.findAll({ feedId });
   }
+
 
   @UseGuards(GqlAuthAccessGuard) // 로그인한 유저 댓글 가능
   @Mutation(() => Comment)

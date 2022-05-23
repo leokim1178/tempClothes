@@ -113,8 +113,6 @@ export class FeedService {
       .where({ id: feedId }) // id로 조회
       .leftJoinAndSelect('Feed.feedImg', 'feedImg') // 피드 이미지들 조인
       .leftJoinAndSelect('Feed.comment', 'comment') // 피드 댓글들 조인
-      .leftJoinAndSelect('comment.pComment', 'pComment')
-      .leftJoinAndSelect('comment.user', 'user')
       .leftJoinAndSelect('Feed.feedLike', 'feedLike') // 좋아요 테이블 조인
       .leftJoinAndSelect('Feed.feedTag', 'feedTag') // 피드 태그들 조인
       .leftJoinAndSelect('Feed.region', 'region') // 지역 테이블 조인

@@ -18,18 +18,17 @@ export class CommentService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async findOne({ feedId }) {
+  async findOne({ commentId }) {
     const result = await this.commentRepository.findOne({
-      where: { feed: feedId },
-      relations: ['feed'],
+      where: { id: commentId },
+      relations: ['user', 'pComment'],
     });
     console.log(result);
 
     return result;
   }
 
-  async create({ email, createCommentInput }) {
-    console.log(email, '유저아이디');
+  async create({ currentUser, createCommentInput }) {
     console.log('댓글내용');
     const { pCommentId, feedId, commentDetail } = createCommentInput;
     let parentComment;
@@ -41,7 +40,7 @@ export class CommentService {
     console.log(parentComment, '부모댓글');
 
     const comUser = await this.userRepository.findOne({
-      where: { email: email },
+      where: { email: currentUser.email },
     });
 
     const feed = await this.feedRepository.findOne({

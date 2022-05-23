@@ -81,6 +81,6 @@ export class AuthResolver {
   restoreAccessToken(
     @CurrentUser() currentUser: ICurrentUser, //
   ) {
-    return this.authService.getAccessToken({ user: currentUser.email });
+    return this.authService.getAccessToken({ user: currentUser });
   }
 }

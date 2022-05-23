@@ -61,7 +61,6 @@ export class UserResolver {
     @Args('updateUserInput') updateUserInput: updateUserInput,
   ) {
     const currentEmail = currentUser.email;
-    console.log(currentEmail, '커랜트 유저이메일');
     return await this.userService.update({
       currentEmail,
       updateUserInput,

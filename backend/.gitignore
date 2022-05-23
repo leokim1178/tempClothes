@@ -13,6 +13,7 @@ schema.gql
 gcp-bigquery.json
 gcp-storage.json
 gcp-file-storage.json
+gcp-storage-master.json
 
 # Logs
 logs

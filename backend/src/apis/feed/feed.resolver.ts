@@ -39,10 +39,10 @@ export class FeedResolver {
     region: string,
     @Args({ name: 'feedTags', type: () => [String], nullable: true })
     feedTags: string[],
-    @Args('page', { nullable: true, defaultValue: 1 })
-    page: number,
-    @Args('count', { nullable: true, defaultValue: 10 })
-    count: number,
+    @Args('page', { nullable: true })
+    page?: number,
+    @Args('count', { nullable: true })
+    count?: number,
   ) {
     const redisInput = JSON.stringify({ region, feedTags, page, count });
     const redis = await this.cachManager.get(redisInput);
@@ -63,12 +63,23 @@ export class FeedResolver {
 
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => [Feed]) // 유저 정보로 피드 조회
-  async fetchMyFeeds(@CurrentUser() currentUser: ICurrentUser) {
-    const redis = await this.cachManager.get(currentUser.email);
+  async fetchMyFeeds(
+    @CurrentUser() currentUser: ICurrentUser,
+    @Args('page', { nullable: true })
+    page?: number,
+    @Args('count', { nullable: true })
+    count?: number,
+  ) {
+    const redisInput = JSON.stringify({ currentUser, page, count });
+    const redis = await this.cachManager.get(redisInput);
     if (redis) return redis;
     else {
-      const result = await this.feedService.findWithUser({ currentUser });
-      await this.cachManager.set(currentUser.email, result, { ttl: 15 });
+      const result = await this.feedService.findWithUser({
+        currentUser,
+        page,
+        count,
+      });
+      await this.cachManager.set(redisInput, result, { ttl: 15 });
       console.log('db에서 서치한 데이터');
       return result;
     }

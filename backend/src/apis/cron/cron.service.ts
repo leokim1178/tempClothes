@@ -4,19 +4,35 @@ import { Cron, Interval, SchedulerRegistry } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Repository } from 'typeorm';
+import { Feed } from '../feed/entities/feed.entity';
 import { FeedImg } from '../feedImg/entities/feedImg.entity';
+import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class CronService {
   constructor(
     private schedularRegistry: SchedulerRegistry,
+    @InjectRepository(Feed)
+    private readonly feedRepository: Repository<Feed>,
     @InjectRepository(FeedImg)
     private readonly feedImgRepository: Repository<FeedImg>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
   private readonly logger = new Logger(CronService.name);
 
-  // @Cron('0 0 0 * * *')
   @Cron('0 0 0 * * *')
+  async resetWatchCount() {
+    const feeds = await this.feedRepository.find();
+
+    const result = await Promise.all(
+      feeds.map((el) => {
+        return this.feedRepository.save({ ...el, watchCount: 0 });
+      }),
+    );
+  }
+
+  @Cron('0 0 0 * * 1')
   async cleanImgBucket() {
     const storage = new Storage({
       keyFilename: process.env.STORAGE_KEY_FILENAME,
@@ -26,15 +42,19 @@ export class CronService {
     const getFiles = await storage.getFiles();
 
     const storageURLs = await Promise.all(getFiles[0].map((el) => el.name));
-    const dbImgs = await this.feedImgRepository.find();
-    const dbImgURLs = dbImgs.map((el) => el.imgURL);
+    const dbFeeds = await this.feedImgRepository.find();
+    const dbImgURLs = dbFeeds.map((el) => el.imgURL);
+    const dbUsers = await this.userRepository.find();
+    const dbUserImgURLs = dbUsers.map((el) => el.userImgURL);
 
-    console.log(storageURLs);
-    console.log(dbImgURLs);
     await Promise.all(
       storageURLs.map((el) => {
         return new Promise((resolve, reject) => {
-          if (!dbImgURLs.includes(`${bucket}/${el}`)) storage.file(el).delete();
+          if (
+            !dbImgURLs.includes(`${bucket}/${el}`) &&
+            !dbUserImgURLs.includes(`${bucket}/${el}`)
+          )
+            storage.file(el).delete();
         });
       }),
     );

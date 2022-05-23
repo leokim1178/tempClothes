@@ -14,24 +14,23 @@ export class CommentResolver {
   ) {}
 
   @Query(() => Comment)
-  fetchComment(@Args('feedId') feedId: string) {
-    return this.commentService.findOne({ feedId });
+  fetchComment(@Args('feedId') commentId: string) {
+    return this.commentService.findOne({ commentId });
   }
 
   @UseGuards(GqlAuthAccessGuard) // 로그인한 유저 댓글 가능
   @Mutation(() => Comment)
   createComment(
-    @CurrentUser() currentUser: ICurrentUser, 
-    @Args('email') email: string, //
+    @CurrentUser() currentUser: ICurrentUser,
     @Args('createCommentInput') createCommentInput: createCommentInput,
   ) {
-    return this.commentService.create({ email, createCommentInput });
+    return this.commentService.create({ currentUser, createCommentInput });
   }
 
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Comment)
   updateComment(
-    @CurrentUser() currentUser: ICurrentUser, 
+    @CurrentUser() currentUser: ICurrentUser,
     @Args('email') email: string,
     @Args('commentId') commentId: string,
     @Args('updateCommentInput') updateCommentInput: updateCommentInput,
@@ -46,7 +45,7 @@ export class CommentResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
   deleteComment(
-    @CurrentUser() currentUser: ICurrentUser, 
+    @CurrentUser() currentUser: ICurrentUser,
     @Args('commentId') commentId: string, //
   ) {
     return this.commentService.delete({ commentId }); // feedId 추가해야함

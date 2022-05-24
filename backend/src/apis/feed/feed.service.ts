@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
 import { Comment } from '../comment/entities/comment.entity';
 import { FeedImg } from '../feedImg/entities/feedImg.entity';
+import { FeedImgService } from '../feedImg/feedImg.service';
 import { FeedLike } from '../feedLike/entities/feedLike.entity';
 import { FeedTag } from '../feedTag/entities/feedTag.entity';
 import { Region } from '../region/entities/region.entity';
@@ -26,6 +27,7 @@ export class FeedService {
     @InjectRepository(FeedLike)
     private readonly feedLikeRepository: Repository<FeedLike>,
     private readonly connection: Connection,
+    private readonly feedImgService: FeedImgService,
   ) {}
 
   async findWithTags({ region, feedTags, page, count }) {
@@ -178,34 +180,55 @@ export class FeedService {
       },
     });
     if (!lastFeed) throw new ConflictException('등록되지 않은 피드입니다 ');
+    console.log(updateFeedInput);
 
-    const { feedTag, regionId, ...feed } = updateFeedInput;
-    const tagResult = [];
+    const { feedTag, imgURLs, regionId, ...feed } = updateFeedInput;
 
-    for (let i = 0; i < feedTag.length; i++) {
-      const tagName = feedTag[i];
-      const prevTag = await this.feedTagRepository.findOne({
-        where: { tagName },
-      });
-      if (prevTag) {
-        tagResult.push(prevTag); // tag가 이미 존재하면 저장하지 않고 추가
-      } else {
-        const newTag = await this.feedTagRepository.save({
-          tagName,
-        });
-        tagResult.push(newTag); // 없으면 db에 저장 후 추가
-      }
-    }
     const region = await this.regionRepository.findOne({
       where: { id: regionId },
     });
-    const feedUpdateResult = await this.feedRepository.save({
-      ...lastFeed,
-      ...feed,
-      region,
-      feedTag: tagResult,
-    });
-    return feedUpdateResult;
+    if (feedTag) {
+      const tagResult = [];
+      for (let i = 0; i < feedTag.length; i++) {
+        const tagName = feedTag[i];
+        const prevTag = await this.feedTagRepository.findOne({
+          where: { tagName },
+        });
+        if (prevTag) {
+          tagResult.push(prevTag); // tag가 이미 존재하면 저장하지 않고 추가
+        } else {
+          const newTag = await this.feedTagRepository.save({
+            tagName,
+          });
+          tagResult.push(newTag); // 없으면 db에 저장 후 추가
+        }
+      }
+
+      const feedUpdateResult = await this.feedRepository.save({
+        ...lastFeed,
+        ...feed,
+        region,
+        feedTag: tagResult,
+      });
+
+      const imgResult = await this.feedImgService.updateImg({
+        feedId: feedUpdateResult.id,
+        imgURLs,
+      });
+
+      return feedUpdateResult;
+    } else {
+      const feedUpdateResult = await this.feedRepository.save({
+        ...lastFeed,
+        ...feed,
+        region,
+      });
+      const imgResult = await this.feedImgService.updateImg({
+        feedId,
+        imgURLs,
+      });
+      return feedUpdateResult;
+    }
   }
 
   async delete({ feedId }) {

@@ -21,10 +21,18 @@ export class CommentService {
   async findAll({ feedId }) {
     const result = await this.commentRepository.find({
       where: { feed: feedId },
-      relations: ['pComment','user']
+      relations: ['pComment', 'user'],
     });
-    console.log(result, 'ccc')
+    console.log(result, 'ccc');
 
+    return result;
+  }
+
+  async findSubComments({ pCommentId }) {
+    const result = await this.commentRepository.find({
+      where: { pComment: pCommentId },
+      relations: ['pComment', 'user'],
+    });
     return result;
   }
 

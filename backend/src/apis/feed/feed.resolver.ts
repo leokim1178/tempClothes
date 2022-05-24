@@ -23,14 +23,9 @@ export class FeedResolver {
     @Args('feedId')
     feedId: string,
   ) {
-    const redis = await this.cachManager.get(feedId); // 키 자체가 토큰 값이 되있기 때문.
-    if (redis) return redis;
-    else {
-      const result = await this.feedService.findWithFeedId({ feedId });
-      await this.cachManager.set(feedId, result, { ttl: 15 });
-      console.log('db에서 서치한 데이터');
-      return result;
-    }
+    const result = await this.feedService.findWithFeedId({ feedId });
+
+    return result;
   }
 
   @Query(() => fetchFeedOutput) // 태그들로 피드 조회
@@ -62,7 +57,7 @@ export class FeedResolver {
   }
 
   @UseGuards(GqlAuthAccessGuard)
-  @Query(() => [Feed]) // 유저 정보로 피드 조회
+  @Query(() => fetchFeedOutput) // 유저 정보로 피드 조회
   async fetchMyFeeds(
     @CurrentUser() currentUser: ICurrentUser,
     @Args('page', { nullable: true })

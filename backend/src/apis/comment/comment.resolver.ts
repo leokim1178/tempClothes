@@ -14,12 +14,16 @@ export class CommentResolver {
   ) {}
 
   @Query(() => [Comment])
-  fetchComment(
+  fetchComments(
     @Args('feedId') feedId: string, //
   ) {
     return this.commentService.findAll({ feedId });
   }
 
+  @Query(() => [Comment])
+  fetchSubComments(@Args('pCommentId') pCommentId: string) {
+    return this.commentService.findSubComments({ pCommentId });
+  }
 
   @UseGuards(GqlAuthAccessGuard) // 로그인한 유저 댓글 가능
   @Mutation(() => Comment)

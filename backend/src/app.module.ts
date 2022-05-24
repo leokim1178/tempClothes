@@ -61,7 +61,7 @@ import { CronModule } from './apis/cron/cron.module';
     CacheModule.register<RedisClientOptions>({
       store: redisStore,
       // url: 'redis://:dmCfbZ8b@10.140.0.4:6379', // prod
-      url: 'redis://:fQrnzb8N@10.140.0.3:6379', // dev
+      // url: 'redis://:fQrnzb8N@10.140.0.3:6379', // dev
       // url: 'redis://my-redis:6379', // local
       isGlobal: true,
     }),

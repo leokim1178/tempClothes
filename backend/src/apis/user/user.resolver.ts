@@ -53,21 +53,30 @@ export class UserResolver {
     });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlAuthAccessGuard) // 회원정보 수정
   @Mutation(() => User)
   async updateUser(
     @CurrentUser() currentUser: ICurrentUser,
-    @Args('password') password: string,
     @Args('updateUserInput') updateUserInput: updateUserInput,
   ) {
     const currentEmail = currentUser.email;
     return await this.userService.update({
       currentEmail,
-      updateUserInput,
-      password,
+      updateUserInput,     
     });
   }
 
+  @UseGuards(GqlAuthAccessGuard) // 비밀번호 변경
+  @Mutation(() => User)
+  async updatePassword(
+    @CurrentUser() currentUser: ICurrentUser,
+    @Args('originPassword') originPassword: string, //
+    @Args('updatePassword') updatePassword: string, //
+  ){
+    const currentEmail = currentUser.email
+    return await this.userService.updatePassword({ originPassword, updatePassword, currentEmail })
+  }
+     
   @UseGuards(GqlAuthAccessGuard) // 로그인한 유저
   @Mutation(() => Boolean) // 회원탈퇴 API
   deleteUser(

@@ -105,6 +105,7 @@ export class UserService {
     const nic = await this.userRepository.find(); // 유저 정보 파인드
     const updateUser = await this.userRepository.findOne({
       where: { email: currentEmail },
+      relations: ['region']
     });
     const isAuthNic = updateUserInput.nickname;
     

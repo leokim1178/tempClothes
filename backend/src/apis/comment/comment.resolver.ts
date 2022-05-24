@@ -16,6 +16,7 @@ export class CommentResolver {
   @Query(() => [Comment])
   fetchComments(
     @Args('feedId') feedId: string, //
+    @Args('page', { nullable: true }) page?: number, //
   ) {
     return this.commentService.findAll({ feedId });
   }

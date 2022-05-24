@@ -13,6 +13,7 @@ import * as bcrypt from 'bcrypt';
 import axios from 'axios';
 import { Cache } from 'cache-manager';
 import { getToday } from './utils/date';
+import { CurrentUser } from 'src/commons/auth/gql-user.param';
 
 @Injectable()
 export class UserService {
@@ -100,7 +101,7 @@ export class UserService {
     });
   }
 
-  async update({ currentEmail, updateUserInput, password }) {
+  async update({ currentEmail, updateUserInput }) {
     const nic = await this.userRepository.find(); // 유저 정보 파인드
     const updateUser = await this.userRepository.findOne({
       where: { email: currentEmail },
@@ -114,20 +115,38 @@ export class UserService {
       }
     }
 
-    const isAuth = await bcrypt.compare(password, updateUser.password);
-    if (!isAuth)
-      throw new UnprocessableEntityException('현재 비밀번호가 틀렸습니다.');
-    if (updateUserInput.password)
-      updateUserInput.password = await bcrypt.hash(
-        updateUserInput.password, // 변경 비밀번호 해싱
-        10,
-      );
+    // const isAuth = await bcrypt.compare(password, updateUser.password);
+    // if (!isAuth)
+    //   throw new UnprocessableEntityException('현재 비밀번호가 틀렸습니다.');
+    // if (updateUserInput.password)
+    //   updateUserInput.password = await bcrypt.hash(
+    //     updateUserInput.password, // 변경 비밀번호 해싱
+    //     10,
+    //   );
 
     const newUser: User = {
       ...updateUser,
       ...updateUserInput,
     };
     return await this.userRepository.save(newUser);
+  }
+
+  async updatePassword({ originPassword, updatePassword, currentEmail }) {
+    const user = await this.userRepository.findOne({ email: currentEmail })
+    console.log(originPassword, "aaa")
+     const isAuth = await bcrypt.compare(originPassword, user.password);
+     console.log(isAuth,'ccc')
+    if (!isAuth)
+      throw new UnprocessableEntityException('현재 비밀번호가 틀렸습니다.');
+
+    if (user.password)
+    user.password = await bcrypt.hash(
+      updatePassword, // 변경 비밀번호 해싱
+        10,
+      );
+      console.log(user.password, 'bbb')
+
+    return this.userRepository.save( user )
   }
 
   async delete({ currentUserEmail }) {

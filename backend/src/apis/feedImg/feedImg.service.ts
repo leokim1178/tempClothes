@@ -30,7 +30,7 @@ export class FeedImgService {
     //1. feedId가 유효한지 확인
 
     const feed = await this.feedImgRepository.findOne({
-      where: { id: feedId },
+      where: { feed: feedId },
     });
     if (!feed)
       throw new UnprocessableEntityException('등록되지 않은 feedId입니다');
@@ -68,12 +68,13 @@ export class FeedImgService {
         }),
       ),
     ];
+    console.log('hi this is fucked');
 
     // 4. 새로운 url들 저장
     await Promise.all(
       newURLs.map(async (el) => {
         return await this.feedImgRepository.save({
-          feed,
+          feed: feed,
           imgURL: el,
         });
       }),

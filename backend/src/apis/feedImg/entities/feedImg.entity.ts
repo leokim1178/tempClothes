@@ -25,6 +25,7 @@ export class FeedImg {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
     orphanedRowAction: 'delete',
+    createForeignKeyConstraints: false,
   })
   @Field(() => Feed)
   feed: Feed;

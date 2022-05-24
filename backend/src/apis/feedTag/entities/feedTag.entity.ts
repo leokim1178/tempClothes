@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { Feed } from 'src/apis/feed/entities/feed.entity';
 import {
   Column,
@@ -18,6 +18,10 @@ export class FeedTag {
   @Column()
   @Field(() => String)
   tagName: string;
+
+  @Column({ default: 1 })
+  @Field(() => Int)
+  count: number;
 
   @ManyToMany(() => Feed, (feeds) => feeds.feedTag)
   @Field(() => [Feed])

@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, getConnection } from 'typeorm';
 import { Feed } from '../feed/entities/feed.entity';
 import { User } from '../user/entities/user.entity';
+import { fetchCommentOutput } from './dto/fetchComment.output';
 import { Comment } from './entities/comment.entity';
 
 @Injectable()
@@ -18,16 +19,26 @@ export class CommentService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async findAll({ feedId }) {
-    const result = await this.commentRepository.find({
-      where: { feed: feedId },
-      relations: ['pComment', 'user'],
-    });
-    console.log(result, 'ccc');
+  async findAll({ feedId, page }) {
 
-    return result;
+    const qb = this.commentRepository   
+    .createQueryBuilder('Comment')
+    .leftJoinAndSelect('Comment.feed', 'feed')
+    .leftJoinAndSelect('Comment.pComment', 'pComment')
+    .leftJoinAndSelect('Comment.user', 'user')
+    .where('Comment.feed = :id', { id: feedId})
+
+    const paging = qb.orderBy('Comment.id', 'ASC')
+
+    const result = await paging
+    .take(10)
+    .skip((page - 1) * 10)
+    .getManyAndCount()
+  
+    const [ comments ] = result
+    const result1: fetchCommentOutput =  { comments, page } // 아웃풋을 만들어줘서 타입 지정을 했다. 더 공부해보자
+    return result1
   }
-
   async findSubComments({ pCommentId }) {
     const result = await this.commentRepository.find({
       where: { pComment: pCommentId },

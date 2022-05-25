@@ -65,6 +65,7 @@ export class UserService {
     const region = await this.regionRepository.findOne({
       where: { id: regionId },
     });
+ 
     const emailBody = // 이메일 내용
       `
           <html>

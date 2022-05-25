@@ -21,7 +21,6 @@ export class FileService {
 
     const waitedImgs = await Promise.all(imgs);
 
-    console.log('hi');
     const results = await Promise.all(
       waitedImgs.map((el) => {
         const uuid = uuidv4();

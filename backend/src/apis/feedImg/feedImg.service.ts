@@ -68,7 +68,6 @@ export class FeedImgService {
         }),
       ),
     ];
-    console.log('hi this is fucked');
 
     // 4. 새로운 url들 저장
     await Promise.all(

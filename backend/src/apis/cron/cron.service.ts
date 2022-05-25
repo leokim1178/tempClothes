@@ -31,6 +31,7 @@ export class CronService {
         return this.feedRepository.save({ ...el, watchCount: 0 });
       }),
     );
+    this.logger.debug('💥💥💥조회수 초기화 완료!💥💥💥');
   }
 
   @Cron('0 0 0 * * 1')
@@ -59,6 +60,6 @@ export class CronService {
         });
       }),
     );
-    this.logger.debug('이미지 스토리지 청소 완료!!');
+    this.logger.debug('💥💥💥이미지 스토리지 청소 완료!💥💥💥');
   }
 }

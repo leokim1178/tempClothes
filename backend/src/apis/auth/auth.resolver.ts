@@ -35,7 +35,7 @@ export class AuthResolver {
     // 1. 로그인(이메일과 비밀번호가 일치하는 유저 찾기)
     const user = await this.userService.fetch({ email });
     // 2. 일치하는 유저가 없으면 에러!
-    console.log(user, '유저정보');
+
     if (!user)
       throw new UnprocessableEntityException('존재하지 않는 유저입니다.');
     // 3. 일치하는 유저가 있지만, 암호가 틀린 경우 에러 던지기!!
@@ -54,16 +54,12 @@ export class AuthResolver {
   async logout(
     @Context() context: any, //
   ) {
-    console.log(context, 'context');
     const access = context.req.headers.authorization.split(' ')[1];
     const refresh = context.req.headers.cookie.split('=')[1]; // 시간 남으면 리펙토링
-    console.log(refresh, 'refresh토큰');
+
     try {
       const accessResult = jwt.verify(access, process.env.ACCESS_TOKEN_KEY);
       const refreshResult = jwt.verify(refresh, process.env.REFRESH_TOKEN_KEY);
-      console.log(accessResult, '==========');
-      console.log(refreshResult, '==========11'); // ['']
-      console.log(accessResult['exp']); // 객체의 값 뽑아오기.
       await this.cacheManager.set(`accessToken:${access}`, access, {
         ttl: accessResult['exp'] - accessResult['iat'],
       });

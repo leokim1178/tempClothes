@@ -1,6 +1,6 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Connection, Repository } from 'typeorm';
+import { Connection, getConnection, Repository } from 'typeorm';
 import { Comment } from '../comment/entities/comment.entity';
 import { FeedImg } from '../feedImg/entities/feedImg.entity';
 import { FeedImgService } from '../feedImg/feedImg.service';
@@ -147,7 +147,17 @@ export class FeedService {
       const prevTag = await this.feedTagRepository.findOne({
         where: { tagName },
       });
+      //      console.log(prevTag);
       if (prevTag) {
+        const update = this.feedTagRepository
+          .createQueryBuilder()
+          .update()
+          .set({
+            count: () => 'count+1',
+          })
+          .where('id=:id', { id: prevTag.id })
+          .execute();
+
         tagResult.push(prevTag); // tag가 이미 존재하면 저장하지 않고 추가
       } else {
         const newTag = await this.feedTagRepository.save({
@@ -234,7 +244,15 @@ export class FeedService {
   async delete({ feedId }) {
     const feed = await this.feedRepository.findOne({ id: feedId });
     if (!feed) throw new ConflictException('존재하지 않는 피드입니다');
-
+    const feedTags = feed.feedTag;
+    await Promise.all(
+      feedTags.map((el) => {
+        this.feedTagRepository.update(
+          { tagName: el.tagName },
+          { count: () => 'count-1' },
+        );
+      }),
+    );
     const result = await this.feedRepository.delete({ id: feedId });
     return result.affected ? true : false;
   }

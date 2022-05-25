@@ -1,11 +1,12 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
+import { Args, Mutation, Resolver, Query, Int } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth-guard';
 import { CurrentUser, ICurrentUser } from 'src/commons/auth/gql-user.param';
 import { CommentService } from './comment.service';
 import { createCommentInput } from './dto/createComment.input';
 import { Comment } from './entities/comment.entity';
 import { updateCommentInput } from './dto/updateComment.input';
+import { fetchCommentOutput } from './dto/fetchComment.output';
 
 @Resolver()
 export class CommentResolver {
@@ -13,16 +14,20 @@ export class CommentResolver {
     private readonly commentService: CommentService, //
   ) {}
 
-  @Query(() => [Comment])
+  @UseGuards(GqlAuthAccessGuard)
+  @Query(() => fetchCommentOutput)
   fetchComments(
     @Args('feedId') feedId: string, //
     @Args('page', { nullable: true }) page?: number, //
   ) {
-    return this.commentService.findAll({ feedId });
+    return this.commentService.findAll({ feedId, page });
   }
 
+  @UseGuards(GqlAuthAccessGuard)
   @Query(() => [Comment])
-  fetchSubComments(@Args('pCommentId') pCommentId: string) {
+  fetchSubComments
+  (@Args('pCommentId') pCommentId: string, //
+  ) {
     return this.commentService.findSubComments({ pCommentId });
   }
 

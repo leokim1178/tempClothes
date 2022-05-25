@@ -27,17 +27,29 @@ export class CommentService {
     .leftJoinAndSelect('Comment.pComment', 'pComment')
     .leftJoinAndSelect('Comment.user', 'user')
     .where('Comment.feed = :id', { id: feedId})
-
+    
     const paging = qb.orderBy('Comment.id', 'ASC')
-
+    if( page ) {
     const result = await paging
     .take(10)
     .skip((page - 1) * 10)
     .getManyAndCount()
-  
+      
+    console.log(paging,'aaa')
     const [ comments ] = result
     const result1: fetchCommentOutput =  { comments, page } // 아웃풋을 만들어줘서 타입 지정을 했다. 더 공부해보자
+
     return result1
+
+    } else {
+      const result2 = await paging
+      .getManyAndCount()
+
+      const [ comments ] = result2
+      const result3: fetchCommentOutput = { comments }
+  
+      return result3
+    }
   }
   async findSubComments({ pCommentId }) {
     const result = await this.commentRepository.find({

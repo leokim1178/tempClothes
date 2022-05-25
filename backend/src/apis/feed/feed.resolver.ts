@@ -1,4 +1,4 @@
-import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CreateFeedInput } from './dto/createFeedInput';
 import { UpdateFeedInput } from './dto/updateFeedInput';
 import { Feed } from './entities/feed.entity';
@@ -39,20 +39,32 @@ export class FeedResolver {
     @Args('count', { nullable: true })
     count?: number,
   ) {
-    const redisInput = JSON.stringify({ region, feedTags, page, count });
-    const redis = await this.cachManager.get(redisInput);
-
-    if (redis) return redis;
-    else {
+    try {
+      const redisInput = JSON.stringify({ region, feedTags, page, count });
+      const redis = await this.cachManager.get(redisInput);
+      if (redis) {
+        console.log('redis에서 서치한 데이터');
+        return redis;
+      } else {
+        const result = await this.feedService.findWithTags({
+          feedTags,
+          region,
+          count,
+          page,
+        });
+        await this.cachManager.set(redisInput, result, { ttl: 15 });
+        console.log('db에서 서치한 데이터');
+        return result;
+      }
+    } catch (error) {
       const result = await this.feedService.findWithTags({
         feedTags,
         region,
         count,
         page,
       });
-      await this.cachManager.set(redisInput, result, { ttl: 15 });
-      console.log('db에서 서치한 데이터');
       return result;
+    } finally {
     }
   }
 
@@ -65,18 +77,32 @@ export class FeedResolver {
     @Args('count', { nullable: true })
     count?: number,
   ) {
-    const redisInput = JSON.stringify({ currentUser, page, count });
-    const redis = await this.cachManager.get(redisInput);
-    if (redis) return redis;
-    else {
+    try {
+      const redisInput = JSON.stringify({ currentUser, page, count });
+      const redis = await this.cachManager.get(redisInput);
+      if (redis) {
+        console.log('redis에서 서치한 데이터');
+
+        return redis;
+      } else {
+        const result = await this.feedService.findWithUser({
+          currentUser,
+          page,
+          count,
+        });
+        await this.cachManager.set(redisInput, result, { ttl: 15 });
+        console.log('db에서 서치한 데이터');
+        return result;
+      }
+    } catch (error) {
+      console.log(error);
       const result = await this.feedService.findWithUser({
         currentUser,
         page,
         count,
       });
-      await this.cachManager.set(redisInput, result, { ttl: 15 });
-      console.log('db에서 서치한 데이터');
       return result;
+    } finally {
     }
   }
 

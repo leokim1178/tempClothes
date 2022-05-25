@@ -14,6 +14,8 @@ export class FeedTagService {
   async find({ count }) {
     const result = await this.feedTagRepository
       .createQueryBuilder('FeedTag')
+      .leftJoinAndSelect('FeedTag.feed', 'feed')
+      .leftJoinAndSelect('feed.feedImg', 'imgs')
       .orderBy('FeedTag.count', 'DESC')
       .take(count)
       .getMany();

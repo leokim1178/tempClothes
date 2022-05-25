@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { createUserInput } from '../user/dto/createUser.input';
+import { UserService } from '../user/user.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService, //
+    private readonly userService: UserService,
   ) {}
 
   setRefreshToken({ user, res }) {
@@ -32,26 +36,28 @@ export class AuthService {
 
   async socialLogin({ req, res }) {
     //1. 가입확인
-    console.log(req.user);
+    const hashedPW = //
+      await bcrypt.hash(req.user.password, 10).then((res) => res);
 
-    // const hashedPW = //
-    //     await bcrypt.hash(req.user.password, 10).then((res) => res);
+    let user = await this.userService.fetch({ email: req.user.email });
+    if (!user) {
+      const createUserInput: createUserInput = {
+        email: req.user.email,
+        gender: '미정',
+        phone: '01011111111',
+        nickname: req.user.nickname,
+        password: hashedPW,
+        userImgURL: req.user.userImgURL,
+        regionId: '서울',
+        style: '미정',
+      };
+      user = await this.userService.create({ createUserInput });
+      this.setRefreshToken({ user, res });
+      await res.redirect('http://localhost:3000/signup');
+    } else {
+      this.setRefreshToken({ user, res });
 
-    //2. 회원가입
-    // if (!user) {
-    // const newUser: createUserInput = {
-    //   userId: '소셜 로그인',
-    //   email: req.user.email,
-    //   password: req.user.password,
-    //   nickname: req.user.name,
-    // };
-    // // const result = await this.userService.create({ newUser });
-    // }
-
-    //3. 로그인
-    // //로그인 시키는 것 : access와 refresh 두개 던지기
-    // this.setRefreshToken({ user, res });
-
-    res.redirect('https://naver.com');
+      res.redirect('http://localhost:3000/tempClothes');
+    }
   }
 }

@@ -24,6 +24,7 @@ export class RegionResolver {
   ) {
     const region = await this.regionService.findOne({ regionId }); // 지역정보(위도,경도) 불러오기
     const appId = process.env.OPEN_WEATHER_APP_ID; // openWeather API appId
+    console.log(region);
 
     const result = await axios({
       url: `https://api.openweathermap.org/data/2.5/onecall?lat=${region.lat}&lon=${region.lon}&units=metric&exclude=daily,alerts&appid=${appId}`,

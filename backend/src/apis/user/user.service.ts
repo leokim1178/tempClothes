@@ -12,7 +12,7 @@ import { Region } from '../region/entities/region.entity';
 import * as bcrypt from 'bcrypt';
 import axios from 'axios';
 import { Cache } from 'cache-manager';
-import { getToday } from './utils/date';
+import { getToday } from '../../commons/libraries/utils';
 import { CurrentUser } from 'src/commons/auth/gql-user.param';
 
 @Injectable()

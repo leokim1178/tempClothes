@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Connection } from 'typeorm';
+import { resourceLimits } from 'worker_threads';
 import {
   PaymentButton,
   PAYMENT_BUTTON_STATUS_ENUM,
@@ -35,7 +36,7 @@ export class PaymentButtonService {
       // 1. 테이블에 거래기록 1줄 생성
       const buttonTransaction = await this.paymentButtonRepository.create({
         imp_uid: imp_uid,
-        amount: amount,
+        amount: amount / 100 ,
         user: currentUser.id, // 유저 아이디 저장
         status: PAYMENT_BUTTON_STATUS_ENUM.PAYMENT,
       });
@@ -53,7 +54,7 @@ export class PaymentButtonService {
       // 3. 유저의 돈 업데이트(재충전)
       const updateUser = this.userRepository.create({
         ...user,
-        button: user.button + amount,
+        button: user.button + (amount / 100),
       });
       await queryRunner.manager.save(updateUser); // 재충전 후 저장
 
@@ -113,19 +114,18 @@ export class PaymentButtonService {
       const updateUser = this.userRepository.create({
         // 환불 한 후 유저 남은 단추 업데이트
         ...user,
-        button: user.button - amount,
+        button: user.button - ( amount / 100 ),
       });
       console.log(updateUser, 'cancel 유저단추 업데이트');
       await queryRunner.manager.save(updateUser); // 재충전 후 저장
 
       const result = this.paymentButtonRepository.create({
         imp_uid,
-        amount: -amount,
+        amount: - ( amount / 100 ),
         user: { id: currentUser.id,},
         status: PAYMENT_BUTTON_STATUS_ENUM.CANCEL,
       });
 
-      console.log(result, 'www')
       await queryRunner.manager.save(result);
 
       await queryRunner.commitTransaction();
@@ -135,6 +135,24 @@ export class PaymentButtonService {
       await queryRunner.rollbackTransaction();
     } finally {
       await queryRunner.release();
+    }
+  }
+
+  // 채팅 결제 기능
+  async pay({ currentUser }){
+    const user = await this.userRepository.findOne({
+      where: { email: currentUser.email}
+    })
+    if( user.button >= 5){
+      const result = this.userRepository.create({ 
+        ...user,
+        button: (user.button - 5)
+      })
+
+      const save = await this.userRepository.save(result) // DB 저장
+      return result;
+    } else {
+      throw new UnprocessableEntityException('단추가 부족합니다!!')
     }
   }
 }

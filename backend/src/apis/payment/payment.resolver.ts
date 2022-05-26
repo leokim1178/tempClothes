@@ -3,6 +3,7 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth-guard';
 import { CurrentUser, ICurrentUser } from 'src/commons/auth/gql-user.param';
 import { IamportService } from '../iamport/iamport.service';
+import { User } from '../user/entities/user.entity';
 import { PaymentButton } from './entities/payment.entity';
 import { PaymentButtonService } from './payment.service';
 
@@ -60,5 +61,14 @@ export class PaymentButtonResolver {
       amount: canceledButton,
       currentUser,
     });
+  }
+
+  // 채팅 결제 기능
+  @UseGuards(GqlAuthAccessGuard)
+  @Mutation(() => User)
+  async payChat(
+    @CurrentUser() currentUser: ICurrentUser,
+  ){
+    return await this.paymentButtonService.pay({ currentUser })
   }
 }

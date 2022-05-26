@@ -18,7 +18,7 @@ export class Comment {
   @Field(() => String)
   id: string;
 
-  @Column()
+  @Column({ type: 'longtext' })
   @Field(() => String)
   commentDetail: string;
 

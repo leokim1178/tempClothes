@@ -69,6 +69,6 @@ import { FeedTagModule } from './apis/feedTag/feedTag.module';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService, ChatGateway], // 채팅 게이트웨이 넣기
+  providers: [AppService], // 채팅 게이트웨이 넣기
 })
 export class AppModule {}

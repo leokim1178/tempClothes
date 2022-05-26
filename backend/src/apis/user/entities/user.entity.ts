@@ -9,6 +9,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Region } from 'src/apis/region/entities/region.entity';
+import { Chat } from 'src/apis/chat/entities/chat.entity';
 
 @Entity()
 @ObjectType()
@@ -52,10 +53,16 @@ export class User {
   @Field(() => Region)
   region: Region;
 
+  @ManyToOne(() => Chat)
+  @Field(() => Chat)
+  chat: Chat;
+
   @CreateDateColumn()
+  @Field(() => Date)
   createdAt: Date;
 
   @UpdateDateColumn()
+  @Field(() => Date)
   updatedAt: Date;
 
   @DeleteDateColumn({ nullable: true })

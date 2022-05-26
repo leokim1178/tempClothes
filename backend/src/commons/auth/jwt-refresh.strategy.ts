@@ -11,7 +11,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
     private readonly cacheManager: Cache,
   ) {
     super({
-      jwtFromRequest: (req) => req.headers.cookie.replace('refreshToken=', ''),
+      jwtFromRequest: (req) => req.headers.cookie?.replace('refreshToken=', ''),
       secretOrKey: process.env.REFRESH_TOKEN_KEY,
       passReqToCallback: true,
     });

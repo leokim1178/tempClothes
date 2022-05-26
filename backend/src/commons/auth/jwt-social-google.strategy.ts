@@ -13,7 +13,7 @@ export class JwtGoogleStrategy extends PassportStrategy(Strategy, 'google') {
     super({
       clientID: googleClientID,
       clientSecret: googleClientSecret,
-      callbackURL: 'http://localhost:3000/login/google',
+      callbackURL: 'https://team01.leo3179.shop/login/google',
       scope: ['email', 'profile'],
     });
   }

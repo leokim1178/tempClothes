@@ -10,7 +10,7 @@ export class JwtKakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
     super({
       clientID: kakaoClientID,
       clientSecret: kakaoClientSecret,
-      callbackURL: 'http://localhost:3000/login/kakao',
+      callbackURL: 'https://team01.leo3179.shop/login/kakao',
       // scope: ['email', 'profile'],
     });
   }

@@ -14,7 +14,7 @@ export class FeedResolver {
   constructor(
     private readonly feedService: FeedService,
     @Inject(CACHE_MANAGER)
-    private readonly cachManager: Cache,
+    private readonly cacheManager: Cache,
   ) {}
 
   @UseGuards(GqlAuthAccessGuard)
@@ -40,7 +40,7 @@ export class FeedResolver {
     count?: number,
   ) {
     const redisInput = JSON.stringify({ region, feedTags, page, count });
-    const redis = await this.cachManager.get(redisInput);
+    const redis = await this.cacheManager.get(redisInput);
 
     if (redis) return redis;
     else {
@@ -50,7 +50,7 @@ export class FeedResolver {
         count,
         page,
       });
-      await this.cachManager.set(redisInput, result, { ttl: 15 });
+      await this.cacheManager.set(redisInput, result, { ttl: 15 });
       console.log('db에서 서치한 데이터');
       return result;
     }
@@ -66,7 +66,7 @@ export class FeedResolver {
     count?: number,
   ) {
     const redisInput = JSON.stringify({ currentUser, page, count });
-    const redis = await this.cachManager.get(redisInput);
+    const redis = await this.cacheManager.get(redisInput);
     if (redis) return redis;
     else {
       const result = await this.feedService.findWithUser({
@@ -74,7 +74,7 @@ export class FeedResolver {
         page,
         count,
       });
-      await this.cachManager.set(redisInput, result, { ttl: 15 });
+      await this.cacheManager.set(redisInput, result, { ttl: 15 });
       console.log('db에서 서치한 데이터');
       return result;
     }

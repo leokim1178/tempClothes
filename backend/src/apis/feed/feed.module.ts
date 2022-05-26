@@ -9,6 +9,7 @@ import { Region } from '../region/entities/region.entity';
 import { User } from '../user/entities/user.entity';
 import { Feed } from './entities/feed.entity';
 import { FeedSubscriber } from './entities/feed.subscriber';
+
 import { FeedResolver } from './feed.resolver';
 import { FeedService } from './feed.service';
 

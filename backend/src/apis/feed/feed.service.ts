@@ -145,7 +145,7 @@ export class FeedService {
 
       return result;
     } catch {
-      throw new InternalServerErrorException('sql 에러');
+      throw new NotFoundException('피드를 찾을 수 없습니다');
     }
   }
 
@@ -156,12 +156,12 @@ export class FeedService {
       const region = await this.regionRepository.findOne({
         id: regionId,
       });
-      if (!region) throw new ConflictException('등록되지 않은 지역명입니다');
+      if (!region) throw new NotFoundException('등록되지 않은 지역명입니다');
 
       const user = await this.userRepository.findOne({
         email: currentUser.email,
       });
-      if (!user) throw new ConflictException('등록되지 않은 유저입니다');
+      if (!user) throw new NotFoundException('등록되지 않은 유저입니다');
 
       const tagResult = [];
       for (let i = 0; i < feedTags.length; i++) {
@@ -215,7 +215,7 @@ export class FeedService {
           id: feedId,
         },
       });
-      if (!lastFeed) throw new NotFoundException();
+      if (!lastFeed) throw new NotFoundException('존재하지 않는 피드입니다');
 
       const { feedTag, imgURLs, regionId, ...feed } = updateFeedInput;
 
@@ -265,9 +265,7 @@ export class FeedService {
         return feedUpdateResult;
       }
     } catch (error) {
-      if (error.status == 404)
-        throw new NotFoundException('존재하지 않는 거시기입니다');
-      throw new InternalServerErrorException('sql 에러');
+      throw error;
     }
   }
 
@@ -287,9 +285,7 @@ export class FeedService {
       const result = await this.feedRepository.delete({ id: feedId });
       return result.affected ? true : false;
     } catch (error) {
-      if (error.status == 404)
-        throw new NotFoundException('존재하지 않는 피드입니다');
-      throw new InternalServerErrorException('sql 에러');
+      throw error;
     }
   }
 
@@ -378,8 +374,7 @@ export class FeedService {
       }
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      if (error.status == 404)
-        throw new NotFoundException('피드 혹은 유저가 존재하지 않습니다');
+      if (error.status == 404) throw new NotFoundException(error.message);
       throw new InternalServerErrorException('서버 에러');
     } finally {
       await queryRunner.release();

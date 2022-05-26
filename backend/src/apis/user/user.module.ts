@@ -4,9 +4,10 @@ import { User } from './entities/user.entity';
 import { UserResolver } from './user.resolver';
 import { UserService } from './user.service';
 import { Region } from '../region/entities/region.entity';
+import { Chat } from '../chat/entities/chat.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Region])],
+  imports: [TypeOrmModule.forFeature([User, Region, Chat])],
   providers: [UserResolver, UserService],
 })
 export class UserModule {}

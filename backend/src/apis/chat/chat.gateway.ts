@@ -7,27 +7,44 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { CurrentUser } from 'src/commons/auth/gql-user.param'; // 로그인 인증된
+import { Chat } from './entities/chat.entity';
+import { User } from '../user/entities/user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Injectable } from '@nestjs/common';
 
 @WebSocketGateway({
   namespace: 'chat', // cors문제 해결해줘야 함.
   cors: { origin: '*' },
-}) // 방 만들기(포트 설정 해주기)
+}) // 방 만들기(포트 설정 해주기)\
+
+@Injectable()
 export class ChatGateway {
+  constructor(
+    @InjectRepository(Chat)
+    private readonly chatRepository: Repository<Chat>,
+    @InjectRepository(User)
+    private readonly userRepositoey: Repository<User>,
+  ){}
+
   @WebSocketServer()
   server: Server;
 
   wsClients = [];
 
   @SubscribeMessage('message')
-  connectSomeone(@MessageBody() data: string, @ConnectedSocket() client) {
-    const [nickname, room] = data;
+  connectSomeone(
+    @MessageBody() data: string, //
+    @ConnectedSocket() client) {
+
+    const [nickname, room] = data; // 채팅방 입장!
     // console.log(`${nickname}님이 유저: ${room}방에 접속했습니다.`) // 채팅 기능 활성화 부분(수정해야 할 부분)
-    console.log('BBB');
     const receive = `${nickname}님이 입장했습니다.`;
     this.server.emit('receive' + room, receive);
+    console.log(this.server, 'server')
     this.wsClients.push(client);
   }
-
+  
   private broadcast(event, client, message: any) {
     for (let c of this.wsClients) {
       if (client.id == c.id) continue;
@@ -36,9 +53,20 @@ export class ChatGateway {
   }
 
   @SubscribeMessage('send')
-  sendMessage(@MessageBody() data: string, @ConnectedSocket() client) {
+  async sendMessage(
+    @MessageBody() data: string, //
+    @ConnectedSocket() client) {
     const [room, nickname, message] = data;
-    console.log('AAA');
+    const user = await this.userRepositoey.findOne({
+      where: { nickname: nickname}
+    })
+ 
+    const result = this.chatRepository.save({
+      user: user,
+      room: room,
+      message: data[2],
+    })
+  
     console.log(`${client.id} : ${data}`);
     this.broadcast(room, client, [nickname, message]);
   }

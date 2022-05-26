@@ -40,7 +40,7 @@ export class PaymentButtonService {
         user: currentUser.id, // 유저 아이디 저장
         status: PAYMENT_BUTTON_STATUS_ENUM.PAYMENT,
       });
-      console.log(buttonTransaction, "PPP")
+      console.log(buttonTransaction, "buttonTransaction")
 
       await queryRunner.manager.save(buttonTransaction); // 쿼리 러너를 통해서 저장!
 
@@ -50,7 +50,7 @@ export class PaymentButtonService {
         { id: currentUser.id }, // 조건
         { lock: { mode: 'pessimistic_write' } }, // 비관적락_쓰기(입력) 락 걸기
       );
-        console.log(user, 'OOO')
+
       // 3. 유저의 돈 업데이트(재충전)
       const updateUser = this.userRepository.create({
         ...user,
@@ -76,6 +76,7 @@ export class PaymentButtonService {
   async checkOverlap({ imp_uid }) {
     // 아임포트 imp_uid 중복 찾기
     const result = await this.paymentButtonRepository.findOne({ imp_uid });
+
     if (result) throw new ConflictException('이미 결제가 완료되었습니다.');
   }
 
@@ -84,6 +85,7 @@ export class PaymentButtonService {
       imp_uid,
       status: PAYMENT_BUTTON_STATUS_ENUM.CANCEL, // 어려운거 없이 이 status로 취소 됐는지 확인 가능
     });
+
     if (result) throw new ConflictException('이미 취소된 결제건입니다.');
   }
 
@@ -93,13 +95,14 @@ export class PaymentButtonService {
       user: { id: currentUser.id },
       status: PAYMENT_BUTTON_STATUS_ENUM.PAYMENT, // 어려운거 없이 이 status로 취소 됐는지 확인 가능
     });
-    console.log(result, "ccc")
+    
     if (!result)
       throw new UnprocessableEntityException('결제기록이 존재하지 않습니다.');
   }
 
   async cancel({ imp_uid, amount, currentUser }) {
     const queryRunner = await this.connection.createQueryRunner();
+
     await queryRunner.connect();
 
     await queryRunner.startTransaction('SERIALIZABLE');
@@ -150,6 +153,7 @@ export class PaymentButtonService {
       })
 
       const save = await this.userRepository.save(result) // DB 저장
+      
       return result;
     } else {
       throw new UnprocessableEntityException('단추가 부족합니다!!')

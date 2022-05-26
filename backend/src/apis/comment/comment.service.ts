@@ -34,8 +34,7 @@ export class CommentService {
     .take(10)
     .skip((page - 1) * 10)
     .getManyAndCount()
-      
-    console.log(paging,'aaa')
+  
     const [ comments ] = result
     const result1: fetchCommentOutput =  { comments, page } // 아웃풋을 만들어줘서 타입 지정을 했다. 더 공부해보자
 
@@ -60,7 +59,7 @@ export class CommentService {
   }
 
   async create({ currentUser, createCommentInput }) {
-    console.log('댓글내용');
+  
     const { pCommentId, feedId, commentDetail } = createCommentInput;
     let parentComment;
     if (pCommentId) {
@@ -68,7 +67,6 @@ export class CommentService {
         where: { id: pCommentId },
       });
     }
-    console.log(parentComment, '부모댓글');
 
     const comUser = await this.userRepository.findOne({
       where: { email: currentUser.email },
@@ -77,7 +75,6 @@ export class CommentService {
     const feed = await this.feedRepository.findOne({
       where: { id: feedId },
     });
-    console.log(comUser);
 
     return await this.commentRepository.save({
       user: comUser,
@@ -95,7 +92,6 @@ export class CommentService {
       where: { email: email },
     });
 
-    console.log(result);
     return await this.commentRepository.save({
       ...result,
       user: comUser,
@@ -111,9 +107,7 @@ export class CommentService {
     const result = await this.commentRepository.delete({
       id: commentId,
     });
-
-    console.log(result, '댓글삭제');
-    console.log(result2, '대댓글삭제');
+    
     return result.affected ? true : false;
   }
 }

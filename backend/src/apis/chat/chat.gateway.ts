@@ -61,7 +61,7 @@ export class ChatGateway {
       where: { nickname: nickname}
     })
  
-    const result = this.chatRepository.save({
+    const result = this.chatRepository.save({ // redis에 저장 해보기?!
       user: user,
       room: room,
       message: data[2],

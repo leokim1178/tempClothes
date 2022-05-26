@@ -37,7 +37,6 @@ export class IamportService {
         // 아임포트를 이용해 결제를 하고, 웹에서 확인 하는 과정
         throw new ConflictException('결제내역이 존재하지 않습니다.');
 
-
       if (result.data.response.amount !== amount)
         throw new UnprocessableEntityException('결제 금액이 다릅니다.');
 

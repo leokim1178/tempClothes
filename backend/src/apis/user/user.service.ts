@@ -135,9 +135,9 @@ export class UserService {
 
   async updatePassword({ originPassword, updatePassword, currentEmail }) {
     const user = await this.userRepository.findOne({ email: currentEmail })
-    console.log(originPassword, "aaa")
-     const isAuth = await bcrypt.compare(originPassword, user.password);
-     console.log(isAuth,'ccc')
+  
+    const isAuth = await bcrypt.compare(originPassword, user.password);
+
     if (!isAuth)
       throw new UnprocessableEntityException('현재 비밀번호가 틀렸습니다.');
 
@@ -146,7 +146,6 @@ export class UserService {
       updatePassword, // 변경 비밀번호 해싱
         10,
       );
-      console.log(user.password, 'bbb')
 
     return this.userRepository.save( user )
   }

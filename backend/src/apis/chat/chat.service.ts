@@ -15,12 +15,12 @@ export class ChatService {
 
     async load({ currentUser, host }) {
     
-        const myself = await this.chatRepository.find({
+        const myself = await this.chatRepository.find({ // 자기 자신의 정보
             where: { user: currentUser.id},
             order: { id: 'ASC'}
         })        
 
-        const result = await this.chatRepository.find({
+        const result = await this.chatRepository.find({ // 채팅하고자 하는 유저 
             where: { user: host},
             order: { id: 'ASC'}
 

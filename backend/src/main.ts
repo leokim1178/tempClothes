@@ -12,7 +12,7 @@ async function bootstrap() {
     credentials: true,
     origin: 'http://localhost:3000',
   });
-  app.useStaticAssets(join(__dirname, '..', 'static')); // main.ts 채팅 설정(NestApplication)
+  app.useStaticAssets(join(__dirname, '..', 'chat')); // main.ts 채팅 설정(NestApplication)
   app.use(graphqlUploadExpress());
   await app.listen(3000);
 }

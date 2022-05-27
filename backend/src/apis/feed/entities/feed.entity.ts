@@ -33,19 +33,19 @@ export class Feed {
   @Field(() => String)
   detail: string;
 
-  @Column({ nullable: true, default: 0 })
+  @Column({ default: 0 })
   @Field(() => Int, { nullable: true })
   likeCount: number;
 
-  @Column({ nullable: true, default: null })
+  @Column({ default: null })
   @Field(() => String, { nullable: true })
   top?: string;
 
-  @Column({ nullable: true, default: null })
+  @Column({ default: null })
   @Field(() => String, { nullable: true })
   bottom?: string;
 
-  @Column({ nullable: true, default: null })
+  @Column({ default: null })
   @Field(() => String, { nullable: true })
   outer?: string;
 

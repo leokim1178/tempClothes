@@ -15,7 +15,6 @@ import { ChatModule } from './apis/chat/chat.module';
 import { AppController } from './apis/app/app.controller';
 import { AppService } from './apis/app/app.service';
 import { FileModule } from './apis/file/file.module';
-import { ChatGateway } from './apis/chat/chat.gateway';
 import { FeedModule } from './apis/feed/feed.module';
 import { CronModule } from './apis/cron/cron.module';
 import { FeedTagModule } from './apis/feedTag/feedTag.module';

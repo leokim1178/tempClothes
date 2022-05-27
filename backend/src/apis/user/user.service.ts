@@ -32,6 +32,15 @@ export class UserService {
     });
   }
 
+  async load({ nickname }) { // 닉네임으로 유저 & 피드 조회
+    const result = await this.userRepository.findOne({
+      where: { nickname: nickname },
+      relations: ['region']
+    });
+
+    return result;
+  }
+
   async fetch({ email }) {
     // 유저 조회(피드와 유저 합치기)
     const result = await this.userRepository.findOne({

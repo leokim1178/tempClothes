@@ -55,7 +55,6 @@
 
 // export default Chat;
 
-import Script from "next/script";
 import { io } from "socket.io-client";
 import React, { useState, useEffect, useRef } from "react";
 
@@ -79,13 +78,13 @@ const Chat = () => {
       socket.on(room, (data) => {
         console.log("data:", data);
         // setOtherSendMessage([...myOtherSendMessage, data]);
-        messageDiv.current.append(${data[0]} : ${data[1]});
+        messageDiv.current.append(`${data[0]} : ${data[1]}`);
       });
       /* 누군가 입장 */
       socket.on("receive" + room, (receive) => {
         console.log("receive", receive);
         // setReceive([...Receive, receive]);
-        messageDiv.current.append(${receive});
+        messageDiv.current.append(`${receive}`);
       });
     });
     setNickName(nickName);
@@ -102,7 +101,7 @@ const Chat = () => {
     console.log("전송?");
     // setMySendMessage([...mySendMessage, message]);
     socket.emit("send", room, nickName, message);
-    messageDiv.current.append(나:${message});
+    messageDiv.current.append(`나:${message}`);
   }
 
   return (

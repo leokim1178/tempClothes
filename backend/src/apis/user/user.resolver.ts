@@ -28,6 +28,13 @@ export class UserResolver {
     return this.userService.fetch({ email: currentUser.email });
   }
 
+  @Query(() => User) // 마이페이지 조회
+  fetchNickname(
+    @Args('nickname') nickname: string, //
+  ) {
+    return this.userService.load({ nickname });
+  }
+
   @Mutation(() => String) // 이메일 중복 확인
   confirmOverlapEmail(
     @Args('email') email: string, //

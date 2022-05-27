@@ -21,7 +21,7 @@ export class createUserInput {
   nickname: string;
 
   @Field(() => String, {
-    defaultValue: 'https://ssl.pstatic.net/static/pwe/address/img_profile.png',
+    defaultValue: 'https://ssl.pstatic.net/static/pwe/address/img_profile.png', // 유저 프로필 이미지 기본값
   })
   userImgURL: string;
 

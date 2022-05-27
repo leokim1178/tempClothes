@@ -52,7 +52,7 @@ export class FeedResolver {
           count,
           page,
         });
-        await this.cacheManager.set(redisInput, result, { ttl: 15 });
+        await this.cacheManager.set(redisInput, result, { ttl: 10 });
         console.log('db에서 서치한 데이터');
         return result;
       }
@@ -91,7 +91,7 @@ export class FeedResolver {
           page,
           count,
         });
-        await this.cacheManager.set(redisInput, result, { ttl: 15 });
+        await this.cacheManager.set(redisInput, result, { ttl: 10 });
         console.log('db에서 서치한 데이터');
         return result;
       }
@@ -104,7 +104,6 @@ export class FeedResolver {
       });
 
       return result;
-    } finally {
     }
   }
 

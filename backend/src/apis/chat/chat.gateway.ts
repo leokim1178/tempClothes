@@ -15,7 +15,8 @@ import { Injectable } from '@nestjs/common';
 
 @WebSocketGateway({
   namespace: 'chat', // cors문제 해결해줘야 함.
-  cors: { origin: '*' },
+  cors: { origin: '*', credentials: true },
+  transports: ['websocket']
 }) // 방 만들기(포트 설정 해주기)\
 
 @Injectable()

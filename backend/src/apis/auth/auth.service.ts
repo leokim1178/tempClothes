@@ -43,21 +43,25 @@ export class AuthService {
     if (!user) {
       const createUserInput: createUserInput = {
         email: req.user.email,
-        gender: '미정',
-        phone: '01011111111',
+        gender: null,
+        phone: null,
         nickname: req.user.nickname,
         password: hashedPW,
         userImgURL: req.user.userImgURL,
-        regionId: '서울',
-        style: '미정',
+        regionId: null,
+        style: null,
       };
       user = await this.userService.create({ createUserInput });
       this.setRefreshToken({ user, res });
       await res.redirect('http://localhost:3000/signup');
     } else {
-      this.setRefreshToken({ user, res });
-
-      res.redirect('http://localhost:3000/tempClothes');
+      if (!user.gender || !user.phone || !user.region || !user.style) {
+        this.setRefreshToken({ user, res });
+        await res.redirect('http://localhost:3000/signup');
+      } else {
+        this.setRefreshToken({ user, res });
+        await res.redirect('http://localhost:3000/tempClothes');
+      }
     }
   }
 }

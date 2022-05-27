@@ -1,27 +1,16 @@
 <p align="center">
-<img src="https://capsule-render.vercel.app/api?&type=waving&color=timeAuto&height=180&section=header&text=Main Project%20Tesla&fontSize=50&animation=fadeIn&fontAlignY=45" />
+<img src="https://capsule-render.vercel.app/api?&type=waving&color=timeAuto&height=180&section=header&text=온도衣 BackEnd&fontSize=50&animation=fadeIn&fontAlignY=45" />
   </p>
 
-> Tesla를 주제로 간단히 만든 백엔드
-
-공부한 내용들을 바탕으로 api를 구성했습니다
-Tesla 홈페이지를 참고했습니다만,
-없는 기능이 들어가 있기도 합니다.
-<br>
-<br>
-api 중 Car api들의 경우 fetch를 제외한 나머지 CRU 기능들은 웹의 관리자를 대상으로 구현했으며
-이외의 api들은 웹을 방문할 실제 고객들이 대상입니다.
-<br>
+> 날씨에 맞는 OOTD를 보여주는 패션 커뮤니티, 온도衣
 
 **⚠️ 공지사항 ⚠️**
-
-elk stacks 가상머신 기능을 gcp가 최근에 삭제했습니다ㅠ
-elk 관련 기능은 추후 업데이트 예정입니다..!
 
 ## 배포 주소
 
 ```sh
-https://main-project.leo3179.shop/graphql
+dev: https://team01.leo3179.shop/graphql
+prod: https://t1dreamers.shop/graphql
 ```
 
 ## 기술 스택
@@ -59,6 +48,8 @@ https://main-project.leo3179.shop/graphql
 <img alt= "icon" wide="65" height="65" src ="https://techstack-generator.vercel.app/docker-icon.svg">
   &nbsp&nbsp
 <img alt= "icon" wide="60" height="60" src ="https://symbols.getvecta.com/stencil_89/37_nestjs-icon.a67daec196.svg">
+  &nbsp&nbsp
+<img alt= "icon" wide="60" height="60" src ="https://cdn4.iconfinder.com/data/icons/redis-2/1451/Untitled-2-512.png">
   </p>
 
 ## ERD 설계

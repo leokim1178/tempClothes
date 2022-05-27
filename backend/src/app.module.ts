@@ -46,14 +46,14 @@ import { FeedTagModule } from './apis/feedTag/feedTag.module';
     TypeOrmModule.forRoot({
       type: 'mysql',
       // // host: '10.118.112.4', // prod
-      host: '10.82.224.4', // dev
-      // host: 'my-database', // local
+      // host: '10.82.224.4', // dev
+      host: 'my-database', // local
       port: 3306,
       username: 'root',
       password: '1234',
       // database: 't1', //prod
-      database: 'team-01-database', // dev
-      // database: 'team01-database', //local
+      // database: 'team-01-database', // dev
+      database: 'team01-database', //local
       entities: [__dirname + '/apis/**/**/*.entity.*'],
       synchronize: true,
       logging: true,
@@ -63,8 +63,8 @@ import { FeedTagModule } from './apis/feedTag/feedTag.module';
     CacheModule.register<RedisClientOptions>({
       store: redisStore,
       // url: 'redis://:dmCfbZ8b@10.140.0.4:6379', // prod
-      url: 'redis://:fQrnzb8N@10.140.0.3:6379', // dev
-      // url: 'redis://my-redis:6379', // local
+      // url: 'redis://:fQrnzb8N@10.140.0.3:6379', // dev
+      url: 'redis://my-redis:6379', // local
       isGlobal: true,
     }),
   ],

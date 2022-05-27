@@ -97,7 +97,7 @@ export class FeedService {
     }
   }
 
-  async findWithUser({ currentUser, page, count }) {
+  async findMyFeeds({ currentUser, page, count }) {
     try {
       const qb = this.feedRepository
         .createQueryBuilder('Feed')
@@ -123,6 +123,34 @@ export class FeedService {
       }
     } catch (error) {
       throw new InternalServerErrorException('sql 에러');
+    }
+  }
+
+  async findUserFeeds({ userNickname, page, count }) {
+    const user = this.userRepository.findOne({
+      where: { nickname: userNickname },
+    });
+    const qb = this.feedRepository
+      .createQueryBuilder('Feed')
+      .leftJoinAndSelect('Feed.user', 'user') // 유저정보 조인하고 'user'로 명명
+      .where({ user }) // 유저정보 필터링 조건 추가
+      .leftJoinAndSelect('Feed.feedImg', 'feedImg') // 피드 이미지들 조인
+      .leftJoinAndSelect('Feed.feedLike', 'feedLike') // 좋아요 테이블 조인
+      .orderBy('Feed.watchCount', 'DESC'); // 조회수 기준으로 내림차순으로 정렬
+    if (page && count) {
+      const result = await qb
+        .take(count)
+        .skip((page - 1) * count)
+        .getManyAndCount();
+      console.log(result);
+      const [feeds, total] = result;
+      const output: fetchFeedOutput = { feeds, total, page, count };
+      return output;
+    } else {
+      const result = await qb.getManyAndCount();
+      const [feeds, total] = result;
+      const output: fetchFeedOutput = { feeds, total };
+      return output;
     }
   }
 

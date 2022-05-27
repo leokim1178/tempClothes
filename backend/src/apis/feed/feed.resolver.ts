@@ -1,4 +1,4 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CreateFeedInput } from './dto/createFeedInput';
 import { UpdateFeedInput } from './dto/updateFeedInput';
 import { Feed } from './entities/feed.entity';
@@ -73,9 +73,9 @@ export class FeedResolver {
   @Query(() => fetchFeedOutput) // 유저 정보로 피드 조회
   async fetchMyFeeds(
     @CurrentUser() currentUser: ICurrentUser,
-    @Args('page', { nullable: true })
+    @Args({ name: 'page', nullable: true, type: () => Int })
     page?: number,
-    @Args('count', { nullable: true })
+    @Args({ name: 'count', nullable: true, type: () => Int })
     count?: number,
   ) {
     try {
@@ -86,7 +86,7 @@ export class FeedResolver {
 
         return redis;
       } else {
-        const result = await this.feedService.findWithUser({
+        const result = await this.feedService.findMyFeeds({
           currentUser,
           page,
           count,
@@ -97,8 +97,46 @@ export class FeedResolver {
       }
     } catch (error) {
       console.log(error);
-      const result = await this.feedService.findWithUser({
+      const result = await this.feedService.findMyFeeds({
         currentUser,
+        page,
+        count,
+      });
+
+      return result;
+    }
+  }
+
+  @Query(() => fetchFeedOutput)
+  async fetchUserFeeds(
+    @Args('userNickname')
+    userNickname: string,
+    @Args({ name: 'page', nullable: true, type: () => Int })
+    page?: number,
+    @Args({ name: 'count', nullable: true, type: () => Int })
+    count?: number,
+  ) {
+    try {
+      const redisInput = JSON.stringify({ userNickname, page, count });
+      const redis = await this.cacheManager.get(redisInput);
+      if (redis) {
+        console.log('redis에서 서치한 데이터');
+
+        return redis;
+      } else {
+        const result = await this.feedService.findUserFeeds({
+          userNickname,
+          page,
+          count,
+        });
+        await this.cacheManager.set(redisInput, result, { ttl: 10 });
+        console.log('db에서 서치한 데이터');
+        return result;
+      }
+    } catch (error) {
+      console.log(error);
+      const result = await this.feedService.findUserFeeds({
+        userNickname,
         page,
         count,
       });

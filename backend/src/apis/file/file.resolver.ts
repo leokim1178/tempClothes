@@ -38,9 +38,10 @@ export class FileResolver {
       },
     });
 
-    await this.userRepository.save({
+    const updateResult = await this.userRepository.save({
       ...user,
       userImgURL: String(uploadResult),
     });
+    return uploadResult;
   }
 }

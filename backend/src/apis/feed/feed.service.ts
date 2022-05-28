@@ -37,12 +37,7 @@ export class FeedService {
     private readonly feedImgService: FeedImgService,
   ) {}
 
-  async findWithTags({ region, feedTags, page, count }) {
-    if ((page && !count) || (!page && count))
-      throw new HttpException(
-        { message: 'page값과 count값을 모두 입력해주세요' },
-        HttpStatus.BAD_REQUEST,
-      );
+  async findWithTags({ region, feedTags, page }) {
     try {
       const qb = this.feedRepository
         .createQueryBuilder('Feed')
@@ -53,13 +48,13 @@ export class FeedService {
         .leftJoinAndSelect('Feed.feedImg', 'feedImg'); //피드 이미지들 조인
       if (!feedTags) {
         const paging = qb.orderBy('Feed.watchCount', 'DESC'); // 조회수 기준으로 내림차순으로 정렬
-        if (page && count) {
+        if (page) {
           const result = await paging
-            .take(count)
-            .skip((page - 1) * count)
+            .take(10)
+            .skip((page - 1) * 10)
             .getManyAndCount();
           const [feeds, total] = result;
-          const output: fetchFeedOutput = { feeds, total, count, page };
+          const output: fetchFeedOutput = { feeds, total, count: 10, page };
           console.log('지역으로 조회');
           return output;
         } else {
@@ -75,14 +70,14 @@ export class FeedService {
           }) // andWhere로 조건 추가 태그들이 들어간 feedTags로 IN 조회
           .orderBy('Feed.watchCount', 'DESC'); // 조회수 기준으로 내림차순으로 정렬
 
-        if (page && count) {
+        if (page) {
           const result = await paging
-            .take(count)
-            .skip((page - 1) * count)
+            .take(10)
+            .skip((page - 1) * 10)
             .getManyAndCount();
           console.log('지역 + 태그로 조회');
           const [feeds, total] = result;
-          const output: fetchFeedOutput = { feeds, total, count, page };
+          const output: fetchFeedOutput = { feeds, total, count: 10, page };
 
           return output;
         } else {
@@ -97,23 +92,22 @@ export class FeedService {
     }
   }
 
-  async findMyFeeds({ currentUser, page, count }) {
+  async findMyFeeds({ currentUser, page }) {
     try {
       const qb = this.feedRepository
         .createQueryBuilder('Feed')
         .leftJoinAndSelect('Feed.user', 'user') // 유저정보 조인하고 'user'로 명명
         .where({ user: currentUser }) // 유저정보 필터링 조건 추가
         .leftJoinAndSelect('Feed.feedImg', 'feedImg') // 피드 이미지들 조인
-        .leftJoinAndSelect('Feed.feedLike', 'feedLike') // 좋아요 테이블 조인
         .orderBy('Feed.watchCount', 'DESC'); // 조회수 기준으로 내림차순으로 정렬
-      if (page && count) {
+      if (page) {
         const result = await qb
-          .take(count)
-          .skip((page - 1) * count)
+          .take(10)
+          .skip((page - 1) * 10)
           .getManyAndCount();
         console.log(result);
         const [feeds, total] = result;
-        const output: fetchFeedOutput = { feeds, total, page, count };
+        const output: fetchFeedOutput = { feeds, total, page, count: 10 };
         return output;
       } else {
         const result = await qb.getManyAndCount();
@@ -126,25 +120,23 @@ export class FeedService {
     }
   }
 
-  async findUserFeeds({ userNickname, page, count }) {
-    const user = this.userRepository.findOne({
+  async findUserFeeds({ userNickname, page }) {
+    const user = await this.userRepository.findOne({
       where: { nickname: userNickname },
     });
     const qb = this.feedRepository
       .createQueryBuilder('Feed')
       .leftJoinAndSelect('Feed.user', 'user') // 유저정보 조인하고 'user'로 명명
-      .where({ user }) // 유저정보 필터링 조건 추가
+      .where({ user: user.id }) // 유저정보 필터링 조건 추가
       .leftJoinAndSelect('Feed.feedImg', 'feedImg') // 피드 이미지들 조인
-      .leftJoinAndSelect('Feed.feedLike', 'feedLike') // 좋아요 테이블 조인
       .orderBy('Feed.watchCount', 'DESC'); // 조회수 기준으로 내림차순으로 정렬
-    if (page && count) {
+    if (page) {
       const result = await qb
-        .take(count)
-        .skip((page - 1) * count)
+        .take(10)
+        .skip((page - 1) * 10)
         .getManyAndCount();
-      console.log(result);
       const [feeds, total] = result;
-      const output: fetchFeedOutput = { feeds, total, page, count };
+      const output: fetchFeedOutput = { feeds, total, page, count: 10 };
       return output;
     } else {
       const result = await qb.getManyAndCount();
@@ -178,73 +170,79 @@ export class FeedService {
   }
 
   async create({ currentUser, createFeedInput }) {
+    const { feedTags, regionId, imgURLs, ...feed } = createFeedInput;
+
+    const region = await this.regionRepository.findOne({
+      id: regionId,
+    });
+    if (!region) throw new NotFoundException('등록되지 않은 지역명입니다');
+
+    const user = await this.userRepository.findOne({
+      email: currentUser.email,
+    });
+    if (!user) throw new NotFoundException('등록되지 않은 유저입니다');
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction('SERIALIZABLE');
     try {
-      const { feedTags, regionId, imgURLs, ...feed } = createFeedInput;
-
-      const region = await this.regionRepository.findOne({
-        id: regionId,
-      });
-      if (!region) throw new NotFoundException('등록되지 않은 지역명입니다');
-
-      const user = await this.userRepository.findOne({
-        email: currentUser.email,
-      });
-      if (!user) throw new NotFoundException('등록되지 않은 유저입니다');
-
       const tagResult = [];
       for (let i = 0; i < feedTags.length; i++) {
         const tagName = feedTags[i];
-        const prevTag = await this.feedTagRepository.findOne({
+        const prevTag = await queryRunner.manager.findOne(FeedTag, {
           where: { tagName },
         });
-        //      console.log(prevTag);
         if (prevTag) {
-          await this.feedTagRepository
-            .createQueryBuilder()
-            .update()
-            .set({
-              count: () => 'count+1',
-            })
-            .where('id=:id', { id: prevTag.id })
-            .execute();
+          const updateTag = await queryRunner.manager.save(FeedTag, {
+            ...prevTag,
+            count: prevTag.count + 1,
+          });
 
-          tagResult.push(prevTag); // tag가 이미 존재하면 저장하지 않고 추가
+          tagResult.push(updateTag); // tag가 이미 존재하면 저장하지 않고 추가
         } else {
-          const newTag = await this.feedTagRepository.save({
+          const newTag = this.feedTagRepository.create({
             tagName,
           });
+          await queryRunner.manager.save(newTag);
           tagResult.push(newTag); // 없으면 db에 저장 후 추가
         }
       }
 
-      const feedResult = await this.feedRepository.save({
+      const feedResult = await queryRunner.manager.save(Feed, {
         ...feed,
         feedTag: tagResult,
         region,
         user,
       });
 
-      await Promise.all(
+      const images = await Promise.all(
         imgURLs.map((el) => {
-          return this.feedImgRepository.save({ imgURL: el, feed: feedResult });
+          const saveFeedImg = this.feedImgRepository.create({
+            imgURL: el,
+            feed: feedResult,
+          });
+          return queryRunner.manager.save(saveFeedImg);
         }),
       );
 
+      await queryRunner.commitTransaction();
       return feedResult;
     } catch (error) {
+      await queryRunner.rollbackTransaction();
+
       throw new InternalServerErrorException('sql 에러');
+    } finally {
+      await queryRunner.release();
     }
   }
 
   async update({ feedId, updateFeedInput }) {
+    const lastFeed = await this.feedRepository.findOne({
+      where: {
+        id: feedId,
+      },
+    });
+    if (!lastFeed) throw new NotFoundException('존재하지 않는 피드입니다');
     try {
-      const lastFeed = await this.feedRepository.findOne({
-        where: {
-          id: feedId,
-        },
-      });
-      if (!lastFeed) throw new NotFoundException('존재하지 않는 피드입니다');
-
       const { feedTag, imgURLs, regionId, ...feed } = updateFeedInput;
 
       const region = await this.regionRepository.findOne({
@@ -318,7 +316,7 @@ export class FeedService {
   }
 
   async like({ currentUser, feedId }) {
-    const queryRunner = await this.connection.createQueryRunner();
+    const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction('SERIALIZABLE');
     try {
@@ -329,7 +327,6 @@ export class FeedService {
       const feedLike = await queryRunner.manager.findOne(
         FeedLike, //
         { feed: feedId },
-        { lock: { mode: 'pessimistic_write' } },
       );
       // 1. 유저정보와 피드 정보 조회
       //유저 정보 조회(일반 findOne으로 해도 무관)
@@ -338,11 +335,7 @@ export class FeedService {
         email: currentUser.email,
       }); // 유저 정보 조회
       //피드 정보 조회
-      const feed = await queryRunner.manager.findOne(
-        Feed,
-        { id: feedId },
-        { lock: { mode: 'pessimistic_write' } },
-      );
+      const feed = await queryRunner.manager.findOne(Feed, { id: feedId });
 
       if (!feed || !user) throw new NotFoundException();
       //유저 정보가 없거나 피드 정보가 없을 경우 에러 쓰로잉

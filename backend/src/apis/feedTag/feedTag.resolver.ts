@@ -1,4 +1,4 @@
-import { Args, Query, Resolver } from '@nestjs/graphql';
+import { Args, Int, Query, Resolver } from '@nestjs/graphql';
 import { FeedTag } from './entities/feedTag.entity';
 import { FeedTagService } from './feedTag.service';
 
@@ -8,7 +8,7 @@ export class FeedTagResolver {
 
   @Query(() => [FeedTag])
   fetchFeedTags(
-    @Args('count')
+    @Args({ name: 'count', type: () => Int })
     count: number,
   ) {
     return this.feedTagService.find({ count });

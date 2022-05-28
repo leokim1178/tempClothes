@@ -20,7 +20,7 @@ export class createUserInput {
   @Field(() => String)
   nickname: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   userImgURL?: string;
 
   @Field(() => String) // 나중에 weather api 쓸때, 다시 검토(미리 아이디를 설정 or 다른 방법)

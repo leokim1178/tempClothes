@@ -53,7 +53,7 @@ export class Feed {
   @Field(() => String, { nullable: true })
   etc?: string;
 
-  @JoinTable({})
+  @JoinTable()
   @ManyToMany(() => FeedTag, (feedTags) => feedTags.feed, {
     eager: true,
     cascade: true,

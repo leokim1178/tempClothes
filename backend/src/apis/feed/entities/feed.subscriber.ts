@@ -23,9 +23,8 @@
 //     // console.log('🚀🚀🚀🚀🚀hi this is subscriber');
 //     return Feed;
 //   }
-
-//   async afterLoad(entity: Feed, event?: LoadEvent<Feed>) {
-//     console.log(event.manager);
+//   afterInsert(event: InsertEvent<Feed>): void | Promise<any> {
 //     console.log('🚀🚀🚀🚀🚀hi this is subscriber');
 //   }
+
 // }

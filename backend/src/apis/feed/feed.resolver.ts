@@ -34,13 +34,11 @@ export class FeedResolver {
     region: string,
     @Args({ name: 'feedTags', type: () => [String], nullable: true })
     feedTags: string[],
-    @Args('page', { nullable: true })
+    @Args({ name: 'page', nullable: true, type: () => Int })
     page?: number,
-    @Args('count', { nullable: true })
-    count?: number,
   ) {
     try {
-      const redisInput = JSON.stringify({ region, feedTags, page, count });
+      const redisInput = JSON.stringify({ region, feedTags, page });
       const redis = await this.cacheManager.get(redisInput);
       if (redis) {
         console.log('redis에서 서치한 데이터');
@@ -49,7 +47,7 @@ export class FeedResolver {
         const result = await this.feedService.findWithTags({
           feedTags,
           region,
-          count,
+
           page,
         });
         await this.cacheManager.set(redisInput, result, { ttl: 10 });
@@ -60,7 +58,6 @@ export class FeedResolver {
       const result = await this.feedService.findWithTags({
         feedTags,
         region,
-        count,
         page,
       });
 
@@ -75,11 +72,9 @@ export class FeedResolver {
     @CurrentUser() currentUser: ICurrentUser,
     @Args({ name: 'page', nullable: true, type: () => Int })
     page?: number,
-    @Args({ name: 'count', nullable: true, type: () => Int })
-    count?: number,
   ) {
     try {
-      const redisInput = JSON.stringify({ currentUser, page, count });
+      const redisInput = JSON.stringify({ currentUser, page });
       const redis = await this.cacheManager.get(redisInput);
       if (redis) {
         console.log('redis에서 서치한 데이터');
@@ -89,7 +84,6 @@ export class FeedResolver {
         const result = await this.feedService.findMyFeeds({
           currentUser,
           page,
-          count,
         });
         await this.cacheManager.set(redisInput, result, { ttl: 10 });
         console.log('db에서 서치한 데이터');
@@ -100,7 +94,6 @@ export class FeedResolver {
       const result = await this.feedService.findMyFeeds({
         currentUser,
         page,
-        count,
       });
 
       return result;
@@ -113,11 +106,9 @@ export class FeedResolver {
     userNickname: string,
     @Args({ name: 'page', nullable: true, type: () => Int })
     page?: number,
-    @Args({ name: 'count', nullable: true, type: () => Int })
-    count?: number,
   ) {
     try {
-      const redisInput = JSON.stringify({ userNickname, page, count });
+      const redisInput = JSON.stringify({ userNickname, page });
       const redis = await this.cacheManager.get(redisInput);
       if (redis) {
         console.log('redis에서 서치한 데이터');
@@ -127,9 +118,8 @@ export class FeedResolver {
         const result = await this.feedService.findUserFeeds({
           userNickname,
           page,
-          count,
         });
-        await this.cacheManager.set(redisInput, result, { ttl: 10 });
+        await this.cacheManager.set(redisInput, result, { ttl: 3 });
         console.log('db에서 서치한 데이터');
         return result;
       }
@@ -138,7 +128,6 @@ export class FeedResolver {
       const result = await this.feedService.findUserFeeds({
         userNickname,
         page,
-        count,
       });
 
       return result;

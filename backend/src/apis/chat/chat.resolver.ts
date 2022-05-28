@@ -34,4 +34,11 @@ export class ChatResolver {
         return this.chatService.load({ currentUser, host })
     }
     
-}
+    @UseGuards(GqlAuthAccessGuard)
+    @Mutation(() => Chat)
+        createRoom(
+            @CurrentUser() currentUser: ICurrentUser,
+        ){
+            return this.chatService.createRoom({ currentUser })
+        }
+    }

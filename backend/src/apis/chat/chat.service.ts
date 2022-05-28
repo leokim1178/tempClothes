@@ -42,4 +42,22 @@ export class ChatService {
             
         })
     }
+
+    async createRoom({ currentUser }) {
+        const user = await this.chatRepository.findOne({
+            where: { user : currentUser.id},
+            relations: ['user']
+        })
+        const { id, ...userInfo } = user;
+        console.log(user,'유저아이디')
+
+        let roomNum = ""
+        roomNum = roomNum + "1"
+       
+        return await this.chatRepository.save({
+            userId: id,
+            ...userInfo,
+            room: roomNum
+        })
+    }
 }

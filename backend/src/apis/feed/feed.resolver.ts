@@ -23,7 +23,7 @@ export class FeedResolver {
     @Args('feedId')
     feedId: string,
   ) {
-    const result = await this.feedService.findWithFeedId({ feedId });
+    const result: Feed = await this.feedService.findWithFeedId({ feedId });
 
     return result;
   }
@@ -44,7 +44,7 @@ export class FeedResolver {
         console.log('redis에서 서치한 데이터');
         return redis;
       } else {
-        const result = await this.feedService.findWithTags({
+        const result: fetchFeedOutput = await this.feedService.findWithTags({
           feedTags,
           region,
 
@@ -55,14 +55,13 @@ export class FeedResolver {
         return result;
       }
     } catch (error) {
-      const result = await this.feedService.findWithTags({
+      const result: fetchFeedOutput = await this.feedService.findWithTags({
         feedTags,
         region,
         page,
       });
 
       return result;
-    } finally {
     }
   }
 
@@ -81,7 +80,7 @@ export class FeedResolver {
 
         return redis;
       } else {
-        const result = await this.feedService.findMyFeeds({
+        const result: fetchFeedOutput = await this.feedService.findMyFeeds({
           currentUser,
           page,
         });
@@ -91,7 +90,7 @@ export class FeedResolver {
       }
     } catch (error) {
       console.log(error);
-      const result = await this.feedService.findMyFeeds({
+      const result: fetchFeedOutput = await this.feedService.findMyFeeds({
         currentUser,
         page,
       });
@@ -109,13 +108,13 @@ export class FeedResolver {
   ) {
     try {
       const redisInput = JSON.stringify({ userNickname, page });
-      const redis = await this.cacheManager.get(redisInput);
+      const redis: fetchFeedOutput = await this.cacheManager.get(redisInput);
       if (redis) {
         console.log('redis에서 서치한 데이터');
 
         return redis;
       } else {
-        const result = await this.feedService.findUserFeeds({
+        const result: fetchFeedOutput = await this.feedService.findUserFeeds({
           userNickname,
           page,
         });
@@ -125,7 +124,7 @@ export class FeedResolver {
       }
     } catch (error) {
       console.log(error);
-      const result = await this.feedService.findUserFeeds({
+      const result: fetchFeedOutput = await this.feedService.findUserFeeds({
         userNickname,
         page,
       });

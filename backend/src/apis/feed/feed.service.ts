@@ -5,6 +5,7 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
@@ -124,6 +125,9 @@ export class FeedService {
     const user = await this.userRepository.findOne({
       where: { nickname: userNickname },
     });
+    if (!user)
+      throw new UnprocessableEntityException('해당 회원이 존재하지 않습니다');
+
     const qb = this.feedRepository
       .createQueryBuilder('Feed')
       .leftJoinAndSelect('Feed.user', 'user') // 유저정보 조인하고 'user'로 명명
@@ -296,9 +300,10 @@ export class FeedService {
   }
 
   async delete({ feedId }) {
+    const feed = await this.feedRepository.findOne({ id: feedId });
+    if (!feed) throw new NotFoundException('존재하지 않는 피드입니다');
+
     try {
-      const feed = await this.feedRepository.findOne({ id: feedId });
-      if (!feed) throw new NotFoundException('존재하지 않는 피드입니다');
       const feedTags = feed.feedTag;
       await Promise.all(
         feedTags.map((el) => {
@@ -395,7 +400,8 @@ export class FeedService {
       }
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      if (error.status == 404) throw new NotFoundException(error.message);
+      if (error.status == 404)
+        throw new NotFoundException('등록되지 않은 정보입니다');
       throw new InternalServerErrorException('서버 에러');
     } finally {
       await queryRunner.release();

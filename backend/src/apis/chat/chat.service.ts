@@ -63,7 +63,7 @@ export class ChatService {
       where: {
         chatRoom: room,
       },
-      relations: ['user'],
+      relations: ['user','chatRoom'],
     });
     return result;
   }

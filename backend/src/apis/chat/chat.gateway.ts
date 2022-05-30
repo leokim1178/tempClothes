@@ -10,19 +10,23 @@ import { User } from '../user/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
+import { ChatMsg } from './entities/chatMsg.entity';
+import { ChatRoom } from './entities/chatRoom.entity';
 
 @WebSocketGateway({
   namespace: 'chat', // cors문제 해결해줘야 함.
   cors: { origin: '*', credentials: true },
-  transports: ['websocket'],
+  // transports: ['websocket'],
 }) // 방 만들기(포트 설정 해주기)\
 @Injectable()
 export class ChatGateway {
   constructor(
-    // @InjectRepository(Chat)
-    // private readonly chatRepository: Repository<Chat>,
+    @InjectRepository(ChatMsg)
+    private readonly chatMsgRepository: Repository<ChatMsg>,
+    @InjectRepository(ChatRoom)
+    private readonly chatRoomRepository: Repository<ChatRoom>,
     @InjectRepository(User)
-    private readonly userRepositoey: Repository<User>,
+    private readonly userRepository: Repository<User>,
   ) {}
 
   @WebSocketServer()
@@ -59,16 +63,16 @@ export class ChatGateway {
     @ConnectedSocket() client,
   ) {
     const [room, nickname, message] = data;
-    const user = await this.userRepositoey.findOne({
+    const user = await this.userRepository.findOne({
       where: { nickname: nickname },
     });
-
-    // const result = await this.chatRepository.save({
-    //   // redis에 저장 해보기?!
-    //   user: user,
-    //   room: room,
-    //   message: data[2],
-    // });
+    
+    const result = await this.chatMsgRepository.save({
+      // redis에 저장 해보기?!
+      user: { id: user.id},
+      chatRoom: { id: room },
+      message: data[2],
+    });
 
     console.log(`${client.id} : ${data}`);
     this.broadcast(room, client, [nickname, message]);

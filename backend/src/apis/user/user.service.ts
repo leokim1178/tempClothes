@@ -134,11 +134,16 @@ export class UserService {
 
   async update({ currentEmail, updateUserInput }) {
     const nic = await this.userRepository.find(); // 유저 정보 파인드
+    const { regionId, ...rest } = updateUserInput;
     const updateUser = await this.userRepository.findOne({
       where: { email: currentEmail },
       relations: ['region'],
     });
     const isAuthNic = updateUserInput.nickname;
+
+    const region = await this.regionRepository.findOne({
+      where: { id: regionId },
+    });
 
     for (let i = 0; i < nic.length; i++) {
       // 닉네임 중복 확인
@@ -158,7 +163,8 @@ export class UserService {
 
     const newUser: User = {
       ...updateUser,
-      ...updateUserInput,
+      region,
+      ...rest,
     };
     return await this.userRepository.save(newUser);
   }

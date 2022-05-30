@@ -43,19 +43,24 @@ export class AuthService {
     if (!user) {
       const createUserInput: createUserInput = {
         email: req.user.email,
-        gender: null,
-        phone: null,
+        gender: '성별을 입력해주세요',
+        phone: '번호를 입력해주세요',
         nickname: req.user.nickname,
         password: hashedPW,
         userImgURL: req.user.userImgURL,
-        regionId: null,
-        style: null,
+        regionId: '미선택',
+        style: '스타일 정보를 입력해주세요',
       };
       user = await this.userService.create({ createUserInput });
       this.setRefreshToken({ user, res });
       await res.redirect('http://localhost:3000/signup');
     } else {
-      if (!user.gender || !user.phone || !user.region || !user.style) {
+      if (
+        user.gender === '성별을 입력해주세요' ||
+        user.phone === '번호를 입력해주세요' ||
+        user.region.id === '미선택' ||
+        user.style === '스타일 정보를 입력해주세요'
+      ) {
         this.setRefreshToken({ user, res });
         await res.redirect('http://localhost:3000/signup');
       } else {

@@ -27,8 +27,4 @@ export class FeedLike {
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @Field(() => User)
   user: User;
-
-  @DeleteDateColumn()
-  @Field(() => Date)
-  deletedAt: Date;
 }

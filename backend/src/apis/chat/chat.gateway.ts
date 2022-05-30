@@ -10,12 +10,12 @@ import { Chat } from './entities/chat.entity';
 import { User } from '../user/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 @WebSocketGateway({
   namespace: 'chat', // cors문제 해결해줘야 함.
   cors: { origin: '*', credentials: true },
-  // transports: ['websocket'],
+  transports: ['websocket'],
 }) // 방 만들기(포트 설정 해주기)\
 @Injectable()
 export class ChatGateway {
@@ -40,14 +40,18 @@ export class ChatGateway {
     // console.log(`${nickname}님이 유저: ${room}방에 접속했습니다.`) // 채팅 기능 활성화 부분(수정해야 할 부분)
     const receive = `${nickname}님이 입장했습니다.`;
     this.server.emit('receive' + room, receive);
+    console.log(this.server, 'server');
     this.wsClients.push(client);
   }
-
+  
   private broadcast(event, client, message: any) {
     for (let c of this.wsClients) {
+      console.log("AAAAA")
       if (client.id == c.id) continue;
+      console.log("BBBB")
       c.emit(event, message);
     }
+    console.log("CCCC") // 이게 문제인지 확인 해볼것!
   }
 
   @SubscribeMessage('send')
@@ -66,7 +70,6 @@ export class ChatGateway {
       room: room,
       message: data[2],
     });
-
 
     console.log(`${client.id} : ${data}`);
     this.broadcast(room, client, [nickname, message]);

@@ -37,7 +37,7 @@ export class PaymentButtonResolver {
     });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlAuthAccessGuard) // 아직 우리 서비스에서 필요가 없는듯...??아직 쓰지 않음
   @Mutation(() => PaymentButton)
   async cancelButton(
     @Args('imp_uid') imp_uid: string,
@@ -66,9 +66,7 @@ export class PaymentButtonResolver {
   // 채팅 결제 기능
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => User)
-  async payChat(
-    @CurrentUser() currentUser: ICurrentUser,
-  ){
-    return await this.paymentButtonService.pay({ currentUser })
+  async payChat(@CurrentUser() currentUser: ICurrentUser) {
+    return await this.paymentButtonService.pay({ currentUser });
   }
 }

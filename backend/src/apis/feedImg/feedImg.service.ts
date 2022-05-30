@@ -29,8 +29,8 @@ export class FeedImgService {
   async updateImg({ feedId, imgURLs }) {
     //1. feedId가 유효한지 확인
 
-    const feed = await this.feedImgRepository.findOne({
-      where: { feed: feedId },
+    const feed = await this.feedRepository.findOne({
+      where: { id: feedId },
     });
     if (!feed)
       throw new UnprocessableEntityException('등록되지 않은 feedId입니다');

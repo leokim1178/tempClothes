@@ -73,6 +73,7 @@ export class Feed {
     cascade: true,
     orphanedRowAction: 'delete',
     createForeignKeyConstraints: true,
+    nullable: true,
   })
   @Field(() => [Comment])
   comment: Comment[];
@@ -81,8 +82,9 @@ export class Feed {
     cascade: true,
     orphanedRowAction: 'delete',
     createForeignKeyConstraints: true,
+    nullable: true,
   })
-  @Field(() => [FeedLike])
+  @Field(() => [FeedLike], { nullable: true })
   feedLike: FeedLike[];
 
   @ManyToOne(() => Region)

@@ -13,7 +13,6 @@ import * as bcrypt from 'bcrypt';
 import axios from 'axios';
 import { Cache } from 'cache-manager';
 import { getToday } from '../../commons/libraries/utils';
-import { CurrentUser } from 'src/commons/auth/gql-user.param';
 
 @Injectable()
 export class UserService {
@@ -79,14 +78,31 @@ export class UserService {
     const emailBody =
       // 이메일 내용
       `
-          <html>
-              <body>
-                  <h1>온도衣 가입에 감사합니다!</h1>
-                  <hr />
-                  <div>${nickname}님의 가입을 축하드립니다. 많은 활동 부탁드립니다 </div>
-                  <div>가입일: ${getToday()}</div>
-              </body>
-          </html>
+      <html>
+      <body>
+        <h1></h1>
+        <p align="center">
+          <img
+            src="https://capsule-render.vercel.app/api?&type=waving&color=timeAuto&height=180&section=header&text=${nickname}님 가입을 축하드립니다!&fontSize=50&animation=fadeIn&fontAlignY=45"
+          />
+        </p>
+        <p align="center" fontSize="150">
+          <a href="https://naver.com" >온도衣에서 오늘의 착장 자랑하기</a>
+        </p>
+        <p align="center">
+          <img
+            width="450"
+            src="https://i.ytimg.com/vi/z3pqoPAGbb0/maxresdefault.jpg"
+          />
+        </p>
+    
+        <div align="center">
+          ${nickname}님의 가입을 축하드립니다. 많은 활동 부탁드립니다
+        </div>
+        <div align="center">가입일: ${getToday()}</div>
+      </body>
+    </html>
+
       `;
     const appKey = process.env.EMAIL_APP_KEY;
     const XSecretKey = process.env.EMAIL_X_SECRET_KEY;

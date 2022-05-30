@@ -1,7 +1,4 @@
 import {
-  ConflictException,
-  HttpException,
-  HttpStatus,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -37,6 +34,31 @@ export class FeedService {
     private readonly connection: Connection,
     private readonly feedImgService: FeedImgService,
   ) {}
+
+  async findWithFeedId({ feedId }) {
+    try {
+      const feed = await this.feedRepository
+        .createQueryBuilder('Feed')
+        .where({ id: feedId }) // id로 조회
+        .leftJoinAndSelect('Feed.feedImg', 'feedImg') // 피드 이미지들 조인
+        .leftJoinAndSelect('Feed.comment', 'comment') // 피드 댓글들 조인
+        .leftJoinAndSelect('Feed.feedLike', 'feedlike') // 좋아요 테이블 조인
+        .leftJoinAndSelect('feedlike.user', 'likeuser')
+        .leftJoinAndSelect('Feed.feedTag', 'feedTag') // 피드 태그들 조인
+        .leftJoinAndSelect('Feed.region', 'region') // 지역 테이블 조인
+        .leftJoinAndSelect('Feed.user', 'user') // 유저 테이블 조인
+        .getOne();
+      console.log(feed);
+      const result = await this.feedRepository.save({
+        ...feed,
+        watchCount: feed.watchCount + 1, // 조회 수 증가
+      });
+
+      return result;
+    } catch {
+      throw new NotFoundException('피드를 찾을 수 없습니다');
+    }
+  }
 
   async findWithTags({ region, feedTags, page }) {
     try {
@@ -150,29 +172,6 @@ export class FeedService {
     }
   }
 
-  async findWithFeedId({ feedId }) {
-    try {
-      const feed = await this.feedRepository
-        .createQueryBuilder('Feed')
-        .where({ id: feedId }) // id로 조회
-        .leftJoinAndSelect('Feed.feedImg', 'feedImg') // 피드 이미지들 조인
-        .leftJoinAndSelect('Feed.comment', 'comment') // 피드 댓글들 조인
-        .leftJoinAndSelect('Feed.feedLike', 'feedLike') // 좋아요 테이블 조인
-        .leftJoinAndSelect('Feed.feedTag', 'feedTag') // 피드 태그들 조인
-        .leftJoinAndSelect('Feed.region', 'region') // 지역 테이블 조인
-        .leftJoinAndSelect('Feed.user', 'user') // 유저 테이블 조인
-        .getOne();
-      const result = await this.feedRepository.save({
-        ...feed,
-        watchCount: feed.watchCount + 1, // 조회 수 증가
-      });
-
-      return result;
-    } catch {
-      throw new NotFoundException('피드를 찾을 수 없습니다');
-    }
-  }
-
   async create({ currentUser, createFeedInput }) {
     const { feedTags, regionId, imgURLs, ...feed } = createFeedInput;
 
@@ -247,15 +246,17 @@ export class FeedService {
     });
     if (!lastFeed) throw new NotFoundException('존재하지 않는 피드입니다');
     try {
-      const { feedTag, imgURLs, regionId, ...feed } = updateFeedInput;
+      const { feedTags, imgURLs, regionId, ...feed } = updateFeedInput;
 
       const region = await this.regionRepository.findOne({
         where: { id: regionId },
       });
-      if (feedTag) {
+      if (!region) throw new NotFoundException('지역명을 입력하세요');
+
+      if (feedTags) {
         const tagResult = [];
-        for (let i = 0; i < feedTag.length; i++) {
-          const tagName = feedTag[i];
+        for (let i = 0; i < feedTags.length; i++) {
+          const tagName = feedTags[i];
           const prevTag = await this.feedTagRepository.findOne({
             where: { tagName },
           });
@@ -276,22 +277,26 @@ export class FeedService {
           feedTag: tagResult,
         });
 
-        await this.feedImgService.updateImg({
+        const imgUpdateResult = await this.feedImgService.updateImg({
           feedId: feedUpdateResult.id,
           imgURLs,
         });
+        console.log(imgUpdateResult);
 
         return feedUpdateResult;
       } else {
         const feedUpdateResult = await this.feedRepository.save({
           ...lastFeed,
           ...feed,
+          feed,
           region,
         });
-        await this.feedImgService.updateImg({
-          feedId,
+
+        const imgUpdateResult = await this.feedImgService.updateImg({
+          feedId: feedUpdateResult.id,
           imgURLs,
         });
+
         return feedUpdateResult;
       }
     } catch (error) {
@@ -317,94 +322,6 @@ export class FeedService {
       return result.affected ? true : false;
     } catch (error) {
       throw error;
-    }
-  }
-
-  async like({ currentUser, feedId }) {
-    const queryRunner = this.connection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction('SERIALIZABLE');
-    try {
-      // 0. 좋아요 관계 형성 유무 확인
-      // const feedLike = await this.feedLikeRepository.findOne({
-      //   where: { user: userId, feed: feedId },
-      // });
-      const feedLike = await queryRunner.manager.findOne(
-        FeedLike, //
-        { feed: feedId },
-      );
-      // 1. 유저정보와 피드 정보 조회
-      //유저 정보 조회(일반 findOne으로 해도 무관)
-
-      const user = await this.userRepository.findOne({
-        email: currentUser.email,
-      }); // 유저 정보 조회
-      //피드 정보 조회
-      const feed = await queryRunner.manager.findOne(Feed, { id: feedId });
-
-      if (!feed || !user) throw new NotFoundException();
-      //유저 정보가 없거나 피드 정보가 없을 경우 에러 쓰로잉
-
-      if (!feedLike) {
-        const updateLike = await this.feedLikeRepository.create({
-          user,
-          feed,
-          isLike: true,
-        });
-        await queryRunner.manager.save(updateLike);
-
-        const updateFeed = await this.feedRepository.create({
-          ...feed,
-          likeCount: feed.likeCount + 1,
-        });
-        await queryRunner.manager.save(updateFeed);
-        await queryRunner.commitTransaction();
-
-        return true;
-      } else {
-        if (feedLike.isLike) {
-          const updateLike = await this.feedLikeRepository.create({
-            ...feedLike,
-            user,
-            feed,
-            isLike: false,
-          });
-          await queryRunner.manager.save(updateLike);
-
-          const updateFeed = await this.feedRepository.create({
-            ...feed,
-            likeCount: feed.likeCount - 1,
-          });
-          await queryRunner.manager.save(updateFeed);
-          await queryRunner.commitTransaction();
-
-          return false;
-        } else {
-          const updateLike = await this.feedLikeRepository.create({
-            ...feedLike,
-            user,
-            feed,
-            isLike: true,
-          });
-          await queryRunner.manager.save(updateLike);
-
-          const updateFeed = await this.feedRepository.create({
-            ...feed,
-            likeCount: feed.likeCount + 1,
-          });
-          await queryRunner.manager.save(updateFeed);
-          await queryRunner.commitTransaction();
-
-          return true;
-        }
-      }
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      if (error.status == 404)
-        throw new NotFoundException('등록되지 않은 정보입니다');
-      throw new InternalServerErrorException('서버 에러');
-    } finally {
-      await queryRunner.release();
     }
   }
 }

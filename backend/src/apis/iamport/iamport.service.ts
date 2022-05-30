@@ -39,7 +39,6 @@ export class IamportService {
 
       if (result.data.response.amount !== amount)
         throw new UnprocessableEntityException('결제 금액이 다릅니다.');
-
     } catch (error) {
       if (error?.response?.data?.message) {
         throw new HttpException( // 플레이 그라운드는 정상,,, 프론트한테 에러 반환!
@@ -59,7 +58,7 @@ export class IamportService {
         { imp_uid: imp_uid },
         { headers: { Authorization: token } },
       );
-      console.log(result,'AAA')
+
       return result.data.response.cancel_amount;
     } catch (error) {
       throw new HttpException(

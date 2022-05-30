@@ -99,6 +99,7 @@ export class FeedResolver {
     }
   }
 
+  @UseGuards(GqlAuthAccessGuard)
   @Query(() => fetchFeedOutput)
   async fetchUserFeeds(
     @Args('userNickname')
@@ -131,16 +132,6 @@ export class FeedResolver {
 
       return result;
     }
-  }
-
-  @UseGuards(GqlAuthAccessGuard)
-  @Mutation(() => Boolean) // 좋아요 누르기
-  toggleLikeFeed(
-    @CurrentUser() currentUser: ICurrentUser,
-    @Args('feedId')
-    feedId: string,
-  ) {
-    return this.feedService.like({ currentUser, feedId });
   }
 
   @UseGuards(GqlAuthAccessGuard)

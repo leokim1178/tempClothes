@@ -17,8 +17,8 @@ export class CommentResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => fetchCommentOutput)
   fetchComments(
-    @Args('feedId') feedId: string, //
-    @Args('page', { nullable: true }) page?: number, //
+    @Args('feedId', { type: () => String }) feedId: string, //
+    @Args('page', { nullable: true, type: () => Int }) page?: number, //
   ) {
     return this.commentService.findAll({ feedId, page });
   }
@@ -26,7 +26,7 @@ export class CommentResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => [Comment])
   fetchSubComments
-  (@Args('pCommentId') pCommentId: string, //
+  (@Args('pCommentId', { type: () => String }) pCommentId: string, //
   ) {
     return this.commentService.findSubComments({ pCommentId });
   }

@@ -1,8 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { Chat } from './entities/chat.entity';
+import { Cache } from 'cache-manager';
+import { PaymentButtonService } from '../payment/payment.service'
+import { v4 as uuidv4 } from 'uuid'; // uuid 만드는 라이브러리
 
 @Injectable()
 export class ChatService {
@@ -11,6 +14,10 @@ export class ChatService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Chat)
     private readonly chatRepository: Repository<Chat>,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
+    @Inject(PaymentButtonService)
+    private readonly paymentButtonService: PaymentButtonService
   ) {}
 
   async load({ currentUser, host }) {
@@ -42,5 +49,31 @@ export class ChatService {
       relations: ['user'],
     });
     return finalResult;
+  }
+
+  async create({ currentUser, opponentNickname }){
+    const pay = await this.paymentButtonService.pay({ currentUser })
+    console.log(pay, 'pay')
+
+    const uuid = uuidv4();
+
+     if( pay ){
+      await this.chatRepository.save({
+        user:currentUser.id,
+        room: uuid
+      })
+    }
+
+    const user = await this.userRepository.findOne({
+      where: { nickname: opponentNickname}
+    })
+
+  if( pay ){
+    await this.chatRepository.save({
+      user,
+      room: uuid,
+    })
+  }
+    return uuid;
   }
 }

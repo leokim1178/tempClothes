@@ -6,7 +6,6 @@ import { CurrentUser, ICurrentUser } from 'src/commons/auth/gql-user.param';
 import { Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { ChatService } from './chat.service';
-import { Chat } from './entities/chat.entity';
 
 @Resolver()
 export class ChatResolver {
@@ -16,25 +15,25 @@ export class ChatResolver {
     private readonly userRepository: Repository<User>, // @Inject(CACHE_MANAGER) // private readonly cacheManager: Cache,
   ) {}
 
-  @UseGuards(GqlAuthAccessGuard) // 채팅 로그 불러오기
-  @Query(() => [Chat])
-  async fetchLogs(
-    @Args('opponentNickname') opponentNickname: string, //
-    @CurrentUser() currentUser: ICurrentUser,
-  ) {
-    const user = await this.userRepository.findOne({
-      where: { nickname: opponentNickname },
-    });
-    const host = user.id;
-    return this.chatService.load({ currentUser, host });
-  }
+  // @UseGuards(GqlAuthAccessGuard) // 채팅 로그 불러오기
+  // @Query(() => [Chat])
+  // async fetchLogs(
+  //   @Args('opponentNickname') opponentNickname: string, //
+  //   @CurrentUser() currentUser: ICurrentUser,
+  // ) {
+  //   const user = await this.userRepository.findOne({
+  //     where: { nickname: opponentNickname },
+  //   });
+  //   const host = user.id;
+  //   return this.chatService.load({ currentUser, host });
+  // }
 
   @UseGuards(GqlAuthAccessGuard) // 룸번호 만들기(uuid)
   @Mutation(() => String)
   async createRoom(
     @CurrentUser() currentUser: ICurrentUser,
-    @Args('opponentNickname') opponentNickname: string, //
+    @Args('guestNickname') guestNickname: string, //
   ){
-    return this.chatService.create({ currentUser, opponentNickname })
+    return this.chatService.create({ currentUser, guestNickname })
   }
 }

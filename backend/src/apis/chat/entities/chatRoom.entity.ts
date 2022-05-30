@@ -22,11 +22,11 @@ export class ChatRoom {
     id: string;
 
     @Column()
-    @Field(() => String)
+    @Field(() => String, { nullable: false })
     host: string
 
     @Column()
-    @Field(() => String)
+    @Field(() => String, { nullable: false })
     guest: string
 
     @CreateDateColumn()

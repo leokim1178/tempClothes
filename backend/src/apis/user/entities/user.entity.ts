@@ -9,7 +9,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Region } from 'src/apis/region/entities/region.entity';
-import { Chat } from 'src/apis/chat/entities/chat.entity';
 
 @Entity()
 @ObjectType()

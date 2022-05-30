@@ -12,29 +12,26 @@ import {
 } from 'typeorm';
 import { ChatRoom } from './chatRoom.entity';
 
-
 @Entity()
 @ObjectType()
+export class ChatMsg {
+  @PrimaryGeneratedColumn('uuid')
+  @Field(() => String)
+  id: string;
 
-export class Msg {
+  @Column()
+  @Field(() => String)
+  message: string;
 
-    @PrimaryGeneratedColumn('uuid')
-    @Field(() => String)
-    id: string;
+  @ManyToOne(() => User)
+  @Field(() => User)
+  user: User;
 
-    @Column()
-    @Field(() => String)
-    message: string;
+  @ManyToOne(() => ChatRoom)
+  @Field(() => ChatRoom)
+  chatRoom: ChatRoom;
 
-    @ManyToOne(() => User)
-    @Field(() => User)
-    user: User;
-
-    @ManyToOne(() => ChatRoom)
-    @Field(() => ChatRoom)
-    chatRoom: ChatRoom;
-
-    @CreateDateColumn()
-    @Field(() => Date)
-    createdAt: Date;
+  @CreateDateColumn()
+  @Field(() => Date)
+  createdAt: Date;
 }

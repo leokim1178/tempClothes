@@ -1,5 +1,5 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Int, Mutation, Resolver } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth-guard';
 import { CurrentUser, ICurrentUser } from 'src/commons/auth/gql-user.param';
 import { IamportService } from '../iamport/iamport.service';
@@ -18,7 +18,7 @@ export class PaymentButtonResolver {
   @Mutation(() => PaymentButton)
   async createButton(
     @Args('imp_uid') imp_uid: string,
-    @Args('amount') amount: number,
+    @Args('amount', { type: () => Int }) amount: number,
     @CurrentUser() currentUser: ICurrentUser,
   ) {
     // 검증단계

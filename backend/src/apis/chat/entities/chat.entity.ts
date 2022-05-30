@@ -25,7 +25,7 @@ export class Chat {
   @Field(() => String, { nullable: true })
   message?: string;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE'})
   @Field(() => User)
   user: User;
 

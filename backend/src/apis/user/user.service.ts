@@ -159,7 +159,7 @@ export class UserService {
     return this.userRepository.save( user )
   }
 
-  async delete({ currentUserEmail }) {
+  async delete({ currentUserEmail }) { 
 
     const result = await this.userRepository.delete({
       email: currentUserEmail,

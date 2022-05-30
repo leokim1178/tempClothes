@@ -28,4 +28,13 @@ export class ChatResolver {
     const host = user.id;
     return this.chatService.load({ currentUser, host });
   }
+
+  @UseGuards(GqlAuthAccessGuard) // 룸번호 만들기(uuid)
+  @Mutation(() => String)
+  async createRoom(
+    @CurrentUser() currentUser: ICurrentUser,
+    @Args('opponentNickname') opponentNickname: string, //
+  ){
+    return this.chatService.create({ currentUser, opponentNickname })
+  }
 }

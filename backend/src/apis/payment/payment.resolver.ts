@@ -37,7 +37,7 @@ export class PaymentButtonResolver {
     });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlAuthAccessGuard) // 아직 우리 서비스에서 필요가 없는듯...??아직 쓰지 않음
   @Mutation(() => PaymentButton)
   async cancelButton(
     @Args('imp_uid') imp_uid: string,

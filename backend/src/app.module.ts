@@ -44,7 +44,7 @@ import { FeedTagModule } from './apis/feedTag/feedTag.module';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      // // host: '10.118.112.4', // prod
+      // host: '10.118.112.4', // prod
       host: '10.82.224.4', // dev
       // host: 'my-database', // local
       port: 3306,

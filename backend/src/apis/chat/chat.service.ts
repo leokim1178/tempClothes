@@ -52,13 +52,14 @@ export class ChatService {
   }
 
   async create({ currentUser, opponentNickname }){
+
     const uuid = uuidv4(); // uuid 생성하는 라이브러리 씀
+
 
       await this.chatRepository.save({
         user:currentUser.id,
         room: uuid
       })
-    
     const user = await this.userRepository.findOne({
       where: { nickname: opponentNickname}
     })
@@ -67,7 +68,6 @@ export class ChatService {
       user,
       room: uuid,
     })
-  
     return uuid;
   }
 }

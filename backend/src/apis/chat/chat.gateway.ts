@@ -6,7 +6,6 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Chat } from './entities/chat.entity';
 import { User } from '../user/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -20,8 +19,8 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class ChatGateway {
   constructor(
-    @InjectRepository(Chat)
-    private readonly chatRepository: Repository<Chat>,
+    // @InjectRepository(Chat)
+    // private readonly chatRepository: Repository<Chat>,
     @InjectRepository(User)
     private readonly userRepositoey: Repository<User>,
   ) {}
@@ -64,12 +63,12 @@ export class ChatGateway {
       where: { nickname: nickname },
     });
 
-    const result = await this.chatRepository.save({
-      // redis에 저장 해보기?!
-      user: user,
-      room: room,
-      message: data[2],
-    });
+    // const result = await this.chatRepository.save({
+    //   // redis에 저장 해보기?!
+    //   user: user,
+    //   room: room,
+    //   message: data[2],
+    // });
 
     console.log(`${client.id} : ${data}`);
     this.broadcast(room, client, [nickname, message]);

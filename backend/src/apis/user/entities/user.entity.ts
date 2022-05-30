@@ -53,10 +53,6 @@ export class User {
   @Field(() => Region, { nullable: true })
   region: Region;
 
-  @ManyToOne(() => Chat)
-  @Field(() => Chat)
-  chat: Chat;
-
   @CreateDateColumn()
   @Field(() => Date)
   createdAt: Date;

@@ -52,28 +52,22 @@ export class ChatService {
   }
 
   async create({ currentUser, opponentNickname }){
-    const pay = await this.paymentButtonService.pay({ currentUser })
-    console.log(pay, 'pay')
-
+    
     const uuid = uuidv4();
 
-     if( pay ){
       await this.chatRepository.save({
         user:currentUser.id,
         room: uuid
       })
-    }
-
+  
     const user = await this.userRepository.findOne({
       where: { nickname: opponentNickname}
     })
 
-  if( pay ){
     await this.chatRepository.save({
       user,
       room: uuid,
     })
-  }
     return uuid;
   }
 }

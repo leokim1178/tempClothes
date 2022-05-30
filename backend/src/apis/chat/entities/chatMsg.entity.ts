@@ -5,22 +5,28 @@ import {
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
+  ManyToOne,
 } from 'typeorm';
+import { ChatRoom } from './chatRoom.entity';
 
 @Entity()
 @ObjectType()
-export class ChatRoom {
+export class ChatMsg {
   @PrimaryGeneratedColumn('uuid')
   @Field(() => String)
   id: string;
 
   @Column()
-  @Field(() => String, { nullable: false })
-  host: string;
+  @Field(() => String)
+  message: string;
 
-  @Column()
-  @Field(() => String, { nullable: false })
-  guest: string;
+  @ManyToOne(() => User)
+  @Field(() => User)
+  user: User;
+
+  @ManyToOne(() => ChatRoom)
+  @Field(() => ChatRoom)
+  chatRoom: ChatRoom;
 
   @CreateDateColumn()
   @Field(() => Date)

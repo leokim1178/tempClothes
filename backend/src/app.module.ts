@@ -18,6 +18,7 @@ import { FileModule } from './apis/file/file.module';
 import { FeedModule } from './apis/feed/feed.module';
 import { CronModule } from './apis/cron/cron.module';
 import { FeedTagModule } from './apis/feedTag/feedTag.module';
+import { FeedLikeModule } from './apis/feedLike/feedLike.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { FeedTagModule } from './apis/feedTag/feedTag.module';
     FileModule, // 파일 모듈
     ChatModule, // 채팅 시스템
     CronModule, // 크론 모듈
+    FeedLikeModule, // 피드 좋아요 모듈
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: 'src/commons/graphql/schema.gql',

@@ -1,6 +1,6 @@
 import { Storage } from '@google-cloud/storage';
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron, Interval, SchedulerRegistry } from '@nestjs/schedule';
+import { Cron, SchedulerRegistry } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Repository } from 'typeorm';

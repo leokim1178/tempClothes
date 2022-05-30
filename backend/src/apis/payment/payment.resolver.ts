@@ -66,9 +66,7 @@ export class PaymentButtonResolver {
   // 채팅 결제 기능
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => User)
-  async payChat(
-    @CurrentUser() currentUser: ICurrentUser,
-  ){
-    return await this.paymentButtonService.pay({ currentUser })
+  async payChat(@CurrentUser() currentUser: ICurrentUser) {
+    return await this.paymentButtonService.pay({ currentUser });
   }
 }

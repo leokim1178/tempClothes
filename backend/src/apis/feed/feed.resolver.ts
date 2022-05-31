@@ -47,7 +47,6 @@ export class FeedResolver {
         const result: fetchFeedOutput = await this.feedService.findWithTags({
           feedTags,
           region,
-
           page,
         });
         await this.cacheManager.set(redisInput, result, { ttl: 10 });
@@ -89,7 +88,6 @@ export class FeedResolver {
         return result;
       }
     } catch (error) {
-      console.log(error);
       const result: fetchFeedOutput = await this.feedService.findMyFeeds({
         currentUser,
         page,
@@ -124,7 +122,6 @@ export class FeedResolver {
         return result;
       }
     } catch (error) {
-      console.log(error);
       const result: fetchFeedOutput = await this.feedService.findUserFeeds({
         userNickname,
         page,

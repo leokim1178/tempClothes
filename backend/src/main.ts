@@ -10,7 +10,7 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
   app.enableCors({
     credentials: true,
-    origin: 'http://tempClothes.site:3000',
+    origin: 'http://localhost:3000',
   });
   app.useStaticAssets(join(__dirname, '..', 'chat')); // main.ts 채팅 설정(NestApplication)
   app.use(graphqlUploadExpress());

@@ -25,8 +25,8 @@ export class CommentResolver {
 
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => [Comment])
-  fetchSubComments
-  (@Args('pCommentId', { type: () => String }) pCommentId: string, //
+  fetchSubComments(
+    @Args('pCommentId', { type: () => String }) pCommentId: string, //
   ) {
     return this.commentService.findSubComments({ pCommentId });
   }

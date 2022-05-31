@@ -1,85 +1,44 @@
-import {
-  CACHE_MANAGER,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
-import { Cache } from 'cache-manager';
-import { PaymentButtonService } from '../payment/payment.service';
-
-import { ChatMsg } from './entities/chatMsg.entity';
-import { ChatRoom } from './entities/chatRoom.entity';
+import { Chat } from './entities/chat.entity';
 
 @Injectable()
 export class ChatService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(ChatMsg)
-    private readonly chatMsgRepository: Repository<ChatMsg>,
-    @InjectRepository(ChatRoom)
-    private readonly chatRoomRepository: Repository<ChatRoom>,
-    @Inject(CACHE_MANAGER)
-    private readonly cacheManager: Cache,
-    @Inject(PaymentButtonService)
-    private readonly paymentButtonService: PaymentButtonService,
+    @InjectRepository(Chat)
+    private readonly chatRepository: Repository<Chat>,
   ) {}
 
-  async create({ currentUser, guestNickname }) {
-    const user = await this.userRepository.findOne({
-      where: { id: currentUser.id },
+  async load({ currentUser, host }) {
+    const myself = await this.chatRepository.find({
+      // 자기 자신의 정보
+      where: { user: currentUser.id },
+      order: { id: 'ASC' },
     });
 
-    const room = await this.chatRoomRepository.findOne({
-      where: { host: user.nickname, guest: guestNickname },
+    const result = await this.chatRepository.find({
+      // 채팅하고자 하는 유저
+      where: { user: host },
+      order: { id: 'ASC' },
     });
 
-    if (room) {
-      return room.id;
-    } else {
-      const result = await this.chatRoomRepository.save({
-        host: user.nickname,
-        guest: guestNickname,
-      });
-      return result.id;
+    let roomNum;
+    for (let i = 0; i < result.length; i++) {
+      for (let j = 0; j < myself.length; j++) {
+        if (myself[j].room === result[i].room) {
+          roomNum = myself[j].room;
+          break;
+        }
+      }
     }
-  }
-  async loadLogs({ currentUser, guestNickname }) {
-    const user = await this.userRepository.findOne({
-      where: {
-        id: currentUser.id,
-      },
+    return await this.chatRepository.find({
+      where: { room: roomNum },
+      order: { id: 'ASC' },
+      relations: ['user'],
     });
-    if (!user) throw new NotFoundException('유저정보가 존재하지 않습니다');
-    const room = await this.chatRoomRepository.findOne({
-      where: { host: user.nickname, guest: guestNickname },
-    });
-
-    if (!room) throw new NotFoundException('채팅방이 존재하지 않습니다');
-    const result = await this.chatMsgRepository.find({
-      where: {
-        chatRoom: room,
-      },
-      relations: ['user','chatRoom'],
-    });
-    return result;
-  }
-
-  async findRoom({ currentUser, guestNickname }) {
-    const user = await this.userRepository.findOne({
-      where: {
-        id: currentUser.id,
-      },
-    });
-    if (!user) throw new NotFoundException('유저정보가 존재하지 않습니다');
-    const room = await this.chatRoomRepository.findOne({
-      where: { host: user.nickname, guest: guestNickname },
-    });
-    if (!room) throw new NotFoundException('채팅방이 존재하지 않습니다');
-
-    return room;
   }
 }

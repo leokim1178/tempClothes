@@ -128,7 +128,7 @@ export class FeedService {
           .take(10)
           .skip((page - 1) * 10)
           .getManyAndCount();
-        console.log(result);
+
         const [feeds, total] = result;
         const output: fetchFeedOutput = { feeds, total, page, count: 10 };
         return output;

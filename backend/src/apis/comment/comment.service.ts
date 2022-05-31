@@ -20,34 +20,31 @@ export class CommentService {
   ) {}
 
   async findAll({ feedId, page }) {
+    const qb = this.commentRepository
+      .createQueryBuilder('Comment')
+      .leftJoinAndSelect('Comment.feed', 'feed')
+      .leftJoinAndSelect('Comment.pComment', 'pComment')
+      .leftJoinAndSelect('Comment.user', 'user')
+      .where('Comment.feed = :id', { id: feedId });
 
-    const qb = this.commentRepository   
-    .createQueryBuilder('Comment')
-    .leftJoinAndSelect('Comment.feed', 'feed')
-    .leftJoinAndSelect('Comment.pComment', 'pComment')
-    .leftJoinAndSelect('Comment.user', 'user')
-    .where('Comment.feed = :id', { id: feedId})
-    
-    const paging = qb.orderBy('Comment.id', 'ASC')
-    if( page ) {
-    const result = await paging
-    .take(10)
-    .skip((page - 1) * 10)
-    .getManyAndCount()
-  
-    const [ comments ] = result
-    const result1: fetchCommentOutput =  { comments, page } // 아웃풋을 만들어줘서 타입 지정을 했다. 더 공부해보자
+    const paging = qb.orderBy('Comment.id', 'ASC');
+    if (page) {
+      const result = await paging
+        .take(10)
+        .skip((page - 1) * 10)
+        .getManyAndCount();
 
-    return result1
+      const [comments] = result;
+      const result1: fetchCommentOutput = { comments, page }; // 아웃풋을 만들어줘서 타입 지정을 했다. 더 공부해보자
 
+      return result1;
     } else {
-      const result2 = await paging
-      .getManyAndCount()
+      const result2 = await paging.getManyAndCount();
 
-      const [ comments ] = result2
-      const result3: fetchCommentOutput = { comments }
-  
-      return result3
+      const [comments] = result2;
+      const result3: fetchCommentOutput = { comments };
+
+      return result3;
     }
   }
   async findSubComments({ pCommentId }) {
@@ -59,7 +56,6 @@ export class CommentService {
   }
 
   async create({ currentUser, createCommentInput }) {
-  
     const { pCommentId, feedId, commentDetail } = createCommentInput;
     let parentComment;
     if (pCommentId) {
@@ -107,7 +103,7 @@ export class CommentService {
     const result = await this.commentRepository.delete({
       id: commentId,
     });
-    
+
     return result.affected ? true : false;
   }
 }

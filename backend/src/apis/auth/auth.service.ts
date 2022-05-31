@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { createUserInput } from '../user/dto/createUser.input';
 import { UserService } from '../user/user.service';
@@ -20,13 +24,10 @@ export class AuthService {
     );
 
     // 쿠키 저장 설정
-    res.setHeader(
-      'Access-Control-Allow-Origin',
-      'http://tempClothes.site:3000',
-    );
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
     res.setHeader(
       'Set-Cookie',
-      `refreshToken=${refreshToken}; path=/; domain=team01.leo3179.shop; SameSite=None; Secure; httpOnly;`,
+      `refreshToken=${refreshToken}; path=/; domain=t1dreamers.shop; SameSite=None; Secure; httpOnly;`,
     );
   }
 
@@ -44,6 +45,11 @@ export class AuthService {
 
     let user = await this.userService.fetch({ email: req.user.email });
     if (!user) {
+      if (!req.user.email)
+        throw new BadRequestException('email 정보가 없습니다 ');
+      if (!req.user.nickname)
+        throw new BadRequestException('닉네임 값이 없습니다');
+
       const createUserInput: createUserInput = {
         email: req.user.email,
         gender: '성별을 입력해주세요',
@@ -56,7 +62,7 @@ export class AuthService {
       };
       user = await this.userService.create({ createUserInput });
       this.setRefreshToken({ user, res });
-      await res.redirect('http://tempClothes.site:3000/signup');
+      await res.redirect('http://localhost:3000/signup');
     } else {
       if (
         user.gender === '성별을 입력해주세요' ||
@@ -65,10 +71,10 @@ export class AuthService {
         user.style === '스타일 정보를 입력해주세요'
       ) {
         this.setRefreshToken({ user, res });
-        await res.redirect('http://tempClothes.site:3000/signup');
+        await res.redirect('http://localhost:3000/signup');
       } else {
         this.setRefreshToken({ user, res });
-        await res.redirect('http://tempClothes.site:3000/tempClothes');
+        await res.redirect('http://localhost:3000/tempClothes');
       }
     }
   }

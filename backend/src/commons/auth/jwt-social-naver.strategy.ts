@@ -10,7 +10,8 @@ export class JwtNaverStrategy extends PassportStrategy(Strategy, 'naver') {
     super({
       clientID: naverClientID,
       clientSecret: naverClientSecret,
-      callbackURL: 'https://team01.leo3179.shop/login/naver', // prod
+      // callbackURL: 'https://team01.leo3179.shop/login/naver', // prod
+      callbackURL: 'https://server.t1dreamers.shop/login/naver', // prod
       // scope: ['email', 'profile'],
     });
   }

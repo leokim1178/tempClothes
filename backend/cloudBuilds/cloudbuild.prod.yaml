@@ -17,8 +17,8 @@ steps:
         'set',
         'image',
         'deployment/t1-backend',
-        't1-backend-sha256-1=asia.gcr.io/f6b2t1-master/t1-backend:0.1.9',
+        't1-back-sha256-1=asia.gcr.io/f6b2t1-master/t1-back:0.0.0',
       ]
     env:
       - CLOUDSDK_COMPUTE_ZONE=asia-northeast3
-      - CLOUDSDK_CONTAINER_CLUSTER=t1-cluster
+      - CLOUDSDK_CONTAINER_CLUSTER=team01-cluster

@@ -73,15 +73,15 @@ prod: https://server.t1dreamers.shop/graphql
 
 ## ERD 설계
 
-![](https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fd043908d-555a-461b-9986-773b1e2e4070%2F%E1%84%8E%E1%85%AC%E1%84%8C%E1%85%A9%E1%86%BC_ERD.png?table=block&id=589f79fa-8e31-44cc-940e-e6914ad47ca0&spaceId=9c9b02bc-6cb6-4924-bf38-dad25e0fe77b&width=1940&userId=39bd233a-7c37-40ab-8767-ebc4fd788859&cache=v2)
+![](readme-imgs/최종%20ERD.png)
 
 ## Data-Flow
 
-![](https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F1542b639-587f-4a39-aec7-c1aa4b79e753%2F%E1%84%8B%E1%85%A9%E1%86%AB%E1%84%83%E1%85%A9%E1%84%8B%E1%85%B4_dataflow.001.png?table=block&id=e244360b-5c0b-480c-b446-fb7846e56ee0&spaceId=9c9b02bc-6cb6-4924-bf38-dad25e0fe77b&width=1940&userId=39bd233a-7c37-40ab-8767-ebc4fd788859&cache=v2)
+![](/readme-imgs/온도의%20dataflow.001.png)
 
 ## Data Pipeline
 
-![](https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F39011aaa-1d57-49b4-bd0f-11b736741b6f%2Fdataflow.001.png?table=block&id=31005cfd-8068-43b0-ab34-a78cfd9e5f0e&spaceId=9c9b02bc-6cb6-4924-bf38-dad25e0fe77b&width=1940&userId=39bd233a-7c37-40ab-8767-ebc4fd788859&cache=v2)
+![](/readme-imgs/dataflow.001.png)
 
 ## API 설계
 
@@ -119,7 +119,7 @@ git push origin develop (Cloud-Build CI/CD)
 
 ## 폴더 구조
 
-![](https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F6c030de8-afc9-4dc2-8765-9d10ceab4974%2Fbackend_dataflow.001.png?table=block&id=692e2d3b-a5b1-432d-8efb-b3c649a965f0&spaceId=9c9b02bc-6cb6-4924-bf38-dad25e0fe77b&width=1940&userId=39bd233a-7c37-40ab-8767-ebc4fd788859&cache=v2)
+![](/readme-imgs/backend%20dataflow.001.png)
 
 ```
 🏠 tempClothes project
@@ -166,7 +166,6 @@ git push origin develop (Cloud-Build CI/CD)
 3. gcp storage keys
 4. email,sms,IMP keys
 5. open weather API key
-6. 다음주 로또 1등 당첨번호
 
 ## 정보
 

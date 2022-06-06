@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
 import { Feed } from '../feed/entities/feed.entity';
 import { User } from '../user/entities/user.entity';
+import { fetchFeedLikeOutput } from './dto/fetchFeedLikeOutPut';
 import { FeedLike } from './entities/feedLike.entity';
 
 @Injectable()
@@ -25,14 +26,36 @@ export class FeedLikeService {
     const user = await this.userRepository.findOne({
       email: currentUser.email,
     }); // 유저 정보 조회
-
-    const result = await this.feedLikeRepository.findOne({
-      feed: feedId,
-      user,
+    if (!user) throw new NotFoundException('등록되지 않은 유저입니다');
+    const feed = await this.feedRepository.findOne({
+      id: feedId,
     });
-    if (!result) throw new NotFoundException();
 
-    return result.isLike;
+    const result = await this.feedLikeRepository.findOne(
+      {
+        feed,
+        user,
+      },
+      { relations: ['user', 'feed'] },
+    );
+    if (!result) {
+      const saveFeedLike = await this.feedLikeRepository.save({
+        feed,
+        user,
+      });
+      const output: fetchFeedLikeOutput = {
+        isLike: saveFeedLike.isLike,
+        nickname: saveFeedLike.user.nickname,
+        likeCount: saveFeedLike.feed.likeCount,
+      };
+      return output;
+    }
+    const output: fetchFeedLikeOutput = {
+      isLike: result.isLike,
+      nickname: result.user.nickname,
+      likeCount: result.feed.likeCount,
+    };
+    return output;
   }
 
   async like({ currentUser, feedId }) {

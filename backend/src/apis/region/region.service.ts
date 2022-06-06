@@ -44,4 +44,10 @@ export class RegionService {
     });
     return result;
   }
+
+  async delete({ regionId }) {
+    const result = await this.regionRepository.delete({ id: regionId });
+
+    return result.affected ? true : false;
+  }
 }

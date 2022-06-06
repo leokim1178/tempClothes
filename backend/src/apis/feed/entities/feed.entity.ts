@@ -64,7 +64,6 @@ export class Feed {
   @OneToMany(() => FeedImg, (feedImg) => feedImg.feed, {
     cascade: true,
     orphanedRowAction: 'delete',
-    createForeignKeyConstraints: true,
   })
   @Field(() => [FeedImg])
   feedImg: FeedImg[];
@@ -72,7 +71,6 @@ export class Feed {
   @OneToMany(() => Comment, (comment) => comment.feed, {
     cascade: true,
     orphanedRowAction: 'delete',
-    createForeignKeyConstraints: true,
     nullable: true,
   })
   @Field(() => [Comment])
@@ -81,13 +79,14 @@ export class Feed {
   @OneToMany(() => FeedLike, (feedLike) => feedLike.feed, {
     cascade: true,
     orphanedRowAction: 'delete',
-    createForeignKeyConstraints: true,
     nullable: true,
   })
   @Field(() => [FeedLike], { nullable: true })
   feedLike: FeedLike[];
 
-  @ManyToOne(() => Region)
+  @ManyToOne(() => Region, {
+    onDelete: 'CASCADE',
+  })
   @Field(() => Region)
   region: Region;
 

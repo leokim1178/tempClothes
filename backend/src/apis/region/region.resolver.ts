@@ -107,4 +107,12 @@ export class RegionResolver {
   ) {
     return this.regionService.update({ regionId, lat, lon });
   }
+
+  @Mutation(() => Boolean) //지역정보 삭제
+  deleteRegion(
+    @Args('regionId')
+    regionId: string,
+  ) {
+    return this.regionService.delete({ regionId });
+  }
 }

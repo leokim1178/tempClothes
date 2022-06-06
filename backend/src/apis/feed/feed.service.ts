@@ -43,20 +43,22 @@ export class FeedService {
         .leftJoinAndSelect('Feed.feedImg', 'feedImg') // 피드 이미지들 조인
         .leftJoinAndSelect('Feed.comment', 'comment') // 피드 댓글들 조인
         .leftJoinAndSelect('Feed.feedLike', 'feedlike') // 좋아요 테이블 조인
-        .leftJoinAndSelect('feedlike.user', 'likeuser')
+        .leftJoinAndSelect('feedlike.user', 'likeuser') // 유저 조인
         .leftJoinAndSelect('Feed.feedTag', 'feedTag') // 피드 태그들 조인
         .leftJoinAndSelect('Feed.region', 'region') // 지역 테이블 조인
         .leftJoinAndSelect('Feed.user', 'user') // 유저 테이블 조인
         .getOne();
-      console.log(feed);
-      const result = await this.feedRepository.save({
-        ...feed,
-        watchCount: feed.watchCount + 1, // 조회 수 증가
-      });
 
+      if (!feed) throw new NotFoundException('피드 정보가 존재하지않습니다');
+
+      const result: Feed = await this.feedRepository.save({
+        ...feed,
+        watchCount: feed.watchCount + 1, // 조회 수 증가 처리
+      });
       return result;
-    } catch {
-      throw new NotFoundException('피드를 찾을 수 없습니다');
+    } catch (error) {
+      console.log(error);
+      throw error;
     }
   }
 
@@ -70,23 +72,26 @@ export class FeedService {
         .leftJoinAndSelect('Feed.feedTag', 'feedTag') // 피드 태그들을 조인하고 'feedTag'로 명명
         .leftJoinAndSelect('Feed.feedImg', 'feedImg'); //피드 이미지들 조인
       if (!feedTags) {
+        // 태그 검색어가 없을 시 지역 검색으로 종결
         const paging = qb.orderBy('Feed.watchCount', 'DESC'); // 조회수 기준으로 내림차순으로 정렬
         if (page) {
+          // 페이지 분류 필요시
           const result = await paging
             .take(10)
             .skip((page - 1) * 10)
             .getManyAndCount();
           const [feeds, total] = result;
           const output: fetchFeedOutput = { feeds, total, count: 10, page };
-          console.log('지역으로 조회');
           return output;
         } else {
+          // 페이지 분류가 필요없을 시
           const result = await paging.getManyAndCount();
           const [feeds, total] = result;
           const output: fetchFeedOutput = { feeds, total };
           return output;
         }
       } else {
+        // 태그 검색어가 존재할 때 지역으로 검색한 결과를 다시 태그로 검색
         const paging = qb
           .andWhere('feedTag.tagName IN (:tags)', {
             tags: feedTags,
@@ -94,16 +99,16 @@ export class FeedService {
           .orderBy('Feed.watchCount', 'DESC'); // 조회수 기준으로 내림차순으로 정렬
 
         if (page) {
+          // 페이지 분류 필요시
           const result = await paging
             .take(10)
             .skip((page - 1) * 10)
             .getManyAndCount();
-          console.log('지역 + 태그로 조회');
           const [feeds, total] = result;
           const output: fetchFeedOutput = { feeds, total, count: 10, page };
-
           return output;
         } else {
+          // 페이지 분류가 필요없을 시
           const result = await paging.getManyAndCount();
           const [feeds, total] = result;
           const output: fetchFeedOutput = { feeds, total };
@@ -111,7 +116,8 @@ export class FeedService {
         }
       }
     } catch (error) {
-      throw new InternalServerErrorException('sql 에러');
+      console.log(error);
+      throw error;
     }
   }
 
@@ -124,22 +130,24 @@ export class FeedService {
         .leftJoinAndSelect('Feed.feedImg', 'feedImg') // 피드 이미지들 조인
         .orderBy('Feed.watchCount', 'DESC'); // 조회수 기준으로 내림차순으로 정렬
       if (page) {
+        // 페이지 분류 필요시
         const result = await qb
           .take(10)
           .skip((page - 1) * 10)
           .getManyAndCount();
-
         const [feeds, total] = result;
         const output: fetchFeedOutput = { feeds, total, page, count: 10 };
         return output;
       } else {
+        // 페이지 분류가 필요없을 시
         const result = await qb.getManyAndCount();
         const [feeds, total] = result;
         const output: fetchFeedOutput = { feeds, total };
         return output;
       }
     } catch (error) {
-      throw new InternalServerErrorException('sql 에러');
+      console.log(error);
+      throw error;
     }
   }
 
@@ -157,6 +165,7 @@ export class FeedService {
       .leftJoinAndSelect('Feed.feedImg', 'feedImg') // 피드 이미지들 조인
       .orderBy('Feed.watchCount', 'DESC'); // 조회수 기준으로 내림차순으로 정렬
     if (page) {
+      // 페이지 분류 필요시
       const result = await qb
         .take(10)
         .skip((page - 1) * 10)
@@ -165,6 +174,7 @@ export class FeedService {
       const output: fetchFeedOutput = { feeds, total, page, count: 10 };
       return output;
     } else {
+      // 페이지 분류가 필요없을 시
       const result = await qb.getManyAndCount();
       const [feeds, total] = result;
       const output: fetchFeedOutput = { feeds, total };
@@ -173,7 +183,7 @@ export class FeedService {
   }
 
   async create({ currentUser, createFeedInput }) {
-    const { feedTags, regionId, imgURLs, ...feed } = createFeedInput;
+    const { feedTags, regionId, imgURLs, ...feed } = createFeedInput; // 구조분해할당
 
     const region = await this.regionRepository.findOne({
       id: regionId,
@@ -184,6 +194,9 @@ export class FeedService {
       email: currentUser.email,
     });
     if (!user) throw new NotFoundException('등록되지 않은 유저입니다');
+
+    //중요 엔티티므로 create에 transaction 적용
+
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction('SERIALIZABLE');
@@ -231,8 +244,7 @@ export class FeedService {
       return feedResult;
     } catch (error) {
       await queryRunner.rollbackTransaction();
-
-      throw new InternalServerErrorException('sql 에러');
+      throw error;
     } finally {
       await queryRunner.release();
     }
@@ -281,7 +293,6 @@ export class FeedService {
           feedId: feedUpdateResult.id,
           imgURLs,
         });
-        console.log(imgUpdateResult);
 
         return feedUpdateResult;
       } else {

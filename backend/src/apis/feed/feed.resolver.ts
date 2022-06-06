@@ -41,7 +41,6 @@ export class FeedResolver {
       const redisInput = JSON.stringify({ region, feedTags, page });
       const redis = await this.cacheManager.get(redisInput);
       if (redis) {
-        console.log('redis에서 서치한 데이터');
         return redis;
       } else {
         const result: fetchFeedOutput = await this.feedService.findWithTags({
@@ -50,10 +49,10 @@ export class FeedResolver {
           page,
         });
         await this.cacheManager.set(redisInput, result, { ttl: 10 });
-        console.log('db에서 서치한 데이터');
         return result;
       }
     } catch (error) {
+      //redis error시 db에서 서치
       const result: fetchFeedOutput = await this.feedService.findWithTags({
         feedTags,
         region,
@@ -75,8 +74,6 @@ export class FeedResolver {
       const redisInput = JSON.stringify({ currentUser, page });
       const redis = await this.cacheManager.get(redisInput);
       if (redis) {
-        console.log('redis에서 서치한 데이터');
-
         return redis;
       } else {
         const result: fetchFeedOutput = await this.feedService.findMyFeeds({
@@ -84,10 +81,10 @@ export class FeedResolver {
           page,
         });
         await this.cacheManager.set(redisInput, result, { ttl: 10 });
-        console.log('db에서 서치한 데이터');
         return result;
       }
     } catch (error) {
+      //redis error시 db에서 서치
       const result: fetchFeedOutput = await this.feedService.findMyFeeds({
         currentUser,
         page,
@@ -109,8 +106,6 @@ export class FeedResolver {
       const redisInput = JSON.stringify({ userNickname, page });
       const redis: fetchFeedOutput = await this.cacheManager.get(redisInput);
       if (redis) {
-        console.log('redis에서 서치한 데이터');
-
         return redis;
       } else {
         const result: fetchFeedOutput = await this.feedService.findUserFeeds({
@@ -118,10 +113,10 @@ export class FeedResolver {
           page,
         });
         await this.cacheManager.set(redisInput, result, { ttl: 3 });
-        console.log('db에서 서치한 데이터');
         return result;
       }
     } catch (error) {
+      //redis error시 db에서 서치
       const result: fetchFeedOutput = await this.feedService.findUserFeeds({
         userNickname,
         page,

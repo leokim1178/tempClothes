@@ -48,7 +48,7 @@ export class User {
   @Field(() => Int)
   button: number;
 
-  @ManyToOne(() => Region, { nullable: true })
+  @ManyToOne(() => Region, { nullable: true, onDelete: 'CASCADE' })
   @Field(() => Region, { nullable: true })
   region: Region;
 

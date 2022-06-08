@@ -32,7 +32,6 @@ export class UserService {
   }
 
   async load({ nickname }) {
-    // 닉네임으로 유저 & 피드 조회
     const result = await this.userRepository.findOne({
       where: { nickname: nickname },
       relations: ['region'],
@@ -42,7 +41,6 @@ export class UserService {
   }
 
   async fetch({ email }) {
-    // 유저 조회(피드와 유저 합치기)
     const result = await this.userRepository.findOne({
       where: { email: email },
       relations: ['region'],
@@ -76,7 +74,6 @@ export class UserService {
     });
 
     const emailBody =
-      // 이메일 내용
       `
       <html>
       <body>
@@ -102,7 +99,6 @@ export class UserService {
         <div align="center">가입일: ${getToday()}</div>
       </body>
     </html>
-
       `;
     const appKey = process.env.EMAIL_APP_KEY;
     const XSecretKey = process.env.EMAIL_X_SECRET_KEY;
@@ -120,7 +116,7 @@ export class UserService {
       },
       {
         headers: {
-          'Content-Type': 'application/json;charset=UTF-8', // 가운데 - 이게 들어가 문자열로 감싸줘야함. 원래는 안해도 됨.
+          'Content-Type': 'application/json;charset=UTF-8',
           'X-Secret-Key': XSecretKey,
         },
       },
@@ -133,7 +129,7 @@ export class UserService {
   }
 
   async update({ currentEmail, updateUserInput }) {
-    const nic = await this.userRepository.find(); // 유저 정보 파인드
+    const nic = await this.userRepository.find();
     const { regionId, ...rest } = updateUserInput;
     const updateUser = await this.userRepository.findOne({
       where: { email: currentEmail },
@@ -146,20 +142,10 @@ export class UserService {
     });
 
     for (let i = 0; i < nic.length; i++) {
-      // 닉네임 중복 확인
       if (isAuthNic === nic[i]['nickname']) {
         throw new UnprocessableEntityException('이미 사용중인 닉네임입니다.');
       }
     }
-
-    // const isAuth = await bcrypt.compare(password, updateUser.password);
-    // if (!isAuth)
-    //   throw new UnprocessableEntityException('현재 비밀번호가 틀렸습니다.');
-    // if (updateUserInput.password)
-    //   updateUserInput.password = await bcrypt.hash(
-    //     updateUserInput.password, // 변경 비밀번호 해싱
-    //     10,
-    //   );
 
     const newUser: User = {
       ...updateUser,
@@ -179,7 +165,7 @@ export class UserService {
 
     if (user.password)
       user.password = await bcrypt.hash(
-        updatePassword, // 변경 비밀번호 해싱
+        updatePassword,
         10,
       );
 
@@ -195,20 +181,16 @@ export class UserService {
   }
 
   async send({ phone }) {
-    // 휴대폰 번호 인증 전송
     if (phone.length !== 10 && phone.length !== 11)
-      // 핸드폰 번호 길이 검증
       throw new UnprocessableEntityException('핸드폰 번호가 알맞지 않습니다.');
 
     let tokenCount = 6;
-    // 인증번호 토큰 발급
     const token = String(Math.floor(Math.random() * 10 ** tokenCount)).padStart(
       tokenCount,
       '0',
     );
 
     await this.cacheManager.set(`${token}`, token, {
-      // redis 저장
       ttl: 180,
     });
 
@@ -235,8 +217,7 @@ export class UserService {
   }
 
   async confirm({ authNumber }) {
-    const result = await this.cacheManager.get(`${authNumber}`); // redis에 있는 인증번호 확인하기
-
+    const result = await this.cacheManager.get(`${authNumber}`);
     if (result == authNumber) {
       return '인증완료';
     } else {

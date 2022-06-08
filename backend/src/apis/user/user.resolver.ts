@@ -1,6 +1,5 @@
 import { Query, Resolver, Args, Mutation } from '@nestjs/graphql';
 import { UserService } from './user.service';
-// import { FeedService } from '../feed/feed.service';
 import { User } from './entities/user.entity';
 import { createUserInput } from './dto/createUser.input';
 import { updateUserInput } from './dto/updateUser.input';
@@ -12,55 +11,55 @@ import { CurrentUser, ICurrentUser } from '../../commons/auth/gql-user.param';
 @Resolver()
 export class UserResolver {
   constructor(
-    private readonly userService: UserService, //
+    private readonly userService: UserService,
   ) {}
 
-  @Query(() => [User]) // OOTD때, 전체 조회??(이 부분은 피드 부분?)
+  @Query(() => [User])
   fetchUsers() {
     return this.userService.findAll();
   }
 
-  @UseGuards(GqlAuthAccessGuard) // 로그인한 유저
-  @Query(() => User) // 마이페이지 조회
+  @UseGuards(GqlAuthAccessGuard)
+  @Query(() => User)
   fetchUser(
-    @CurrentUser() currentUser: ICurrentUser, //
+    @CurrentUser() currentUser: ICurrentUser,
   ) {
     return this.userService.fetch({ email: currentUser.email });
   }
 
-  @Query(() => User) // 마이페이지 조회
+  @Query(() => User)
   fetchNickname(
-    @Args('nickname') nickname: string, //
+    @Args('nickname') nickname: string,
   ) {
     return this.userService.load({ nickname });
   }
 
-  @Mutation(() => String) // 이메일 중복 확인
+  @Mutation(() => String)
   confirmOverlapEmail(
-    @Args('email') email: string, //
+    @Args('email') email: string,
   ) {
     return this.userService.overLapEmail({ email });
   }
 
-  @Mutation(() => String) // 닉네임 중복 확인
+  @Mutation(() => String)
   confirmOverlapNic(
-    @Args('nickname') nickname: string, //
+    @Args('nickname') nickname: string,
   ) {
     return this.userService.overLapNic({ nickname });
   }
 
-  @Mutation(() => User) // 유저 회원가입
+  @Mutation(() => User)
   async createUser(
-    @Args('createUserInput') createUserInput: createUserInput, //
+    @Args('createUserInput') createUserInput: createUserInput,
   ) {
     const hashedPassword = await bcrypt.hash(createUserInput.password, 10);
-    createUserInput.password = hashedPassword; // 비밀번호 해싱
+    createUserInput.password = hashedPassword;
     return this.userService.create({
       createUserInput,
     });
   }
 
-  @UseGuards(GqlAuthAccessGuard) // 회원정보 수정
+  @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => User)
   async updateUser(
     @CurrentUser() currentUser: ICurrentUser,
@@ -73,12 +72,12 @@ export class UserResolver {
     });
   }
 
-  @UseGuards(GqlAuthAccessGuard) // 비밀번호 변경
+  @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => User)
   async updatePassword(
     @CurrentUser() currentUser: ICurrentUser,
-    @Args('originPassword') originPassword: string, //
-    @Args('updatePassword') updatePassword: string, //
+    @Args('originPassword') originPassword: string, 
+    @Args('updatePassword') updatePassword: string, 
   ) {
     const currentEmail = currentUser.email;
     return await this.userService.updatePassword({
@@ -88,26 +87,26 @@ export class UserResolver {
     });
   }
 
-  @UseGuards(GqlAuthAccessGuard) // 로그인한 유저
-  @Mutation(() => Boolean) // 회원탈퇴 API
+  @UseGuards(GqlAuthAccessGuard) 
+  @Mutation(() => Boolean)
   deleteUser(
-    @CurrentUser() currentUser: ICurrentUser, //
+    @CurrentUser() currentUser: ICurrentUser,
   ) {
     const currentUserEmail = currentUser.email;
-    return this.userService.delete({ currentUserEmail }); // 피드서비스의 delete끌어옴.
+    return this.userService.delete({ currentUserEmail }); 
   }
 
-  @Mutation(() => String) // 인증번호 발송
+  @Mutation(() => String)
   createPhoneAuth(
-    @Args('phone') phone: string, //
-  ) {
+    @Args('phone') phone: string, 
+  ){
     return this.userService.send({ phone });
-  }
+   }
 
-  @Mutation(() => String) // 인증번호 확인
+  @Mutation(() => String) 
   confirmAuthNumber(
-    @Args('authNumber') authNumber: string, //
-  ) {
+    @Args('authNumber') authNumber: string,
+  ){
     return this.userService.confirm({ authNumber });
-  }
+   }
 }

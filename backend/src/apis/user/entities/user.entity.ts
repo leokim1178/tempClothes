@@ -21,7 +21,7 @@ export class User {
   @Field(() => String)
   email: string;
 
-  @Column() // 패스워드는 반환이 되면 안됨
+  @Column()
   password: string;
 
   @Column({ nullable: true })
@@ -44,7 +44,7 @@ export class User {
   @Field(() => String, { nullable: true })
   userImgURL: string;
 
-  @Column({ default: 0 }) // boolean형 일때는 true/false
+  @Column({ default: 0 })
   @Field(() => Int)
   button: number;
 

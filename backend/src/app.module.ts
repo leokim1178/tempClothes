@@ -23,18 +23,18 @@ import { TestModule } from './apis/test/test.module';
 
 @Module({
   imports: [
-    FeedModule, // 피드 모듈
-    FeedImgModule, // 피드 이미지 모듈
-    FeedTagModule, // 피드 태그 모듈
-    UserModule, // 유저 모듈
-    CommentModule, // 댓글 모듈
-    AuthModule, // 로그인 모듈
-    RegionModule, // 지역 & 날씨 모듈
-    PaymentModule, // 결제 모듈
-    FileModule, // 파일 모듈
-    ChatModule, // 채팅 시스템
-    CronModule, // 크론 모듈
-    FeedLikeModule, // 피드 좋아요 모듈
+    FeedModule, 
+    FeedImgModule, 
+    FeedTagModule,
+    UserModule,
+    CommentModule, 
+    AuthModule, 
+    RegionModule,
+    PaymentModule,
+    FileModule, 
+    ChatModule, 
+    CronModule, 
+    FeedLikeModule,
     TestModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,

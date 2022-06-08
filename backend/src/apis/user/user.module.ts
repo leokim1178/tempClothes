@@ -6,7 +6,15 @@ import { UserService } from './user.service';
 import { Region } from '../region/entities/region.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Region])],
-  providers: [UserResolver, UserService],
+  imports: [
+    TypeOrmModule.forFeature([
+      User, //
+      Region,
+    ]),
+  ],
+  providers: [
+    UserResolver, //
+    UserService,
+  ],
 })
 export class UserModule {}

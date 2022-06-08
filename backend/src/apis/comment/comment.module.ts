@@ -7,7 +7,16 @@ import { Feed } from '../feed/entities/feed.entity';
 import { User } from '../user/entities/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Comment, Feed, User])],
-  providers: [CommentResolver, CommentService],
+  imports: [
+    TypeOrmModule.forFeature([
+      Comment, //
+      Feed,
+      User,
+    ]),
+  ],
+  providers: [
+    CommentResolver, //
+    CommentService,
+  ],
 })
 export class CommentModule {}

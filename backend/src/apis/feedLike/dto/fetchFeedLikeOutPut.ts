@@ -4,8 +4,10 @@ import { Field, Int, ObjectType } from '@nestjs/graphql';
 export class fetchFeedLikeOutput {
   @Field(() => Int)
   likeCount: number;
+
   @Field(() => Boolean)
   isLike: boolean;
+
   @Field(() => String)
   nickname: string;
 }

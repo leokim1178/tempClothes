@@ -7,7 +7,7 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly jwtService: JwtService, 
+    private readonly jwtService: JwtService,
     private readonly userService: UserService,
   ) {}
 
@@ -33,18 +33,20 @@ export class AuthService {
   }
 
   async socialLogin({ req, res }) {
-    const hashedPW = await bcrypt.hash(req.user.password, 10).then((res) => res);
+    const hashedPW = await bcrypt
+      .hash(req.user.password, 10) // 유저 resolver에서 패스워드 해시를 했기 때문에 여기서 해시를 미리 해줌.
+      .then((res) => res);
 
     let user = await this.userService.fetch({ email: req.user.email });
     if (!user) {
       if (!req.user.email)
-        throw new BadRequestException('email 정보가 없습니다 ');
+        throw new BadRequestException('email 정보가 없습니다 '); // 4xx에러(프론트쪽 에러라는 것을 알려주기 위함)
       if (!req.user.nickname)
         throw new BadRequestException('닉네임 값이 없습니다');
 
       const createUserInput: createUserInput = {
         email: req.user.email,
-        gender: '성별을 입력해주세요',
+        gender: '성별을 입력해주세요', // 회원 정보를 추가적으로 입력해주기 위해 백엔드에 플레이스홀더 대신에 값을 줌.
         phone: '번호를 입력해주세요',
         nickname: req.user.nickname,
         password: hashedPW,
@@ -63,7 +65,7 @@ export class AuthService {
         user.style === '스타일 정보를 입력해주세요'
       ) {
         this.setRefreshToken({ user, res });
-        await res.redirect('http://localhost:3000/signup');
+        await res.redirect('http://localhost:3000/signup'); // 회원가입 할때 추가정보를 입력안했을때를 생각하여 리다이렉트 시켜주는 작업.
       } else {
         this.setRefreshToken({ user, res });
         await res.redirect('http://localhost:3000/tempClothes');

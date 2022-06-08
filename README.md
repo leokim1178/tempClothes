@@ -73,7 +73,7 @@ prod: https://server.t1dreamers.shop/graphql
 
 ## ERD 설계
 
-![](readme-imgs/최종%20ERD.png)
+![](readme-imgs/%EC%98%A8%EB%8F%84%EC%9D%98%20ERD.png)
 
 ## Data-Flow
 

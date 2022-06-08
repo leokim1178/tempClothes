@@ -34,7 +34,7 @@ export class AuthService {
 
   async socialLogin({ req, res }) {
     const hashedPW = await bcrypt
-      .hash(req.user.password, 10) // 유저 resolver에서 패스워드 해시를 했기 때문에 여기서 해시를 미리 해줌.
+      .hash(req.user.password, 10)
       .then((res) => res);
 
     let user = await this.userService.fetch({ email: req.user.email });

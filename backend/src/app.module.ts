@@ -23,17 +23,17 @@ import { TestModule } from './apis/test/test.module';
 
 @Module({
   imports: [
-    FeedModule, 
-    FeedImgModule, 
+    FeedModule,
+    FeedImgModule,
     FeedTagModule,
     UserModule,
-    CommentModule, 
-    AuthModule, 
+    CommentModule,
+    AuthModule,
     RegionModule,
     PaymentModule,
-    FileModule, 
-    ChatModule, 
-    CronModule, 
+    FileModule,
+    ChatModule,
+    CronModule,
     FeedLikeModule,
     TestModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({

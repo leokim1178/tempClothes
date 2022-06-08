@@ -14,10 +14,7 @@ export class AuthController {
 
   @Get('/login/google')
   @UseGuards(AuthGuard('google'))
-  async loginGoogle(
-    @Req() req: Request & IOAuthUser,
-    @Res() res: Response,
-  ) {
+  async loginGoogle(@Req() req: Request & IOAuthUser, @Res() res: Response) {
     this.authService.socialLogin({ req, res });
   }
 

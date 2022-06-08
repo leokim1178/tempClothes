@@ -26,9 +26,7 @@ export class UserResolver {
   }
 
   @Query(() => User)
-  fetchNickname(
-    @Args('nickname') nickname: string, //
-  ) {
+  fetchNickname(@Args('nickname') nickname: string) {
     return this.userService.load({ nickname });
   }
 

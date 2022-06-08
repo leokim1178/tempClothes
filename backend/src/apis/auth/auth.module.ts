@@ -12,20 +12,12 @@ import { AuthController } from './auth.controller';
 import { UserService } from '../user/user.service';
 import { User } from '../user/entities/user.entity';
 import { Region } from '../region/entities/region.entity';
-import { Feed } from '../feed/entities/feed.entity';
 import { Comment } from '../comment/entities/comment.entity';
-import { FeedTag } from '../feedTag/entities/feedTag.entity';
-import { FeedImg } from '../feedImg/entities/feedImg.entity';
-import { FeedLike } from '../feedLike/entities/feedLike.entity';
 
 @Module({
   imports: [
     JwtModule.register({}), //
-    TypeOrmModule.forFeature([
-      User,
-      Region,
-      Comment,
-    ]),
+    TypeOrmModule.forFeature([User, Region, Comment]),
   ],
   providers: [
     JwtRefreshStrategy,

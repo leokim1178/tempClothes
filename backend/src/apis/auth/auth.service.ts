@@ -40,13 +40,13 @@ export class AuthService {
     let user = await this.userService.fetch({ email: req.user.email });
     if (!user) {
       if (!req.user.email)
-        throw new BadRequestException('email 정보가 없습니다 '); // 4xx에러(프론트쪽 에러라는 것을 알려주기 위함)
+        throw new BadRequestException('email 정보가 없습니다 ');
       if (!req.user.nickname)
         throw new BadRequestException('닉네임 값이 없습니다');
 
       const createUserInput: createUserInput = {
         email: req.user.email,
-        gender: '성별을 입력해주세요', // 회원 정보를 추가적으로 입력해주기 위해 백엔드에 플레이스홀더 대신에 값을 줌.
+        gender: '성별을 입력해주세요',
         phone: '번호를 입력해주세요',
         nickname: req.user.nickname,
         password: hashedPW,
@@ -65,7 +65,7 @@ export class AuthService {
         user.style === '스타일 정보를 입력해주세요'
       ) {
         this.setRefreshToken({ user, res });
-        await res.redirect('http://localhost:3000/signup'); // 회원가입 할때 추가정보를 입력안했을때를 생각하여 리다이렉트 시켜주는 작업.
+        await res.redirect('http://localhost:3000/signup');
       } else {
         this.setRefreshToken({ user, res });
         await res.redirect('http://localhost:3000/tempClothes');

@@ -10,7 +10,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const status =
       exception instanceof HttpException
         ? exception.getStatus()
-        : HttpStatus.INTERNAL_SERVER_ERROR; // getStatus 대신에 그냥 서버오류로 바꾸기 위함(한번 찾아보자)
+        : HttpStatus.INTERNAL_SERVER_ERROR;
     const message = exception.message;
     console.log('==========');
     console.log('에러 발생!');

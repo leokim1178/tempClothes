@@ -302,8 +302,8 @@ export class FeedService {
       await Promise.all(
         feedTags.map((el) => {
           this.feedTagRepository.update(
-            { tagName: el.tagName }, // typeorm에서 쓸 수 있는 기능!, 변경할 부분
-            { count: () => 'count-1' }, // 값 수정, string으로 써야함
+            { tagName: el.tagName },
+            { count: () => 'count-1' },
           );
         }),
       );

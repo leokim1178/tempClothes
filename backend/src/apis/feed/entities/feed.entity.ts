@@ -29,7 +29,7 @@ export class Feed {
   @Field(() => Int, { nullable: true })
   watchCount: number;
 
-  @Column({ type: 'longtext' }) // 길게 쓰고 싶을때!
+  @Column({ type: 'longtext' })
   @Field(() => String)
   detail: string;
 
@@ -62,8 +62,8 @@ export class Feed {
   feedTag: FeedTag[];
 
   @OneToMany(() => FeedImg, (feedImg) => feedImg.feed, {
-    cascade: true, // 주가 되는 객체에!, ondelete: 'cascade'는 1:n에서 n 쪽에 걸어준다.
-    orphanedRowAction: 'delete', // 부모 없으면 죽는거
+    cascade: true,
+    orphanedRowAction: 'delete',
   })
   @Field(() => [FeedImg])
   feedImg: FeedImg[];

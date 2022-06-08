@@ -10,9 +10,9 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
   app.enableCors({
     credentials: true,
-    origin: 'http://localhost:3000',
+    origin: 'http://tempclothes.site',
   });
-  app.useStaticAssets(join(__dirname, '..', 'chat')); 
+  app.useStaticAssets(join(__dirname, '..', 'chat'));
   app.use(graphqlUploadExpress());
   await app.listen(3000);
 }

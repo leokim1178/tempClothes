@@ -41,7 +41,7 @@ import { TestModule } from './apis/test/test.module';
       autoSchemaFile: 'src/commons/graphql/schema.gql',
       context: ({ req, res }) => ({ req, res }),
       cors: {
-        origin: 'http://localhost:3000',
+        origin: 'http://tempclothes.site',
         credentials: true,
       },
     }),

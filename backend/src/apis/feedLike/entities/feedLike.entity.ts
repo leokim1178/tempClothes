@@ -3,7 +3,6 @@ import { Feed } from 'src/apis/feed/entities/feed.entity';
 import { User } from 'src/apis/user/entities/user.entity';
 import {
   Column,
-  DeleteDateColumn,
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,

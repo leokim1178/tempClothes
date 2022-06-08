@@ -29,10 +29,6 @@ export class FeedImg {
   @Field(() => Feed)
   feed: Feed;
 
-  @DeleteDateColumn()
-  @Field(() => Date)
-  deletedAt: Date;
-
   @CreateDateColumn()
   @Field(() => Date)
   createdAt: Date;
@@ -40,4 +36,8 @@ export class FeedImg {
   @UpdateDateColumn()
   @Field(() => Date)
   updatedAt: Date;
+
+  @DeleteDateColumn()
+  @Field(() => Date)
+  deletedAt: Date;
 }

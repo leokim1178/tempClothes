@@ -8,7 +8,6 @@ import { FeedTag } from '../feedTag/entities/feedTag.entity';
 import { Region } from '../region/entities/region.entity';
 import { User } from '../user/entities/user.entity';
 import { Feed } from './entities/feed.entity';
-
 import { FeedResolver } from './feed.resolver';
 import { FeedService } from './feed.service';
 

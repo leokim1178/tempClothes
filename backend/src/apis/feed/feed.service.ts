@@ -5,10 +5,8 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
-
 import { FeedImg } from '../feedImg/entities/feedImg.entity';
 import { FeedImgService } from '../feedImg/feedImg.service';
-
 import { FeedTag } from '../feedTag/entities/feedTag.entity';
 import { Region } from '../region/entities/region.entity';
 import { User } from '../user/entities/user.entity';
@@ -234,9 +232,7 @@ export class FeedService {
 
   async update({ feedId, updateFeedInput }) {
     const lastFeed = await this.feedRepository.findOne({
-      where: {
-        id: feedId,
-      },
+      where: { id: feedId },
     });
     if (!lastFeed) throw new NotFoundException('존재하지 않는 피드입니다');
     try {
@@ -306,8 +302,8 @@ export class FeedService {
       await Promise.all(
         feedTags.map((el) => {
           this.feedTagRepository.update(
-            { tagName: el.tagName },
-            { count: () => 'count-1' },
+            { tagName: el.tagName }, // typeorm에서 쓸 수 있는 기능!, 변경할 부분
+            { count: () => 'count-1' }, // 값 수정, string으로 써야함
           );
         }),
       );

@@ -10,7 +10,6 @@ import { Cache } from 'cache-manager';
 @Resolver()
 export class RegionResolver {
   constructor(
-    //
     private readonly regionService: RegionService,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
@@ -18,16 +17,14 @@ export class RegionResolver {
 
   @Query(() => Region)
   fetchRegion(
-    @Args('reagionName')
-    regionId: string,
+    @Args('reagionName') regionId: string, //
   ) {
     return this.regionService.findOne({ regionId });
   }
 
   @Query(() => WeatherOutPut)
   async getWeather(
-    @Args('regionName')
-    regionId: string,
+    @Args('regionName') regionId: string, //
   ) {
     try {
       const redis = await this.cacheManager.get(regionId);
@@ -78,32 +75,25 @@ export class RegionResolver {
 
   @Mutation(() => Region)
   createRegion(
-    @Args('regionId')
-    regionId: string,
-    @Args('lat')
-    lat: string,
-    @Args('lon')
-    lon: string,
+    @Args('regionId') regionId: string, //
+    @Args('lat') lat: string,
+    @Args('lon') lon: string,
   ) {
     return this.regionService.create({ regionId, lat, lon });
   }
 
   @Mutation(() => Region)
   updateRegion(
-    @Args('regionId')
-    regionId: string,
-    @Args('lat')
-    lat: string,
-    @Args('lon')
-    lon: string,
+    @Args('regionId') regionId: string, //
+    @Args('lat') lat: string,
+    @Args('lon') lon: string,
   ) {
     return this.regionService.update({ regionId, lat, lon });
   }
 
   @Mutation(() => Boolean)
   deleteRegion(
-    @Args('regionId')
-    regionId: string,
+    @Args('regionId') regionId: string, //
   ) {
     return this.regionService.delete({ regionId });
   }

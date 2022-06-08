@@ -6,7 +6,6 @@ import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth-guard';
 import { CurrentUser } from 'src/commons/auth/gql-user.param';
 import { Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
-
 import { FileService } from './file.service';
 
 @Resolver()
@@ -33,9 +32,7 @@ export class FileResolver {
   ) {
     const uploadResult = await this.fileService.uploadImg({ img });
     const user = await this.userRepository.findOne({
-      where: {
-        email: currentUser.email,
-      },
+      where: { email: currentUser.email },
     });
 
     await this.userRepository.save({

@@ -13,17 +13,12 @@ export class JwtGoogleStrategy extends PassportStrategy(Strategy, 'google') {
     super({
       clientID: googleClientID,
       clientSecret: googleClientSecret,
-      // callbackURL: 'https://team01.leo3179.shop/login/google', // dev
       callbackURL: 'https://server.t1dreamers.shop/login/google', // prod
       scope: ['email', 'profile'],
     });
   }
 
   validate(accessToken: string, refreshToken: string, profile: any) {
-    console.log('1//////', accessToken);
-    console.log('2//////', refreshToken);
-    console.log(profile);
-
     return {
       email: profile.emails[0].value,
       password: '1111',

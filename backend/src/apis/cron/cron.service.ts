@@ -24,9 +24,8 @@ export class CronService {
   @Cron('0 0 0 * * *')
   async resetWatchCount() {
     const feeds = await this.feedRepository.find();
-    console.log(feeds);
 
-    const result = await Promise.all(
+    await Promise.all(
       feeds.map((el) => {
         return this.feedRepository.save({ ...el, watchCount: 0 });
       }),

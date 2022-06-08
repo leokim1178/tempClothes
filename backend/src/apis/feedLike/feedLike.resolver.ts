@@ -20,7 +20,7 @@ export class FeedLikeResolver {
   }
 
   @UseGuards(GqlAuthAccessGuard)
-  @Mutation(() => Boolean) // 좋아요 누르기
+  @Mutation(() => Boolean)
   toggleLikeFeed(
     @CurrentUser() currentUser: ICurrentUser,
     @Args('feedId')

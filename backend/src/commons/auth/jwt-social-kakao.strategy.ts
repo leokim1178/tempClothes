@@ -10,16 +10,11 @@ export class JwtKakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
     super({
       clientID: kakaoClientID,
       clientSecret: kakaoClientSecret,
-      // callbackURL: 'https://team01.leo3179.shop/login/kakao', // prod
       callbackURL: 'https://server.t1dreamers.shop/login/kakao', // prod
-      // scope: ['email', 'profile'],
     });
   }
 
   validate(accessToken: string, refreshToken: string, profile: any) {
-    console.log('1/////', accessToken);
-    console.log('2/////', refreshToken);
-
     return {
       email: profile._json.kakao_account.email,
       password: '1111',

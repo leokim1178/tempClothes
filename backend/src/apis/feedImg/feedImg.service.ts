@@ -27,22 +27,18 @@ export class FeedImgService {
   }
 
   async updateImg({ feedId, imgURLs }) {
-    //1. feedId가 유효한지 확인
-
     const feed = await this.feedRepository.findOne({
       where: { id: feedId },
     });
     if (!feed)
       throw new UnprocessableEntityException('등록되지 않은 feedId입니다');
 
-    //2. feedId에 해당되는 이미지들 불러오기
     const feedURLs = await this.feedImgRepository.find({
       where: { feed },
     });
 
-    //3. feedId와 연결된 이미지 중 저장할 항목과 삭제할 항목 분리
-    const newURLsArray = []; // 새롭게 저장해야하는 url들
-    const pastURLs = []; //  이미 존재했던 url들
+    const newURLsArray = [];
+    const pastURLs = [];
 
     for (let i = 0; i < imgURLs.length; i++) {
       await Promise.all(
@@ -55,13 +51,12 @@ export class FeedImgService {
         }),
       );
     }
-    // 저장할 항목( 입력한 url들 - 새롭게 저장해야하는 url들 )
+
     const newURLs = imgURLs.filter((el) => {
       return !newURLsArray.includes(el);
     });
-    // 삭제할 항목( 이미 존재했던 url들 - 새롭게 저장해야하는 url들 )
+
     const forDelete = [
-      // 중복 제거
       ...new Set(
         pastURLs.filter((el) => {
           return !newURLsArray.includes(el);
@@ -69,7 +64,6 @@ export class FeedImgService {
       ),
     ];
 
-    // 4. 새로운 url들 저장
     await Promise.all(
       newURLs.map(async (el) => {
         return await this.feedImgRepository.save({
@@ -79,7 +73,6 @@ export class FeedImgService {
       }),
     );
 
-    // 5. 삭제할 url들 삭제
     await Promise.all(
       forDelete.map(async (el) => {
         return await this.feedImgRepository.delete({
@@ -89,7 +82,6 @@ export class FeedImgService {
       }),
     );
 
-    // 6. feed에 해당되는 이미지 다시 추출 후 전송
     const saveResult = await this.feedImgRepository.find({
       where: { feed },
       relations: ['feed'],

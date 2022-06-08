@@ -4,12 +4,7 @@ import { RegionService } from './region.service';
 
 import axios from 'axios';
 import { WeatherOutPut } from './dto/weatherOutput';
-import {
-  CACHE_MANAGER,
-  Inject,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { CACHE_MANAGER, Inject, NotFoundException } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 
 @Resolver()
@@ -21,7 +16,7 @@ export class RegionResolver {
     private readonly cacheManager: Cache,
   ) {}
 
-  @Query(() => Region) // 지역 정보 조회
+  @Query(() => Region)
   fetchRegion(
     @Args('reagionName')
     regionId: string,
@@ -29,7 +24,7 @@ export class RegionResolver {
     return this.regionService.findOne({ regionId });
   }
 
-  @Query(() => WeatherOutPut) // 날씨 정보 API
+  @Query(() => WeatherOutPut)
   async getWeather(
     @Args('regionName')
     regionId: string,
@@ -38,16 +33,16 @@ export class RegionResolver {
       const redis = await this.cacheManager.get(regionId);
       if (redis) return redis;
       else {
-        const region = await this.regionService.findOne({ regionId }); // 지역정보(위도,경도) 불러오기
+        const region = await this.regionService.findOne({ regionId });
         if (!region) throw new NotFoundException('지역명이 존재하지 않습니다');
 
-        const appId = process.env.OPEN_WEATHER_APP_ID; // openWeather API appId
+        const appId = process.env.OPEN_WEATHER_APP_ID;
 
         const result = await axios({
           url: `https://api.openweathermap.org/data/2.5/onecall?lat=${region.lat}&lon=${region.lon}&units=metric&exclude=daily,alerts&appid=${appId}`,
-        }); // openWeatherAPI 호출
+        });
 
-        const data = result.data; // 전체 데이터
+        const data = result.data;
 
         const current = data.current;
         const minutely = data.minutely[0];
@@ -64,7 +59,6 @@ export class RegionResolver {
         const weatherIcon = weatherObject[0].icon;
 
         const weatherResult: WeatherOutPut = {
-          // 아웃풋 클래스로 타입지정
           rainAmount,
           rainRate,
           temp,
@@ -78,13 +72,11 @@ export class RegionResolver {
         return weatherResult;
       }
     } catch (error) {
-      if (error.status == 404) throw new NotFoundException(error.message);
-
-      throw new InternalServerErrorException('날씨 정보 전송 속도 오류');
+      throw error;
     }
   }
 
-  @Mutation(() => Region) // 지역 정보 생성
+  @Mutation(() => Region)
   createRegion(
     @Args('regionId')
     regionId: string,
@@ -96,7 +88,7 @@ export class RegionResolver {
     return this.regionService.create({ regionId, lat, lon });
   }
 
-  @Mutation(() => Region) // 지역정보 업데이트
+  @Mutation(() => Region)
   updateRegion(
     @Args('regionId')
     regionId: string,
@@ -108,7 +100,7 @@ export class RegionResolver {
     return this.regionService.update({ regionId, lat, lon });
   }
 
-  @Mutation(() => Boolean) //지역정보 삭제
+  @Mutation(() => Boolean)
   deleteRegion(
     @Args('regionId')
     regionId: string,

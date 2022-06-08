@@ -9,12 +9,12 @@ import { PaymentButtonService } from './payment.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      User,
+      User, //
       PaymentButton,
     ]),
   ],
   providers: [
-    PaymentButtonResolver,
+    PaymentButtonResolver, //
     PaymentButtonService,
     IamportService,
   ],

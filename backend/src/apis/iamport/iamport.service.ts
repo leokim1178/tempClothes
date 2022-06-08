@@ -39,12 +39,12 @@ export class IamportService {
         throw new UnprocessableEntityException('결제 금액이 다릅니다.');
     } catch (error) {
       if (error?.response?.data?.message) {
-        throw new HttpException( 
+        throw new HttpException(
           error.response.data.message,
           error.response.status,
         );
       } else {
-        throw error; 
+        throw error;
       }
     }
   }

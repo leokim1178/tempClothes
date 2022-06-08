@@ -10,9 +10,7 @@ import { CurrentUser, ICurrentUser } from '../../commons/auth/gql-user.param';
 
 @Resolver()
 export class UserResolver {
-  constructor(
-    private readonly userService: UserService,
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
   @Query(() => [User])
   fetchUsers() {
@@ -22,35 +20,35 @@ export class UserResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => User)
   fetchUser(
-    @CurrentUser() currentUser: ICurrentUser,
+    @CurrentUser() currentUser: ICurrentUser, //
   ) {
     return this.userService.fetch({ email: currentUser.email });
   }
 
   @Query(() => User)
   fetchNickname(
-    @Args('nickname') nickname: string,
+    @Args('nickname') nickname: string, //
   ) {
     return this.userService.load({ nickname });
   }
 
   @Mutation(() => String)
   confirmOverlapEmail(
-    @Args('email') email: string,
+    @Args('email') email: string, //
   ) {
     return this.userService.overLapEmail({ email });
   }
 
   @Mutation(() => String)
   confirmOverlapNic(
-    @Args('nickname') nickname: string,
+    @Args('nickname') nickname: string, //
   ) {
     return this.userService.overLapNic({ nickname });
   }
 
   @Mutation(() => User)
   async createUser(
-    @Args('createUserInput') createUserInput: createUserInput,
+    @Args('createUserInput') createUserInput: createUserInput, //
   ) {
     const hashedPassword = await bcrypt.hash(createUserInput.password, 10);
     createUserInput.password = hashedPassword;
@@ -62,7 +60,7 @@ export class UserResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => User)
   async updateUser(
-    @CurrentUser() currentUser: ICurrentUser,
+    @CurrentUser() currentUser: ICurrentUser, //
     @Args('updateUserInput') updateUserInput: updateUserInput,
   ) {
     const currentEmail = currentUser.email;
@@ -76,8 +74,8 @@ export class UserResolver {
   @Mutation(() => User)
   async updatePassword(
     @CurrentUser() currentUser: ICurrentUser,
-    @Args('originPassword') originPassword: string, 
-    @Args('updatePassword') updatePassword: string, 
+    @Args('originPassword') originPassword: string,
+    @Args('updatePassword') updatePassword: string,
   ) {
     const currentEmail = currentUser.email;
     return await this.userService.updatePassword({
@@ -87,26 +85,26 @@ export class UserResolver {
     });
   }
 
-  @UseGuards(GqlAuthAccessGuard) 
+  @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
   deleteUser(
-    @CurrentUser() currentUser: ICurrentUser,
+    @CurrentUser() currentUser: ICurrentUser, //
   ) {
     const currentUserEmail = currentUser.email;
-    return this.userService.delete({ currentUserEmail }); 
+    return this.userService.delete({ currentUserEmail });
   }
 
   @Mutation(() => String)
   createPhoneAuth(
-    @Args('phone') phone: string, 
-  ){
+    @Args('phone') phone: string, //
+  ) {
     return this.userService.send({ phone });
-   }
+  }
 
-  @Mutation(() => String) 
+  @Mutation(() => String)
   confirmAuthNumber(
-    @Args('authNumber') authNumber: string,
-  ){
+    @Args('authNumber') authNumber: string, //
+  ) {
     return this.userService.confirm({ authNumber });
-   }
+  }
 }

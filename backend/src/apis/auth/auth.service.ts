@@ -7,7 +7,7 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly jwtService: JwtService, 
+    private readonly jwtService: JwtService,
     private readonly userService: UserService,
   ) {}
 
@@ -33,7 +33,9 @@ export class AuthService {
   }
 
   async socialLogin({ req, res }) {
-    const hashedPW = await bcrypt.hash(req.user.password, 10).then((res) => res);
+    const hashedPW = await bcrypt
+      .hash(req.user.password, 10)
+      .then((res) => res);
 
     let user = await this.userService.fetch({ email: req.user.email });
     if (!user) {

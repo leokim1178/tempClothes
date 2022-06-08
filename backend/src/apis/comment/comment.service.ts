@@ -35,7 +35,7 @@ export class CommentService {
         .getManyAndCount();
 
       const [comments] = result;
-      const result1: fetchCommentOutput = { comments, page }; 
+      const result1: fetchCommentOutput = { comments, page };
 
       return result1;
     } else {

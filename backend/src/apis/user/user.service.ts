@@ -73,8 +73,7 @@ export class UserService {
       where: { id: regionId },
     });
 
-    const emailBody =
-      `
+    const emailBody = `
       <html>
       <body>
         <h1></h1>
@@ -89,7 +88,7 @@ export class UserService {
         <p align="center">
           <img
             width="450"
-            src="https://i.ytimg.com/vi/z3pqoPAGbb0/maxresdefault.jpg"
+            src="https://p0.pikist.com/photos/293/633/field-tree-village-collections-spring-landscape-rural-forest-yields-nature.jpg"
           />
         </p>
     
@@ -163,11 +162,7 @@ export class UserService {
     if (!isAuth)
       throw new UnprocessableEntityException('현재 비밀번호가 틀렸습니다.');
 
-    if (user.password)
-      user.password = await bcrypt.hash(
-        updatePassword,
-        10,
-      );
+    if (user.password) user.password = await bcrypt.hash(updatePassword, 10);
 
     return this.userRepository.save(user);
   }

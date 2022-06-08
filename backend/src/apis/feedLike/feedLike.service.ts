@@ -73,14 +73,14 @@ export class FeedLikeService {
       if (!feed || !user) throw new NotFoundException();
 
       if (!feedLike) {
-        const updateLike = await this.feedLikeRepository.create({
+        const updateLike = this.feedLikeRepository.create({
           user,
           feed,
           isLike: true,
         });
         await queryRunner.manager.save(updateLike);
 
-        const updateFeed = await this.feedRepository.create({
+        const updateFeed = this.feedRepository.create({
           ...feed,
           likeCount: feed.likeCount + 1,
         });
@@ -90,7 +90,7 @@ export class FeedLikeService {
         return true;
       } else {
         if (feedLike.isLike) {
-          const updateLike = await this.feedLikeRepository.create({
+          const updateLike = this.feedLikeRepository.create({
             ...feedLike,
             user,
             feed,
@@ -98,7 +98,7 @@ export class FeedLikeService {
           });
           await queryRunner.manager.save(updateLike);
 
-          const updateFeed = await this.feedRepository.create({
+          const updateFeed = this.feedRepository.create({
             ...feed,
             likeCount: feed.likeCount - 1,
           });
@@ -107,7 +107,7 @@ export class FeedLikeService {
 
           return false;
         } else {
-          const updateLike = await this.feedLikeRepository.create({
+          const updateLike = this.feedLikeRepository.create({
             ...feedLike,
             user,
             feed,
@@ -115,7 +115,7 @@ export class FeedLikeService {
           });
           await queryRunner.manager.save(updateLike);
 
-          const updateFeed = await this.feedRepository.create({
+          const updateFeed = this.feedRepository.create({
             ...feed,
             likeCount: feed.likeCount + 1,
           });

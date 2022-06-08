@@ -35,7 +35,7 @@ export class RegionService {
       },
     });
 
-    if (checkDup) throw new ConflictException('이미 등록된 지역명입니다'); // 지역명 중복 확인
+    if (checkDup) throw new ConflictException('이미 등록된 지역명입니다');
 
     const result = await this.regionRepository.save({
       id: regionId,

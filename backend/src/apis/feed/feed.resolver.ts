@@ -18,7 +18,7 @@ export class FeedResolver {
   ) {}
 
   @UseGuards(GqlAuthAccessGuard)
-  @Query(() => Feed) // 피드 아이디로 피드 내용 조회
+  @Query(() => Feed)
   async fetchFeed(
     @Args('feedId')
     feedId: string,
@@ -28,7 +28,7 @@ export class FeedResolver {
     return result;
   }
 
-  @Query(() => fetchFeedOutput) // 태그들로 피드 조회
+  @Query(() => fetchFeedOutput)
   async fetchFeeds(
     @Args('regionId')
     region: string,
@@ -52,7 +52,6 @@ export class FeedResolver {
         return result;
       }
     } catch (error) {
-      //redis error시 db에서 서치
       const result: fetchFeedOutput = await this.feedService.findWithTags({
         feedTags,
         region,
@@ -64,7 +63,7 @@ export class FeedResolver {
   }
 
   @UseGuards(GqlAuthAccessGuard)
-  @Query(() => fetchFeedOutput) // 유저 정보로 피드 조회
+  @Query(() => fetchFeedOutput)
   async fetchMyFeeds(
     @CurrentUser() currentUser: ICurrentUser,
     @Args({ name: 'page', nullable: true, type: () => Int })
@@ -84,7 +83,6 @@ export class FeedResolver {
         return result;
       }
     } catch (error) {
-      //redis error시 db에서 서치
       const result: fetchFeedOutput = await this.feedService.findMyFeeds({
         currentUser,
         page,
@@ -116,7 +114,6 @@ export class FeedResolver {
         return result;
       }
     } catch (error) {
-      //redis error시 db에서 서치
       const result: fetchFeedOutput = await this.feedService.findUserFeeds({
         userNickname,
         page,
@@ -127,7 +124,7 @@ export class FeedResolver {
   }
 
   @UseGuards(GqlAuthAccessGuard)
-  @Mutation(() => Feed) // 피드 생성
+  @Mutation(() => Feed)
   createFeed(
     @Args('createFeedInput')
     createFeedInput: CreateFeedInput,
@@ -137,7 +134,7 @@ export class FeedResolver {
   }
 
   @UseGuards(GqlAuthAccessGuard)
-  @Mutation(() => Feed) // 피드 업데이트
+  @Mutation(() => Feed)
   updateFeed(
     @Args('updateFeedInput')
     updateFeedInput: UpdateFeedInput,
@@ -148,7 +145,7 @@ export class FeedResolver {
   }
 
   @UseGuards(GqlAuthAccessGuard)
-  @Mutation(() => Boolean) // 피드 삭제
+  @Mutation(() => Boolean)
   deleteFeed(@Args('feedId') feedId: string) {
     return this.feedService.delete({ feedId });
   }

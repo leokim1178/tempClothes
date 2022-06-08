@@ -65,7 +65,7 @@ export class AuthService {
         user.style === '스타일 정보를 입력해주세요'
       ) {
         this.setRefreshToken({ user, res });
-        await res.redirect('http://localhost:3000/signup'); // 회원가입 할때 추가정보를 입력안했을때를 생각하여 리다이렉트 시켜주는 작업.
+        await res.redirect('http://localhost:3000/signup'); // 회원가입 할때 추가정보를 입력안했을때를 생각하여 리다이렉트 시켜주는 작업이다.
       } else {
         this.setRefreshToken({ user, res });
         await res.redirect('http://localhost:3000/tempClothes');

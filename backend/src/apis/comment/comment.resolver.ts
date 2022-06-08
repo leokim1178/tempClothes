@@ -10,9 +10,7 @@ import { fetchCommentOutput } from './dto/fetchComment.output';
 
 @Resolver()
 export class CommentResolver {
-  constructor(
-    private readonly commentService: CommentService,
-  ) {}
+  constructor(private readonly commentService: CommentService) {}
 
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => fetchCommentOutput)

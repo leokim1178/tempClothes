@@ -7,16 +7,7 @@ import { PaymentButtonResolver } from './payment.resolver';
 import { PaymentButtonService } from './payment.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      User,
-      PaymentButton,
-    ]),
-  ],
-  providers: [
-    PaymentButtonResolver,
-    PaymentButtonService,
-    IamportService,
-  ],
+  imports: [TypeOrmModule.forFeature([User, PaymentButton])],
+  providers: [PaymentButtonResolver, PaymentButtonService, IamportService],
 })
 export class PaymentModule {}

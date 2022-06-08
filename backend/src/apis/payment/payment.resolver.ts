@@ -22,7 +22,7 @@ export class PaymentButtonResolver {
     @CurrentUser() currentUser: ICurrentUser,
   ) {
     const token = await this.iamportService.getToken();
-  
+
     await this.iamportService.checkpaid({ imp_uid, amount, token });
 
     await this.paymentButtonService.checkOverlap({ imp_uid });
@@ -59,9 +59,7 @@ export class PaymentButtonResolver {
 
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => User)
-  async payChat(
-    @CurrentUser() currentUser: ICurrentUser) 
-  {
+  async payChat(@CurrentUser() currentUser: ICurrentUser) {
     return await this.paymentButtonService.pay({ currentUser });
   }
 }

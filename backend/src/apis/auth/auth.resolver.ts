@@ -35,7 +35,7 @@ export class AuthResolver {
     const user = await this.userService.fetch({ email });
     if (!user)
       throw new UnprocessableEntityException('존재하지 않는 유저입니다.');
-    
+
     const isAuth = await bcrypt.compare(password, user.password);
     if (!isAuth)
       throw new UnprocessableEntityException('비밀번호를 다시 확인하세요.');
@@ -46,12 +46,10 @@ export class AuthResolver {
   }
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => String)
-  async logout(
-    @Context() context: any, 
-  ) {
+  async logout(@Context() context: any) {
     const access = context.req.headers.authorization.split(' ')[1];
-    const refresh = context.req.headers.cookie.split('=')[1]; 
-    
+    const refresh = context.req.headers.cookie.split('=')[1];
+
     try {
       const accessResult = jwt.verify(access, process.env.ACCESS_TOKEN_KEY);
       const refreshResult = jwt.verify(refresh, process.env.REFRESH_TOKEN_KEY);
@@ -69,9 +67,7 @@ export class AuthResolver {
 
   @UseGuards(GqlAuthRefreshGuard)
   @Mutation(() => String)
-  restoreAccessToken(
-    @CurrentUser() currentUser: ICurrentUser,
-  ) {
+  restoreAccessToken(@CurrentUser() currentUser: ICurrentUser) {
     return this.authService.getAccessToken({ user: currentUser });
   }
 }

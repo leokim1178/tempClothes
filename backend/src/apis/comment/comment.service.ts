@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, getConnection } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Feed } from '../feed/entities/feed.entity';
 import { User } from '../user/entities/user.entity';
 import { fetchCommentOutput } from './dto/fetchComment.output';
@@ -35,7 +35,7 @@ export class CommentService {
         .getManyAndCount();
 
       const [comments] = result;
-      const result1: fetchCommentOutput = { comments, page }; 
+      const result1: fetchCommentOutput = { comments, page };
 
       return result1;
     } else {
@@ -96,7 +96,7 @@ export class CommentService {
   }
 
   async delete({ commentId }) {
-    const result2 = await this.commentRepository.delete({
+    await this.commentRepository.delete({
       pComment: commentId,
     });
 

@@ -35,7 +35,7 @@ export class CommentService {
         .getManyAndCount();
 
       const [comments] = result;
-      const result1: fetchCommentOutput = { comments, page }; // 아웃풋을 만들어줘서 타입 지정을 했다. 더 공부해보자
+      const result1: fetchCommentOutput = { comments, page }; 
 
       return result1;
     } else {

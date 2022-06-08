@@ -18,7 +18,6 @@ export class IamportService {
       return result.data.response.access_token;
     } catch (error) {
       throw new HttpException(
-        // 아임포트에서 준 에러메시지 반환
         error.response.data.message,
         error.response.status,
       );
@@ -34,19 +33,18 @@ export class IamportService {
         },
       );
       if (result.data.response.status !== 'paid')
-        // 아임포트를 이용해 결제를 하고, 웹에서 확인 하는 과정
         throw new ConflictException('결제내역이 존재하지 않습니다.');
 
       if (result.data.response.amount !== amount)
         throw new UnprocessableEntityException('결제 금액이 다릅니다.');
     } catch (error) {
       if (error?.response?.data?.message) {
-        throw new HttpException( // 플레이 그라운드는 정상,,, 프론트한테 에러 반환!
+        throw new HttpException( 
           error.response.data.message,
           error.response.status,
         );
       } else {
-        throw error; // 아임포트에서 에러메시지를 주지 않았을떄
+        throw error; 
       }
     }
   }
@@ -62,7 +60,7 @@ export class IamportService {
       return result.data.response.cancel_amount;
     } catch (error) {
       throw new HttpException(
-        error.response.data.message, // 아임포트에서 준 에러메시지를 반환
+        error.response.data.message,
         error.response.status,
       );
     }

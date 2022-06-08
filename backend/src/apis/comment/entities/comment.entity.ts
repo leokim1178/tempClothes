@@ -30,7 +30,7 @@ export class Comment {
   feed: Feed;
 
   @ManyToOne(() => User, {
-    onDelete: 'CASCADE', //
+    onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
   @Field(() => User)
@@ -40,7 +40,7 @@ export class Comment {
     cascade: true,
     onDelete: 'CASCADE',
     nullable: true,
-  }) // 자기참조
+  })
   @Field(() => Comment, { nullable: true })
   pComment: Comment;
 

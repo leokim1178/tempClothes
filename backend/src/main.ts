@@ -6,13 +6,13 @@ import { HttpExceptionFilter } from './commons/filter/http-exception-filter';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule); // NestApplication 소켓 통신을 위해 설정
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.useGlobalFilters(new HttpExceptionFilter());
   app.enableCors({
     credentials: true,
     origin: 'http://localhost:3000',
   });
-  app.useStaticAssets(join(__dirname, '..', 'chat')); // main.ts 채팅 설정(NestApplication)
+  app.useStaticAssets(join(__dirname, '..', 'chat')); 
   app.use(graphqlUploadExpress());
   await app.listen(3000);
 }

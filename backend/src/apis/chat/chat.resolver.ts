@@ -25,7 +25,9 @@ export class ChatResolver {
     const user = await this.userRepository.findOne({
       where: { nickname: opponentNickname },
     });
+    console.log(user,'user')
     const host = user.id;
+    console.log(host,'host')
     return this.chatService.load({ currentUser, host });
   }
 }

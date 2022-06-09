@@ -4,12 +4,11 @@ import { User } from '../user/entities/user.entity';
 import { ChatGateway } from './chat.gateway';
 import { ChatResolver } from './chat.resolver';
 import { ChatService } from './chat.service';
-// import { ChatResolver } from './chat.resolver';
-// import { ChatService } from './chat.service';
-import { Chat } from './entities/chat.entity';
+import { ChatRoom } from './entities/chatRoom.entity';
+import { ChatMessage } from './entities/chatMessage.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Chat, User])],
+  imports: [TypeOrmModule.forFeature([ChatRoom, ChatMessage, User])],
   providers: [ChatGateway, ChatResolver, ChatService],
 })
 export class ChatModule {}

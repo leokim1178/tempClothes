@@ -2,43 +2,75 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
-import { Chat } from './entities/chat.entity';
+import { ChatRoom } from './entities/chatRoom.entity';
+import { ChatMessage } from './entities/chatMessage.entity';
+import { uuid } from 'uuidv4';
 
 @Injectable()
 export class ChatService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(Chat)
-    private readonly chatRepository: Repository<Chat>,
+    @InjectRepository(ChatRoom)
+    private readonly chatRoomRepository: Repository<ChatRoom>,
+    @InjectRepository(ChatMessage)
+    private readonly chatMessageRepository: Repository<ChatMessage>,
   ) {}
 
-  async load({ currentUser, host }) {
-    const myself = await this.chatRepository.find({
-      // 자기 자신의 정보
+  async create({ opponentNickname, currentUser }) {
+    const host = await this.userRepository.findOne({
+      where: { id: currentUser.id },
+    });
+
+    const opponent = await this.userRepository.findOne({
+      where: { nickname: opponentNickname },
+    });
+
+    const result = await this.chatRoomRepository.save({
+      room: uuid(),
+      user: host,
+    });
+
+    const result1 = await this.chatRoomRepository.save({
+      room: result.room,
+      user: opponent,
+    });
+
+    return result;
+  }
+
+  async join({ currentUser, hostNickname }) {
+    const user = await this.userRepository.findOne({
+      where: { nickname: hostNickname },
+    });
+
+    const host = await this.chatRoomRepository.find({
+      where: { user: user.id },
+    });
+
+    const me = await this.chatRoomRepository.find({
       where: { user: currentUser.id },
-      order: { id: 'ASC' },
     });
-
-    const result = await this.chatRepository.find({
-      // 채팅하고자 하는 유저
-      where: { user: host },
-      order: { id: 'ASC' },
-    });
-
-    let roomNum;
-    for (let i = 0; i < result.length; i++) {
-      for (let j = 0; j < myself.length; j++) {
-        if (myself[j].room === result[i].room) {
-          roomNum = myself[j].room;
-          break;
+    let result;
+    for (let i = 0; i < host.length; i++) {
+      for (let j = 0; j < me.length; j++) {
+        if (host[i].room === me[j].room) {
+          result = host[i];
         }
       }
     }
-    return await this.chatRepository.find({
-      where: { room: roomNum },
-      order: { id: 'ASC' },
+    console.log(result, 'room아이디');
+
+    return result;
+  }
+
+  async load({ room, currentUser }) {
+    const result = await this.chatMessageRepository.find({
+      where: { room: room },
+      order: { createdAt: 'ASC' },
       relations: ['user'],
     });
+    console.log(result, 'result');
+    return result;
   }
 }

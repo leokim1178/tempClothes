@@ -6,22 +6,24 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { CurrentUser } from 'src/commons/auth/gql-user.param'; // 로그인 인증된
-import { Chat } from './entities/chat.entity';
 import { User } from '../user/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
+import { ChatRoom } from './entities/chatRoom.entity';
+import { ChatMessage } from './entities/chatMessage.entity';
 
 @WebSocketGateway({
-  namespace: 'chat', // cors문제 해결해줘야 함.
+  namespace: 'chat',
   cors: { origin: '*' },
-}) // 방 만들기(포트 설정 해주기)\
+})
 @Injectable()
 export class ChatGateway {
   constructor(
-    @InjectRepository(Chat)
-    private readonly chatRepository: Repository<Chat>,
+    @InjectRepository(ChatRoom)
+    private readonly chatRoomRepository: Repository<ChatRoom>,
+    @InjectRepository(ChatMessage)
+    private readonly chatMessageRepository: Repository<ChatMessage>,
     @InjectRepository(User)
     private readonly userRepositoey: Repository<User>,
   ) {}
@@ -37,7 +39,6 @@ export class ChatGateway {
     @ConnectedSocket() client,
   ) {
     const [nickname, room] = data; // 채팅방 입장!
-    // console.log(${nickname}님이 유저: ${room}방에 접속했습니다.) // 채팅 기능 활성화 부분(수정해야 할 부분)
     const receive = `${nickname}님이 입장했습니다.`;
     this.server.emit('receive' + room, receive);
     console.log(this.server, 'server');
@@ -61,8 +62,7 @@ export class ChatGateway {
       where: { nickname: nickname },
     });
 
-    const result = this.chatRepository.save({
-      // redis에 저장 해보기?!
+    const result = this.chatMessageRepository.save({
       user: user,
       room: room,
       message: data[2],

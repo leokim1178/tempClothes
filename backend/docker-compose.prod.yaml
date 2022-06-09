@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   t1-backend:
-    image: asia.gcr.io/f6b2t1-master/t1-back:0.0.6
+    image: asia.gcr.io/f6b2t1-master/t1-back:0.0.7
     platform: linux/x86_64
     build:
       context: .

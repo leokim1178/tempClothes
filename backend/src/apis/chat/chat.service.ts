@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { ChatRoom } from './entities/chatRoom.entity';
 import { ChatMessage } from './entities/chatMessage.entity';
-import { uuid } from 'uuidv4';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class ChatService {
@@ -25,9 +25,9 @@ export class ChatService {
     const opponent = await this.userRepository.findOne({
       where: { nickname: opponentNickname },
     });
-
+    const uuid = uuidv4();
     const result = await this.chatRoomRepository.save({
-      room: uuid(),
+      room: uuid,
       user: host,
     });
 

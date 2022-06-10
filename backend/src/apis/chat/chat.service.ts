@@ -70,6 +70,7 @@ export class ChatService {
       order: { createdAt: 'ASC' },
       relations: ['user'],
     });
+
     console.log(result, 'result');
     return result;
   }

@@ -1,11 +1,12 @@
 import { Storage } from '@google-cloud/storage';
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron, SchedulerRegistry } from '@nestjs/schedule';
+import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Repository } from 'typeorm';
 import { Feed } from '../feed/entities/feed.entity';
 import { FeedImg } from '../feedImg/entities/feedImg.entity';
+import { FeedTag } from '../feedTag/entities/feedTag.entity';
 import { User } from '../user/entities/user.entity';
 
 @Injectable()
@@ -18,10 +19,12 @@ export class CronService {
     private readonly feedImgRepository: Repository<FeedImg>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(FeedTag)
+    private readonly feedTagRepository: Repository<FeedTag>,
   ) {}
   private readonly logger = new Logger(CronService.name);
 
-  @Cron('0 0 0 * * *')
+  @Cron(CronExpression.EVERY_3_HOURS)
   async resetWatchCount() {
     const feeds = await this.feedRepository.find();
 
@@ -32,8 +35,19 @@ export class CronService {
     );
     this.logger.debug('💥💥💥조회수 초기화 완료!💥💥💥');
   }
+  @Cron(CronExpression.EVERY_6_HOURS)
+  async resetFeedCount() {
+    const feedTags = await this.feedTagRepository.find();
 
-  @Cron('0 0 0 * * 1')
+    await Promise.all(
+      feedTags.map((el) => {
+        return this.feedTagRepository.save({ ...el, count: 0 });
+      }),
+    );
+    this.logger.debug('💥💥💥피드카운트 초기화 완료!💥💥💥');
+  }
+
+  @Cron(CronExpression.EVERY_WEEK)
   async cleanImgBucket() {
     const storage = new Storage({
       keyFilename: process.env.STORAGE_KEY_FILENAME,

@@ -16,12 +16,18 @@
 
 <br>
 
+<hr>
+</hr>
+
 ## 배포 주소
 
 ```sh
 dev: https://team01.leo3179.shop/graphql
 prod: https://server.t1dreamers.shop/graphql
 ```
+
+<hr>
+</hr>
 
 ## 기술 스택
 
@@ -73,13 +79,22 @@ prod: https://server.t1dreamers.shop/graphql
 <img alt= "icon" wide="60" height="60" src ="https://nesoy.github.io/assets/posts/20170413/1.PNG">
   </p>
 
+  <hr>
+</hr>
+
 ## ERD 설계
 
 ![](readme-imgs/%EC%98%A8%EB%8F%84%EC%9D%98%20ERD.png)
 
+<hr>
+</hr>
+
 ## Data-Flow
 
 ![](/readme-imgs/온도의%20dataflow.001.png)
+
+<hr>
+</hr>
 
 ## Data Pipeline
 
@@ -92,36 +107,19 @@ prod: https://server.t1dreamers.shop/graphql
 - graphql build : module - resolver - service (social-login, health-checking => controller)
 - TypeORM
 
+<hr>
+</hr>
+
 ## 기능 명세서
 
 [온도衣 기능명세서](https://docs.google.com/spreadsheets/d/1e6NoL06xnfxkcbL8yyFnORKwNP7KJ3nIz8Rm7LORrG4/edit#gid=0)
 
-## 프로젝트 설치 및 실행 방법
-
-```sh
-# 설치
-gcp kubenetes를 통해 설치
-
-# graphql docs를 참고하여 api endpoint를 통해 프론트로 연결
-https://server.t1dreamers.shop/graphql
-
-# 소셜 로그인 endpoint
-https://server.t1dreamers.shop/login/naver
-https://server.t1dreamers.shop/login/kakao
-https://server.t1dreamers.shop/login/google
-
-#업데이트 방법
-git add .
-gitmoji -c "update this project"
-git push origin develop (Cloud-Build CI/CD)
-
-```
-
-## 업데이트 내역
+<hr>
+</hr>
 
 ## 폴더 구조
 
-![](/readme-imgs/backend%20dataflow.001.png)
+![](/readme-imgs/api최종.png)
 
 ```
 🏠 tempClothes project
@@ -161,6 +159,9 @@ git push origin develop (Cloud-Build CI/CD)
 └─ static : test htmls
 ```
 
+<hr>
+</hr>
+
 ## .env 설정
 
 1. kubernetes 환경 변수로 설정
@@ -169,27 +170,42 @@ git push origin develop (Cloud-Build CI/CD)
 4. email,sms,IMP keys
 5. open weather API key
 
-## 정보
+<hr>
+</hr>
 
-고재형
 <br>
-블로그 : [제주에서 온 짱구](https://velog.io/@ko1586)
-<br>
-github : https://github.com/KoJaeHyeong
-<br>
-email : jaehyeong1586@gmail.com
-<br>
+
+# Information
+
+## 고재형
+
+- Role : `Team Member`
+- Position : `Backend`, `Presenter`
+- Stack : `JavaScript` `TypeScript` `Nodejs` `Nestjs` `TypeORM` `Axios` `Docker` `Redis` `gitHub` `MySQL`
+- Works : User CRUD, 결제기능, 로그인/로그아웃, 실시간채팅, 댓글/대댓글 구현, ERD설계
+- Contact :
+  - email: jaehyeong1586@gmail.com
+  - github: [https://github.com/KoJaeHyeong](https://github.com/KoJaeHyeong)
+  - blog: [https://velog.io/@ko1586](https://velog.io/@ko1586)
 
 <hr>
 </hr>
-김태영
-<br>
 
-블로그 : [leoKim's velog](https://story0tae.tistory.com/)
-<br>
-github : https://github.com/leokim1178
-<br>
-email : leo3179@naver.com
-<br>
+## 김태영
 
+- Role : `Team Member`
+- Position : `Backend`, `Git`
+- Stack : `JavaScript` , `TypeScript`, `TypeORM`, `Nodejs`, `Nestjs`, `MySQL`, `Axios`, `expressjs`, `Docker`, `Redis`, `Kubernetes`, `GCP`, `Github`
+- Works : Feed CRUD, Feed 좋아요 CRU, Feed 태그 CRU, Feed 이미지 CRUD, File Upload, CronTab, Region&Weather apis, K8s 서버 배포, 자료 제작
+
+- Contact :
+
+  - email: leo3179@naver.com
+  - github: [https://github.com/leokim1178](https://github.com/leokim1178)
+  - blog: https://story0tae.tistory.com/
+
+- Tech-Presentation : https://www.youtube.com/watch?v=K2kqhS9XQbc
+
+<hr>
+</hr>
 <!-- Markdown link & img dfn's -->

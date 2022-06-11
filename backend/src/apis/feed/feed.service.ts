@@ -66,43 +66,26 @@ export class FeedService {
         .leftJoinAndSelect('Feed.feedTag', 'feedTag')
         .leftJoinAndSelect('Feed.feedImg', 'feedImg');
       if (!feedTags) {
-        const paging = qb.orderBy('Feed.watchCount', 'DESC');
-        if (page) {
-          const result = await paging
-            .take(10)
-            .skip((page - 1) * 10)
-            .getManyAndCount();
-          const [feeds, total] = result;
-          const output: fetchFeedOutput = { feeds, total, count: 10, page };
-          return output;
-        } else {
-          const result = await paging.getManyAndCount();
-          const [feeds, total] = result;
-          const output: fetchFeedOutput = { feeds, total };
-          return output;
-        }
+        qb.orderBy('Feed.watchCount', 'DESC');
       } else {
-        const paging = qb
-          .andWhere('feedTag.tagName IN (:tags)', {
-            tags: feedTags,
-          })
-          .orderBy('Feed.watchCount', 'DESC');
-
-        if (page) {
-          const result = await paging
-            .take(10)
-            .skip((page - 1) * 10)
-            .getManyAndCount();
-          const [feeds, total] = result;
-          const output: fetchFeedOutput = { feeds, total, count: 10, page };
-          return output;
-        } else {
-          const result = await paging.getManyAndCount();
-          const [feeds, total] = result;
-          const output: fetchFeedOutput = { feeds, total };
-          return output;
-        }
+        qb.andWhere('feedTag.tagName IN (:tags)', {
+          tags: feedTags,
+        }).orderBy('Feed.watchCount', 'DESC');
       }
+      let output: fetchFeedOutput;
+      if (page) {
+        const result = await qb
+          .take(10)
+          .skip((page - 1) * 10)
+          .getManyAndCount();
+        const [feeds, total] = result;
+        output = { feeds, total, count: 10, page };
+      } else {
+        const result = await qb.getManyAndCount();
+        const [feeds, total] = result;
+        output = { feeds, total };
+      }
+      return output;
     } catch (error) {
       throw error;
     }
@@ -116,20 +99,21 @@ export class FeedService {
         .where({ user: currentUser })
         .leftJoinAndSelect('Feed.feedImg', 'feedImg')
         .orderBy('Feed.watchCount', 'DESC');
+
+      let output: fetchFeedOutput;
       if (page) {
         const result = await qb
           .take(10)
           .skip((page - 1) * 10)
           .getManyAndCount();
         const [feeds, total] = result;
-        const output: fetchFeedOutput = { feeds, total, page, count: 10 };
-        return output;
+        output = { feeds, total, page, count: 10 };
       } else {
         const result = await qb.getManyAndCount();
         const [feeds, total] = result;
-        const output: fetchFeedOutput = { feeds, total };
-        return output;
+        output = { feeds, total };
       }
+      return output;
     } catch (error) {
       throw error;
     }
@@ -148,20 +132,20 @@ export class FeedService {
       .where({ user: user.id })
       .leftJoinAndSelect('Feed.feedImg', 'feedImg')
       .orderBy('Feed.watchCount', 'DESC');
+    let output: fetchFeedOutput;
     if (page) {
       const result = await qb
         .take(10)
         .skip((page - 1) * 10)
         .getManyAndCount();
       const [feeds, total] = result;
-      const output: fetchFeedOutput = { feeds, total, page, count: 10 };
-      return output;
+      output = { feeds, total, page, count: 10 };
     } else {
       const result = await qb.getManyAndCount();
       const [feeds, total] = result;
-      const output: fetchFeedOutput = { feeds, total };
-      return output;
+      output = { feeds, total };
     }
+    return output;
   }
 
   async create({ currentUser, createFeedInput }) {
@@ -243,8 +227,12 @@ export class FeedService {
       });
       if (!region) throw new NotFoundException('지역명을 입력하세요');
 
+      let feedUpdateResult: Feed;
+
       if (feedTags) {
         const tagResult = [];
+        let lastTag = lastFeed.feedTag;
+
         for (let i = 0; i < feedTags.length; i++) {
           const tagName = feedTags[i];
           const prevTag = await this.feedTagRepository.findOne({
@@ -258,36 +246,38 @@ export class FeedService {
             });
             tagResult.push(newTag);
           }
+
+          lastTag = lastTag.filter((el) => el.tagName !== tagName);
         }
 
-        const feedUpdateResult = await this.feedRepository.save({
+        await Promise.all(
+          lastTag.map((el) => {
+            this.feedTagRepository.update(
+              { tagName: el.tagName },
+              { count: () => 'count-1' },
+            );
+          }),
+        );
+
+        feedUpdateResult = await this.feedRepository.save({
           ...lastFeed,
           ...feed,
           region,
           feedTag: tagResult,
         });
-
-        await this.feedImgService.updateImg({
-          feedId: feedUpdateResult.id,
-          imgURLs,
-        });
-
-        return feedUpdateResult;
       } else {
-        const feedUpdateResult = await this.feedRepository.save({
+        feedUpdateResult = await this.feedRepository.save({
           ...lastFeed,
           ...feed,
-          feed,
           region,
         });
-
-        await this.feedImgService.updateImg({
-          feedId: feedUpdateResult.id,
-          imgURLs,
-        });
-
-        return feedUpdateResult;
       }
+      await this.feedImgService.updateImg({
+        feedId: feedUpdateResult.id,
+        imgURLs,
+      });
+
+      return feedUpdateResult;
     } catch (error) {
       throw error;
     }

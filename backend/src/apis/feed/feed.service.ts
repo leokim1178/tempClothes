@@ -4,7 +4,6 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import e from 'express';
 import { Connection, Repository } from 'typeorm';
 import { FeedImg } from '../feedImg/entities/feedImg.entity';
 import { FeedImgService } from '../feedImg/feedImg.service';

@@ -4,6 +4,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import e from 'express';
 import { Connection, Repository } from 'typeorm';
 import { FeedImg } from '../feedImg/entities/feedImg.entity';
 import { FeedImgService } from '../feedImg/feedImg.service';
@@ -231,15 +232,24 @@ export class FeedService {
 
       if (feedTags) {
         const tagResult = [];
-        let lastTag = lastFeed.feedTag;
+        let excludeTag = lastFeed.feedTag.map((el) => el.tagName);
+        const prevTags = lastFeed.feedTag.map((el) => el.tagName);
 
         for (let i = 0; i < feedTags.length; i++) {
           const tagName = feedTags[i];
           const prevTag = await this.feedTagRepository.findOne({
             where: { tagName },
           });
+
           if (prevTag) {
-            tagResult.push(prevTag);
+            let pushTag = prevTag;
+            if (!prevTags.includes(tagName))
+              pushTag = await this.feedTagRepository.save({
+                ...prevTag,
+                count: prevTag.count + 1,
+              });
+
+            tagResult.push(pushTag);
           } else {
             const newTag = await this.feedTagRepository.save({
               tagName,
@@ -247,13 +257,13 @@ export class FeedService {
             tagResult.push(newTag);
           }
 
-          lastTag = lastTag.filter((el) => el.tagName !== tagName);
+          excludeTag = excludeTag.filter((el) => el !== tagName);
         }
 
         await Promise.all(
-          lastTag.map((el) => {
+          excludeTag.map((el) => {
             this.feedTagRepository.update(
-              { tagName: el.tagName },
+              { tagName: el },
               { count: () => 'count-1' },
             );
           }),

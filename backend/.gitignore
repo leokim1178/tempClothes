@@ -14,6 +14,7 @@ gcp-bigquery.json
 gcp-storage.json
 gcp-file-storage.json
 gcp-storage-master.json
+gcp-storage-dev.json
 
 # Logs
 logs

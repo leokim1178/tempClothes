@@ -1,26 +1,10 @@
 version: '3.7'
 services:
-  my-backend:
-    image: asia.gcr.io/team-01-dreamers/f6b2-backend:1.3.0
+  tp-backend:
+    image: asia.gcr.io/main-project-leokim1178/tp-backend:0.0.2
     platform: linux/x86_64
     build:
       context: .
       dockerfile: Dockerfile
-    # volumes:
-    #   - ./src:/myfolder/src
     ports:
       - 3000:3000
-
-  # my-database:
-  #   platform: linux/x86_64
-  #   image: mysql:latest
-  #   environment:
-  #     MYSQL_DATABASE: 'team01-database'
-  #     MYSQL_ROOT_PASSWORD: '1234'
-  #   ports:
-  #     - 3306:3306
-
-  # my-redis:
-  #   image: redis:latest
-  #   ports:
-  #     - 6379:6379

@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
 import { FeedImg } from '../feedImg/entities/feedImg.entity';
@@ -12,6 +8,10 @@ import { Region } from '../region/entities/region.entity';
 import { User } from '../user/entities/user.entity';
 import { fetchFeedOutput } from './dto/fetchFeedOutput';
 import { Feed } from './entities/feed.entity';
+
+/**
+ * Feed Service
+ */
 
 @Injectable()
 export class FeedService {
@@ -61,7 +61,7 @@ export class FeedService {
       const qb = this.feedRepository
         .createQueryBuilder('Feed')
         .leftJoinAndSelect('Feed.region', 'region')
-        .where({ region: region })
+        .where({ region })
         .leftJoinAndSelect('Feed.user', 'user')
         .leftJoinAndSelect('Feed.feedTag', 'feedTag')
         .leftJoinAndSelect('Feed.feedImg', 'feedImg');
@@ -120,11 +120,7 @@ export class FeedService {
   }
 
   async findUserFeeds({ userNickname, page }) {
-    const user = await this.userRepository.findOne({
-      where: { nickname: userNickname },
-    });
-    if (!user)
-      throw new UnprocessableEntityException('해당 회원이 존재하지 않습니다');
+    const user = await this.checkExist({ userNickname });
 
     const qb = this.feedRepository
       .createQueryBuilder('Feed')
@@ -151,15 +147,8 @@ export class FeedService {
   async create({ currentUser, createFeedInput }) {
     const { feedTags, regionId, imgURLs, ...feed } = createFeedInput;
 
-    const region = await this.regionRepository.findOne({
-      id: regionId,
-    });
-    if (!region) throw new NotFoundException('등록되지 않은 지역명입니다');
-
-    const user = await this.userRepository.findOne({
-      email: currentUser.email,
-    });
-    if (!user) throw new NotFoundException('등록되지 않은 유저입니다');
+    const region = await this.checkExist({ regionId });
+    const user = await this.checkExist({ userEmail: currentUser.email });
 
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
@@ -214,18 +203,12 @@ export class FeedService {
     }
   }
 
-  async update({ feedId, updateFeedInput }) {
-    const lastFeed = await this.feedRepository.findOne({
-      where: { id: feedId },
-    });
-    if (!lastFeed) throw new NotFoundException('존재하지 않는 피드입니다');
+  async update({ feed, updateFeedInput }) {
+    const lastFeed = feed;
     try {
-      const { feedTags, imgURLs, regionId, ...feed } = updateFeedInput;
+      const { feedTags, imgURLs, regionId, ...rest } = updateFeedInput;
 
-      const region = await this.regionRepository.findOne({
-        where: { id: regionId },
-      });
-      if (!region) throw new NotFoundException('지역명을 입력하세요');
+      const region = await this.checkExist({ regionId });
 
       let feedUpdateResult: Feed;
 
@@ -270,17 +253,18 @@ export class FeedService {
 
         feedUpdateResult = await this.feedRepository.save({
           ...lastFeed,
-          ...feed,
+          ...rest,
           region,
           feedTag: tagResult,
         });
       } else {
         feedUpdateResult = await this.feedRepository.save({
           ...lastFeed,
-          ...feed,
+          ...rest,
           region,
         });
       }
+
       await this.feedImgService.updateImg({
         feedId: feedUpdateResult.id,
         imgURLs,
@@ -292,10 +276,7 @@ export class FeedService {
     }
   }
 
-  async delete({ feedId }) {
-    const feed = await this.feedRepository.findOne({ id: feedId });
-    if (!feed) throw new NotFoundException('존재하지 않는 피드입니다');
-
+  async delete({ feed }) {
     try {
       const feedTags = feed.feedTag;
       await Promise.all(
@@ -306,10 +287,46 @@ export class FeedService {
           );
         }),
       );
-      const result = await this.feedRepository.delete({ id: feedId });
+      const result = await this.feedRepository.delete(feed);
       return result.affected ? true : false;
     } catch (error) {
       throw error;
+    }
+  }
+
+  async checkExist({
+    feedId,
+    userEmail,
+    regionId,
+    userNickname,
+  }: {
+    feedId?: string;
+    userEmail?: string;
+    regionId?: string;
+    userNickname?: string;
+  }) {
+    if (feedId) {
+      const feed = await this.feedRepository.findOne({ id: feedId });
+      if (!feed) throw new NotFoundException('존재하지 않는 피드입니다');
+      return feed;
+    }
+    if (userEmail) {
+      const user = await this.userRepository.findOne({ email: userEmail });
+      if (!user) throw new NotFoundException('존재하지 않는 유저입니다');
+      return user;
+    }
+    if (userNickname) {
+      const user = await this.userRepository.findOne({
+        nickname: userNickname,
+      });
+      if (!user) throw new NotFoundException('존재하지 않는 유저입니다');
+      return user;
+    }
+    if (regionId) {
+      const region = await this.regionRepository.findOne({ id: regionId });
+      if (!region) {
+        throw new NotFoundException('존재하지않는 지역명입니다');
+      }
     }
   }
 }

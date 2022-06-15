@@ -9,6 +9,12 @@ import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth-guard';
 import { CurrentUser, ICurrentUser } from 'src/commons/auth/gql-user.param';
 import { fetchFeedOutput } from './dto/fetchFeedOutput';
 
+/**
+ * Feed GraphQL API Resolver
+ * @APIs `fetchFeed`, `fetchFeeds`, `fetchMyFeeds`, `fetchUserFeeds`,
+ * `createFeed`, `updateFeed`, `deleteFeed`
+ */
+
 @Resolver()
 export class FeedResolver {
   constructor(
@@ -17,6 +23,12 @@ export class FeedResolver {
     private readonly cacheManager: Cache,
   ) {}
 
+  /**
+   * Fetch certain Feed API
+   * @type [`Query`]
+   * @param feedId ID of Feed
+   * @returns `Feed`
+   */
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => Feed)
   async fetchFeed(
@@ -28,15 +40,24 @@ export class FeedResolver {
     return result;
   }
 
+  /**
+   * Fetch certain Feed API
+   * @type [`Query`]
+   * @param region ID of Region
+   * @param feedTags tagName[] of FeedTag
+   * @param page[optional] page number of fetchFeedOutput
+   * @returns `fetchFeedOutput`
+   */
   @Query(() => fetchFeedOutput)
   async fetchFeeds(
     @Args('regionId')
-    region: string,
+    regionId: string,
     @Args({ name: 'feedTags', type: () => [String], nullable: true })
     feedTags: string[],
     @Args({ name: 'page', nullable: true, type: () => Int })
     page?: number,
   ) {
+    const region = await this.feedService.checkExist({ regionId });
     try {
       const redisInput = JSON.stringify({ region, feedTags, page });
       const redis = await this.cacheManager.get(redisInput);
@@ -48,10 +69,10 @@ export class FeedResolver {
           region,
           page,
         });
-        await this.cacheManager.set(redisInput, result, { ttl: 10 });
+        await this.cacheManager.set(redisInput, result, { ttl: 5 });
         return result;
       }
-    } catch (error) {
+    } catch ({ error, region }) {
       const result: fetchFeedOutput = await this.feedService.findWithTags({
         feedTags,
         region,
@@ -61,6 +82,13 @@ export class FeedResolver {
       return result;
     }
   }
+
+  /**
+   * Fetch certain Feed API
+   * @type [`Query`]
+   * @param page[optional] page number of fetchFeedOutput
+   * @returns `fetchFeedOutput`
+   */
 
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => fetchFeedOutput)
@@ -92,6 +120,13 @@ export class FeedResolver {
     }
   }
 
+  /**
+   * Fetch certain Feed API
+   * @type [`Query`]
+   * @param userNickname nickname of the User
+   * @param page[optional] page number of fetchFeedOutput
+   * @returns `fetchFeedOutput`
+   */
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => fetchFeedOutput)
   async fetchUserFeeds(
@@ -122,7 +157,12 @@ export class FeedResolver {
       return result;
     }
   }
-
+  /**
+   * Create Feed API
+   * @type [`Mutation`]
+   * @param createFeedInput input type of createFeed
+   * @returns `Feed`
+   */
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Feed)
   createFeed(
@@ -132,21 +172,33 @@ export class FeedResolver {
   ) {
     return this.feedService.create({ createFeedInput, currentUser });
   }
-
+  /**
+   * Update Feed API
+   * @type [`Mutation`]
+   * @param createFeedInput input type of updateFeed
+   * @returns `Feed`
+   */
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Feed)
-  updateFeed(
+  async updateFeed(
     @Args('updateFeedInput')
     updateFeedInput: UpdateFeedInput,
     @Args('feedId')
     feedId: string,
   ) {
-    return this.feedService.update({ feedId, updateFeedInput });
+    const feed = await this.feedService.checkExist({ feedId });
+    return this.feedService.update({ feed, updateFeedInput });
   }
-
+  /**
+   * Delete Feed API
+   * @type [`Mutation`]
+   * @param createFeedInput input type of updateFeed
+   * @returns delete result(`true`, `false`)
+   */
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
-  deleteFeed(@Args('feedId') feedId: string) {
-    return this.feedService.delete({ feedId });
+  async deleteFeed(@Args('feedId') feedId: string) {
+    const feed = await this.feedService.checkExist({ feedId });
+    return this.feedService.delete({ feed });
   }
 }

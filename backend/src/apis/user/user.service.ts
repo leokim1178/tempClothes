@@ -103,7 +103,7 @@ export class UserService {
     const XSecretKey = process.env.EMAIL_X_SECRET_KEY;
     const sender = process.env.EMAIL_SENDER;
 
-    const emailSend = await axios.post(
+    await axios.post(
       `https://api-mail.cloud.toast.com/email/v2.0/appKeys/${appKey}/sender/mail`,
       {
         senderAddress: sender,
@@ -179,7 +179,7 @@ export class UserService {
     if (phone.length !== 10 && phone.length !== 11)
       throw new UnprocessableEntityException('핸드폰 번호가 알맞지 않습니다.');
 
-    let tokenCount = 6;
+    const tokenCount = 6;
     const token = String(Math.floor(Math.random() * 10 ** tokenCount)).padStart(
       tokenCount,
       '0',
@@ -193,7 +193,7 @@ export class UserService {
     const XSecretKey = process.env.SMS_X_SECRET_KEY;
     const sender = process.env.SMS_SENDER;
 
-    const sendSms = await axios.post(
+    await axios.post(
       `https://api-sms.cloud.toast.com/sms/v3.0/appKeys/${appKey}/sender/sms`,
       {
         body: `[온도衣]본인확인 인증번호[${token}]입니다. "타인 노출 금지"`,

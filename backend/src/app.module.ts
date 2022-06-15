@@ -48,15 +48,11 @@ import { TestModule } from './apis/test/test.module';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: '10.118.112.4', // prod
-      // host: '10.82.224.4', // dev
-      // host: 'my-database', // local
+      host: process.env.DATABASE_HOST,
       port: 3306,
       username: 'root',
       password: '1234',
-      database: 't1-database', //prod
-      // database: 'team-01-database', // dev
-      // database: 'team01-database', //local
+      database: process.env.DATABASE_NAME,
       entities: [__dirname + '/apis/**/**/*.entity.*'],
       synchronize: true,
       logging: true,
@@ -65,9 +61,7 @@ import { TestModule } from './apis/test/test.module';
     }),
     CacheModule.register<RedisClientOptions>({
       store: redisStore,
-      url: 'redis://10.118.113.3:6379', // prod
-      // url: 'redis://:fQrnzb8N@10.140.0.3:6379', // dev
-      // url: 'redis://my-redis:6379', // local
+      url: process.env.REDIS_URL,
       isGlobal: true,
     }),
   ],

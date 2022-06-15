@@ -134,7 +134,7 @@ export class PaymentButtonService {
         button: user.button - 5,
       });
 
-      const save = await this.userRepository.save(result);
+      await this.userRepository.save(result);
 
       return result;
     } else {

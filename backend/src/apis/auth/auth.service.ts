@@ -17,11 +17,11 @@ export class AuthService {
       { secret: process.env.REFRESH_TOKEN_KEY, expiresIn: '2w' },
     );
 
-    res.setHeader('Access-Control-Allow-Origin', 'http://tempclothes.site');
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
 
     res.setHeader(
       'Set-Cookie',
-      `refreshToken=${refreshToken}; path=/; domain=server.t1dreamers.shop; SameSite=None; Secure; httpOnly;`,
+      `refreshToken=${refreshToken}; path=/; domain=team-project.leo3179.shop; SameSite=None; Secure; httpOnly;`,
     );
   }
 
@@ -56,7 +56,7 @@ export class AuthService {
       };
       user = await this.userService.create({ createUserInput });
       this.setRefreshToken({ user, res });
-      await res.redirect('http://tempclothes.site/signup');
+      await res.redirect('http://localhost:3000/signup');
     } else {
       if (
         user.gender === '성별을 입력해주세요' ||
@@ -65,10 +65,10 @@ export class AuthService {
         user.style === '스타일 정보를 입력해주세요'
       ) {
         this.setRefreshToken({ user, res });
-        await res.redirect('http://tempclothes.site/signup');
+        await res.redirect('http://localhost:3000/signup');
       } else {
         this.setRefreshToken({ user, res });
-        await res.redirect('http://tempclothes.site/tempClothes');
+        await res.redirect('http://localhost:3000/tempClothes');
       }
     }
   }

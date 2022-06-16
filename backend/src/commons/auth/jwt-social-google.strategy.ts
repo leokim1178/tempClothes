@@ -13,7 +13,7 @@ export class JwtGoogleStrategy extends PassportStrategy(Strategy, 'google') {
     super({
       clientID: googleClientID,
       clientSecret: googleClientSecret,
-      callbackURL: 'https://server.t1dreamers.shop/login/google', // prod
+      callbackURL: 'https://team-project.leo3179.shop/login/google', // prod
       scope: ['email', 'profile'],
     });
   }

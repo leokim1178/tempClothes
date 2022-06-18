@@ -17,7 +17,7 @@ steps:
         'set',
         'image',
         'deployment/tp-backend',
-        'tp-backend-sha256-1=asia.gcr.io/main-project-leokim1178/tp-backend:0.0.3',
+        'tp-backend-sha256-1=asia.gcr.io/main-project-leokim1178/tp-backend:0.0.4',
       ]
     env:
       - CLOUDSDK_COMPUTE_ZONE=asia-northeast3

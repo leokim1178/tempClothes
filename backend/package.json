@@ -21,7 +21,6 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@elastic/elasticsearch": "^8.1.0",
     "@google-cloud/storage": "^5.19.2",
     "@nestjs/apollo": "^10.0.8",
     "@nestjs/common": "^8.0.0",
@@ -57,7 +56,6 @@
     "passport-jwt": "^4.0.0",
     "passport-kakao": "^1.0.1",
     "passport-naver": "^1.0.6",
-    "path": "^0.12.7",
     "redis": "^4.1.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
@@ -67,8 +65,7 @@
     "socket.io-redis": "^6.1.1",
     "typeorm": "0.2",
     "uuid": "^8.3.2",
-    "uuidv4": "^6.2.13",
-    "ws": "^8.6.0"
+    "uuidv4": "^6.2.13"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",

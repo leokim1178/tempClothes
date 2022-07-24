@@ -16,18 +16,15 @@
 
 <br>
 
-<hr>
-</hr>
+---
 
-## 배포 주소
+## 프로젝트 명세 및 기술 발표
+- 프로젝트 명세 :
+  - https://leo3179.notion.site/7a84562be1bf4809a1d5b825ca1d8ab8
+- 기술 발표 :
+  - https://www.youtube.com/watch?v=K2kqhS9XQbc
 
-```sh
-dev: https://team01.leo3179.shop/graphql
-prod: https://server.t1dreamers.shop/graphql
-```
-
-<hr>
-</hr>
+<br>
 
 ## 기술 스택
 

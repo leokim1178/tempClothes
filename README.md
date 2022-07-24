@@ -65,7 +65,6 @@ prod: https://server.t1dreamers.shop/graphql
 🏖&nbsp&nbsp&nbspWith...
   </p>
 <p align="center">
-<img alt= "icon" wide="65" height="65" src ="https://techstack-generator.vercel.app/restapi-icon.svg">
 <img alt= "icon" wide="65" height="65" src ="https://techstack-generator.vercel.app/graphql-icon.svg">
 <img alt= "icon" wide="65" height="65" src ="https://techstack-generator.vercel.app/docker-icon.svg">
   &nbsp&nbsp
@@ -75,9 +74,7 @@ prod: https://server.t1dreamers.shop/graphql
   &nbsp&nbsp
 
 </p>
-<p align="center">
-<img alt= "icon" wide="60" height="60" src ="https://nesoy.github.io/assets/posts/20170413/1.PNG">
-  </p>
+
 
   <hr>
 </hr>

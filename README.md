@@ -1,10 +1,8 @@
-# 날씨 패션 커뮤니티, 온도衣
+# 🌤 날씨 패션 커뮤니티, 온도衣
 
-<p align="center">
-<img src="https://capsule-render.vercel.app/api?&type=waving&color=timeAuto&height=180&section=header&text=BackEnd&fontSize=50&animation=fadeIn&fontAlignY=45" />
-  </p>
+![](./readme-imgs/tempclothes.gif)
 
-## 프로젝트 소개
+## ☂️ 프로젝트 소개
 
 한 번쯤 일기 예보를 보고 옷을 입었다가 다시 집에 돌아온 적도, 손에 짐이 늘어난 적도 있을 것입니다.
 
@@ -14,106 +12,126 @@
 
 온도衣는 그런 당신의 고민을 덜어주기 위해 태어났습니다.
 
-<br>
+---
+
+## 📑 목차
+
+- [🌤 날씨 패션 커뮤니티, 온도衣](#-날씨-패션-커뮤니티-온도衣)
+  - [☂️ 프로젝트 소개](#️-프로젝트-소개)
+  - [📑 목차](#-목차)
+  - [🚀 프로젝트 실행 및 테스트](#-프로젝트-실행-및-테스트)
+  - [🌩 프로젝트 명세 및 기술 발표](#-프로젝트-명세-및-기술-발표)
+  - [🕹 서버,DB 설계](#-서버db-설계)
+  - [💻 기술 스택](#-기술-스택)
+  - [💾 ERD 설계](#-erd-설계)
+  - [🌈 Data-Flow](#-data-flow)
+  - [🛠 Data Pipeline](#-data-pipeline)
+  - [📜 기능 명세서](#-기능-명세서)
+  - [🗂 폴더 구조](#-폴더-구조)
+  - [🔒 ENV](#-env)
+  - [🧑‍💻 팀원](#-팀원)
+    - [고재형](#고재형)
+    - [김태영](#김태영)
 
 ---
 
-## 프로젝트 명세 및 기술 발표
+## 🚀 프로젝트 실행 및 테스트
+
+- local에서 테스트 💡
+
+- 실행 명령어
+
+```
+git clone https://github.com/leokim1178/camp-tempClothes
+cd backend
+# .env 추가
+docker compose build
+docker compose up
+```
+
+- graphql에서 테스트하기
+  - http://localhost:3000/graphql
+
+---
+
+## 🌩 프로젝트 명세 및 기술 발표
+
 - 프로젝트 명세 :
   - https://leo3179.notion.site/7a84562be1bf4809a1d5b825ca1d8ab8
 - 기술 발표 :
   - https://www.youtube.com/watch?v=K2kqhS9XQbc
 
-<br>
+---
 
-## 기술 스택
+## 🕹 서버,DB 설계
 
-<br>
-<div align='center'> 🖥&nbsp&nbsp&nbsp사용한 기술 스택</div>
-<br>
-<p align="center">
-📑&nbsp&nbsp&nbsp구성 언어
-  </p>
-<p align="center">
-<img alt= "icon" wide="80" height="80" src ="https://techstack-generator.vercel.app/js-icon.svg">
-<img alt= "icon" wide="80" height="80" src ="https://techstack-generator.vercel.app/ts-icon.svg">
-  </p>
- <p align="center">
-🏠&nbsp&nbsp&nbsp데이터베이스
-  </p>
-<p align="center">
-<img alt= "icon" wide="65" height="65" src ="https://techstack-generator.vercel.app/mysql-icon.svg"> 
-&nbsp&nbsp&nbsp
-<img alt= "icon" wide="60" height="60" src ="https://cdn4.iconfinder.com/data/icons/redis-2/1451/Untitled-2-512.png">
-
-  </p>
-   <p align="center">
-🚀&nbsp&nbsp&nbsp배포
-  </p>
-<p align="center">
-<img alt= "icon" wide="60" height="60" src ="https://techstack-generator.vercel.app/kubernetes-icon.svg">
-&nbsp
-&nbsp
-&nbsp
-<img alt= "icon" wide="60" height="60" src="https://lirp.cdn-website.com/aa0ef369/dms3rep/multi/opt/google-cloud-icon-570w.png">
-  </p>
-    </p>
-       <p align="center">
-🏖&nbsp&nbsp&nbspWith...
-  </p>
-<p align="center">
-<img alt= "icon" wide="65" height="65" src ="https://techstack-generator.vercel.app/graphql-icon.svg">
-<img alt= "icon" wide="65" height="65" src ="https://techstack-generator.vercel.app/docker-icon.svg">
-  &nbsp&nbsp
-<img alt= "icon" wide="60" height="60" src ="https://symbols.getvecta.com/stencil_89/37_nestjs-icon.a67daec196.svg">
-  &nbsp&nbsp
-  <img alt= "icon" wide="60" height="60" src ="https://images.velog.io/images/dunde/post/51c56207-0c4b-4bd7-a223-6437ee7586f1/1_9hwcv7fEVKEw5LyWFok-lA.jpg">
-  &nbsp&nbsp
-
-</p>
-
-
-  <hr>
-</hr>
-
-## ERD 설계
-
-![](readme-imgs/%EC%98%A8%EB%8F%84%EC%9D%98%20ERD.png)
-
-<hr>
-</hr>
-
-## Data-Flow
-
-![](/readme-imgs/온도의%20dataflow.001.png)
-
-<hr>
-</hr>
-
-## Data Pipeline
-
-![](/readme-imgs/dataflow.001.png)
-
-## API 설계
-
+- [API 목록](./readme-imgs/api최종.png)
 - Nest.js
 - Code-first build
 - graphql build : module - resolver - service (social-login, health-checking => controller)
 - TypeORM
 
-<hr>
-</hr>
+---
 
-## 기능 명세서
+## 💻 기술 스택
+
+<div align="center">
+📑&nbsp&nbsp&nbsp구성 언어
+<br>
+  <img src="https://img.shields.io/badge/javascript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black"> 
+  <img src="https://img.shields.io/badge/typescript-02569B?style=for-the-badge&logo=typescript&logoColor=white"> 
+  </div>
+
+<div align="center">
+  🚂  &nbsp&nbsp 서버
+  <br>
+  <img src="https://img.shields.io/badge/nestjs-D33A3F?style=for-the-badge&logo=nestjs&logoColor=white">
+  <img src="https://img.shields.io/badge/docker-3c90e5?style=for-the-badge&logo=docker&logoColor=white"> 
+  <img src="https://img.shields.io/badge/graphql-C74199?style=for-the-badge&logo=graphql&logoColor=white">
+  </div>
+
+   <div align="center">
+🚀&nbsp&nbsp&nbsp 배포
+<br>
+  <img src="https://img.shields.io/badge/kubernetes-396EDC?style=for-the-badge&logo=kubernetes&logoColor=white">
+    <img src="https://img.shields.io/badge/gcp-d44a33?style=for-the-badge&logo=googlecloud&logoColor=yellow">
+  </div>
+
+ <div align="center">
+💾&nbsp&nbsp&nbsp 데이터
+<br>
+  <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white">
+  <img src="https://img.shields.io/badge/redis-c03b28?style=for-the-badge&logo=redis&logoColor=white"> 
+  </div>
+
+ <div align="center">
+🔍&nbsp&nbsp&nbsp 채팅
+<br>
+  <img src="https://img.shields.io/badge/socket.io-ffffff?style=for-the-badge&logo=socket.io&logoColor=black">
+<br>
+</div>
+
+---
+
+## [💾 ERD 설계](readme-imgs/%EC%98%A8%EB%8F%84%EC%9D%98%20ERD.png)
+
+---
+
+## [🌈 Data-Flow](./readme-imgs/%EC%98%A8%EB%8F%84%EC%9D%98%20dataflow.001.png)
+
+---
+
+## [🛠 Data Pipeline](./readme-imgs/dataflow.001.png)
+
+---
+
+## 📜 기능 명세서
 
 [온도衣 기능명세서](https://docs.google.com/spreadsheets/d/1e6NoL06xnfxkcbL8yyFnORKwNP7KJ3nIz8Rm7LORrG4/edit#gid=0)
 
-<hr>
-</hr>
+---
 
-## 폴더 구조
-
-![](/readme-imgs/api최종.png)
+## 🗂 폴더 구조
 
 ```
 🏠 tempClothes project
@@ -156,22 +174,46 @@
 <hr>
 </hr>
 
-## .env 설정
+## 🔒 ENV
 
-1. kubernetes 환경 변수로 설정
-2. 소셜 로그인 keys(naver,google,kakao)
-3. gcp storage keys
-4. email,sms,IMP keys
-5. open weather API key
+```
+ACCESS_TOKEN_KEY=
+REFRESH_TOKEN_KEY=
 
-<hr>
-</hr>
+IMP_KEY=
+IMP_SECRET=
 
-<br>
+STORAGE_BUCKET=
+STORAGE_KEY_FILENAME
+STORAGE_PROJECT_ID=
 
-# Information
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+KAKAO_CLIENT_ID=
+KAKAO_CLIENT_SECRET=
+NAVER_CLIENT_ID=
+NAVER_CLIENT_SECRET=
 
-## 고재형
+OPEN_WEATHER_APP_ID=
+
+SMS_APP_KEY=
+SMS_X_SECRET_KEY=
+SMS_SENDER=
+
+EMAIL_APP_KEY=
+EMAIL_X_SECRET_KEY=
+EMAIL_SENDER=
+
+DATABASE_HOST=
+DATABASE_NAME=
+REDIS_URL=
+```
+
+---
+
+## 🧑‍💻 팀원
+
+### 고재형
 
 - Role : `Team Member`
 - Position : `Backend`, `Presenter`
@@ -185,7 +227,7 @@
 <hr>
 </hr>
 
-## 김태영
+### 김태영
 
 - Role : `Team Member`
 - Position : `Backend`, `Git`
@@ -200,6 +242,6 @@
 
 - Tech-Presentation : https://www.youtube.com/watch?v=K2kqhS9XQbc
 
-<hr>
-</hr>
+---
+
 <!-- Markdown link & img dfn's -->

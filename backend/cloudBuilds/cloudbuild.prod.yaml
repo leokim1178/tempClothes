@@ -17,8 +17,8 @@ steps:
         'set',
         'image',
         'deployment/t-backend',
-        't-backend-sha256-1=asia.gcr.io/civic-visitor-357217/t-backend:0.0.6',
+        't-backend-sha256-1=asia.gcr.io/civic-visitor-357217/t-backend:0.0.7',
       ]
     env:
       - CLOUDSDK_COMPUTE_ZONE=asia-northeast3
-      - CLOUDSDK_CONTAINER_CLUSTER=team01-cluster
+      - CLOUDSDK_CONTAINER_CLUSTER=tempclothes-cluster

@@ -16,12 +16,14 @@ export class AuthService {
       { email: user.email, sub: user.id },
       { secret: process.env.REFRESH_TOKEN_KEY, expiresIn: '2w' },
     );
+    const allowOriginURL = process.env.ALLOW_ORIGIN_URL;
+    const cookieDomain = process.env.COOKIE_DOMAIN;
 
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.setHeader('Access-Control-Allow-Origin', allowOriginURL);
 
     res.setHeader(
       'Set-Cookie',
-      `refreshToken=${refreshToken}; path=/; domain=team-project.leo3179.shop; SameSite=None; Secure; httpOnly;`,
+      `refreshToken=${refreshToken}; path=/; domain=${cookieDomain}; SameSite=None; Secure; httpOnly;`,
     );
   }
 

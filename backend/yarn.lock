@@ -881,11 +881,6 @@
     tslib "2.4.0"
     uuid "8.3.2"
 
-"@nestjs/elasticsearch@^8.1.0":
-  version "8.1.0"
-  resolved "https://registry.yarnpkg.com/@nestjs/elasticsearch/-/elasticsearch-8.1.0.tgz#ff22ac5534fa4cb9d92261ff979df60afdc108b4"
-  integrity sha512-Ub5p5/D006017SCbygSbStvJ3yt8xYiT5jN/Rbt42d8bkQcr5xhY0iaPfFHPFA1s2Bc6QlVBKbguo++mIhFenQ==
-
 "@nestjs/graphql@^10.0.8":
   version "10.0.16"
   resolved "https://registry.yarnpkg.com/@nestjs/graphql/-/graphql-10.0.16.tgz#b5214fcb3903204fc9c01f2eff72d003c3392aa1"

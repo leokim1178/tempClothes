@@ -10,11 +10,8 @@ schema.gql
 .env.dev
 .DS_Store
 
-gcp-bigquery.json
-gcp-storage.json
-gcp-file-storage.json
-gcp-storage-master.json
-gcp-storage-dev.json
+# gcp
+gcp.json
 
 # Logs
 logs

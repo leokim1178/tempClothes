@@ -13,8 +13,8 @@ services:
   my-database:
     image: mysql:latest
     environment:
-      MYSQL_DATABASE: 'team01-database'
-      MYSQL_ROOT_PASSWORD: '1234'
+      MYSQL_DATABASE: 'tempclothes'
+      MYSQL_ROOT_PASSWORD: '1178'
     ports:
       - 3306:3306
 

@@ -47,7 +47,7 @@ import { TestModule } from './apis/test/test.module';
     }),
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: ['.env' || '.env.local'],
+      envFilePath: process.env.NODE_ENV === 'local' ? '.env.local' : '.env',
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',

@@ -15,7 +15,7 @@ export class FeedImgService {
   ) {}
 
   async create({ feedId, imgURLs }) {
-    const feed = await this.feedRepository.findOne({ id: feedId });
+    const feed = await this.feedRepository.findOne({ where: { id: feedId } });
     if (!feed)
       throw new UnprocessableEntityException('등록되지 않은 feedId입니다');
     const result = await Promise.all(

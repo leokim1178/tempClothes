@@ -11,11 +11,11 @@ export class RegionService {
   ) {}
 
   async findOne({ regionId }) {
-    return await this.regionRepository.findOne({ id: regionId });
+    return await this.regionRepository.findOne({ where: { id: regionId } });
   }
 
   async update({ regionId, lat, lon }) {
-    const region = this.regionRepository.findOne({ id: regionId });
+    const region = this.regionRepository.findOne({ where: { id: regionId } });
 
     if (!region) throw new ConflictException('존재하지않는 지역아이디입니다');
 

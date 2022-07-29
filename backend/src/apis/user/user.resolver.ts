@@ -1,8 +1,8 @@
 import { Query, Resolver, Args, Mutation } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
-import { createUserInput } from './dto/createUser.input';
-import { updateUserInput } from './dto/updateUser.input';
+import { CreateUserInput } from './dto/createUser.input';
+import { UpdateUserInput } from './dto/updateUser.input';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth-guard';
 import * as bcrypt from 'bcrypt';
@@ -46,7 +46,7 @@ export class UserResolver {
 
   @Mutation(() => User)
   async createUser(
-    @Args('createUserInput') createUserInput: createUserInput, //
+    @Args('createUserInput') createUserInput: CreateUserInput, //
   ) {
     const hashedPassword = await bcrypt.hash(createUserInput.password, 10);
     createUserInput.password = hashedPassword;
@@ -59,7 +59,7 @@ export class UserResolver {
   @Mutation(() => User)
   async updateUser(
     @CurrentUser() currentUser: ICurrentUser, //
-    @Args('updateUserInput') updateUserInput: updateUserInput,
+    @Args('updateUserInput') updateUserInput: UpdateUserInput,
   ) {
     const currentEmail = currentUser.email;
     return await this.userService.update({

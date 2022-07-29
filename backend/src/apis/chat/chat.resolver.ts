@@ -1,4 +1,4 @@
-import { CACHE_MANAGER, Injectable, Inject, UseGuards } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
 import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth-guard';
@@ -37,10 +37,7 @@ export class ChatResolver {
 
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => [ChatMessage])
-  fetchLogs(
-    @CurrentUser() currentUser: ICurrentUser, //
-    @Args('room') room: string,
-  ) {
-    return this.chatService.load({ room, currentUser });
+  fetchLogs(@Args('room') room: string) {
+    return this.chatService.load({ room });
   }
 }

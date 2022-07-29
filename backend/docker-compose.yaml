@@ -7,6 +7,8 @@ services:
     volumes:
       - ./src:/myfolder/src
       - .env:/myfolder/.env
+    environment:
+      - TZ=Asia/Seoul
     ports:
       - 3000:3000
 
@@ -15,6 +17,7 @@ services:
     environment:
       MYSQL_DATABASE: 'tempclothes'
       MYSQL_ROOT_PASSWORD: '1178'
+      TZ: 'Asia/Seoul'
     ports:
       - 3306:3306
 

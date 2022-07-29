@@ -3,17 +3,17 @@ import { Args, Mutation, Resolver, Query, Int } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth-guard';
 import { CurrentUser, ICurrentUser } from 'src/commons/auth/gql-user.param';
 import { CommentService } from './comment.service';
-import { createCommentInput } from './dto/createComment.input';
+import { CreateCommentInput } from './dto/createComment.input';
 import { Comment } from './entities/comment.entity';
-import { updateCommentInput } from './dto/updateComment.input';
-import { fetchCommentOutput } from './dto/fetchComment.output';
+import { UpdateCommentInput } from './dto/updateComment.input';
+import { FetchCommentOutput } from './dto/fetchComment.output';
 
 @Resolver()
 export class CommentResolver {
   constructor(private readonly commentService: CommentService) {}
 
   @UseGuards(GqlAuthAccessGuard)
-  @Query(() => fetchCommentOutput)
+  @Query(() => FetchCommentOutput)
   fetchComments(
     @Args('feedId', { type: () => String }) feedId: string,
     @Args('page', { nullable: true, type: () => Int }) page?: number,
@@ -33,7 +33,7 @@ export class CommentResolver {
   @Mutation(() => Comment)
   createComment(
     @CurrentUser() currentUser: ICurrentUser,
-    @Args('createCommentInput') createCommentInput: createCommentInput,
+    @Args('createCommentInput') createCommentInput: CreateCommentInput,
   ) {
     return this.commentService.create({ currentUser, createCommentInput });
   }
@@ -44,7 +44,7 @@ export class CommentResolver {
     @CurrentUser() currentUser: ICurrentUser,
     @Args('email') email: string,
     @Args('commentId') commentId: string,
-    @Args('updateCommentInput') updateCommentInput: updateCommentInput,
+    @Args('updateCommentInput') updateCommentInput: UpdateCommentInput,
   ) {
     return this.commentService.update({
       commentId,

@@ -39,11 +39,10 @@ export class PaymentButtonService {
 
       await queryRunner.manager.save(buttonTransaction);
 
-      const user = await queryRunner.manager.findOne(
-        User,
-        { id: currentUser.id },
-        { lock: { mode: 'pessimistic_write' } },
-      );
+      const user = await queryRunner.manager.findOne(User, {
+        where: { id: currentUser.id },
+        lock: { mode: 'pessimistic_write' },
+      });
 
       const updateUser = this.userRepository.create({
         ...user,
@@ -62,15 +61,16 @@ export class PaymentButtonService {
   }
 
   async checkOverlap({ imp_uid }) {
-    const result = await this.paymentButtonRepository.findOne({ imp_uid });
+    const result = await this.paymentButtonRepository.findOne({
+      where: { imp_uid },
+    });
 
     if (result) throw new ConflictException('이미 결제가 완료되었습니다.');
   }
 
   async checkAlreadyCanceled({ imp_uid }) {
     const result = await this.paymentButtonRepository.findOne({
-      imp_uid,
-      status: PAYMENT_BUTTON_STATUS_ENUM.CANCEL,
+      where: { imp_uid, status: PAYMENT_BUTTON_STATUS_ENUM.CANCEL },
     });
 
     if (result) throw new ConflictException('이미 취소된 결제건입니다.');
@@ -78,9 +78,11 @@ export class PaymentButtonService {
 
   async checklist({ imp_uid, currentUser }) {
     const result = await this.paymentButtonRepository.findOne({
-      imp_uid,
-      user: { id: currentUser.id },
-      status: PAYMENT_BUTTON_STATUS_ENUM.PAYMENT,
+      where: {
+        imp_uid,
+        user: { id: currentUser.id },
+        status: PAYMENT_BUTTON_STATUS_ENUM.PAYMENT,
+      },
     });
 
     if (!result)

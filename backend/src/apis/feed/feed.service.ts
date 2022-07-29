@@ -6,7 +6,7 @@ import { FeedImgService } from '../feedImg/feedImg.service';
 import { FeedTag } from '../feedTag/entities/feedTag.entity';
 import { Region } from '../region/entities/region.entity';
 import { User } from '../user/entities/user.entity';
-import { fetchFeedOutput } from './dto/fetchFeedOutput';
+import { fetchFeedOutput } from './dto/fetchFeed.output';
 import { Feed } from './entities/feed.entity';
 
 /**
@@ -306,24 +306,28 @@ export class FeedService {
     userNickname?: string;
   }) {
     if (feedId) {
-      const feed = await this.feedRepository.findOne({ id: feedId });
+      const feed = await this.feedRepository.findOne({ where: { id: feedId } });
       if (!feed) throw new NotFoundException('존재하지 않는 피드입니다');
       return feed;
     }
     if (userEmail) {
-      const user = await this.userRepository.findOne({ email: userEmail });
+      const user = await this.userRepository.findOne({
+        where: { email: userEmail },
+      });
       if (!user) throw new NotFoundException('존재하지 않는 유저입니다');
       return user;
     }
     if (userNickname) {
       const user = await this.userRepository.findOne({
-        nickname: userNickname,
+        where: { nickname: userNickname },
       });
       if (!user) throw new NotFoundException('존재하지 않는 유저입니다');
       return user;
     }
     if (regionId) {
-      const region = await this.regionRepository.findOne({ id: regionId });
+      const region = await this.regionRepository.findOne({
+        where: { id: regionId },
+      });
       if (!region) {
         throw new NotFoundException('존재하지않는 지역명입니다');
       }

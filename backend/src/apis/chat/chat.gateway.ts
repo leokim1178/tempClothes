@@ -46,7 +46,7 @@ export class ChatGateway {
   }
 
   private broadcast(event, client, message: any) {
-    for (let c of this.wsClients) {
+    for (const c of this.wsClients) {
       if (client.id == c.id) continue;
       c.emit(event, message);
     }
@@ -62,7 +62,7 @@ export class ChatGateway {
       where: { nickname: nickname },
     });
 
-    const result = this.chatMessageRepository.save({
+    await this.chatMessageRepository.save({
       user: user,
       room: room,
       message: data[2],

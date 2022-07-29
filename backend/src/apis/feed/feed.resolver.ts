@@ -1,13 +1,13 @@
 import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { CreateFeedInput } from './dto/createFeedInput';
-import { UpdateFeedInput } from './dto/updateFeedInput';
+import { CreateFeedInput } from './dto/createFeed.input';
+import { UpdateFeedInput } from './dto/updateFeed.input';
 import { Feed } from './entities/feed.entity';
 import { Cache } from 'cache-manager';
 import { FeedService } from './feed.service';
 import { CACHE_MANAGER, Inject, UseGuards } from '@nestjs/common';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth-guard';
 import { CurrentUser, ICurrentUser } from 'src/commons/auth/gql-user.param';
-import { fetchFeedOutput } from './dto/fetchFeedOutput';
+import { fetchFeedOutput } from './dto/fetchFeed.output';
 
 /**
  * Feed GraphQL API Resolver

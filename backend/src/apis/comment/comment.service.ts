@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Feed } from '../feed/entities/feed.entity';
 import { User } from '../user/entities/user.entity';
-import { fetchCommentOutput } from './dto/fetchComment.output';
+import { FetchCommentOutput } from './dto/fetchComment.output';
 import { Comment } from './entities/comment.entity';
 
 @Injectable()
@@ -35,14 +35,14 @@ export class CommentService {
         .getManyAndCount();
 
       const [comments] = result;
-      const result1: fetchCommentOutput = { comments, page };
+      const result1: FetchCommentOutput = { comments, page };
 
       return result1;
     } else {
       const result2 = await paging.getManyAndCount();
 
       const [comments] = result2;
-      const result3: fetchCommentOutput = { comments };
+      const result3: FetchCommentOutput = { comments };
 
       return result3;
     }

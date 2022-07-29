@@ -50,7 +50,7 @@ export class UserService {
   }
 
   async overLapEmail({ email }) {
-    const result = await this.userRepository.findOne({ email });
+    const result = await this.userRepository.findOne({ where: { email } });
     if (result) {
       throw new ConflictException('중복된 이메일입니다.');
     } else if (email === undefined || !email.includes('@')) {
@@ -61,7 +61,7 @@ export class UserService {
   }
 
   async overLapNic({ nickname }) {
-    const result = await this.userRepository.findOne({ nickname });
+    const result = await this.userRepository.findOne({ where: { nickname } });
     if (result) throw new ConflictException('중복된 닉네임입니다.');
 
     return '사용가능한 닉네임입니다.';
@@ -155,7 +155,9 @@ export class UserService {
   }
 
   async updatePassword({ originPassword, updatePassword, currentEmail }) {
-    const user = await this.userRepository.findOne({ email: currentEmail });
+    const user = await this.userRepository.findOne({
+      where: { email: currentEmail },
+    });
 
     const isAuth = await bcrypt.compare(originPassword, user.password);
 

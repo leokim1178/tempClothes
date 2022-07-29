@@ -31,7 +31,7 @@ export class ChatService {
       user: host,
     });
 
-    const result1 = await this.chatRoomRepository.save({
+    await this.chatRoomRepository.save({
       room: result.room,
       user: opponent,
     });
@@ -45,7 +45,7 @@ export class ChatService {
     });
 
     const host = await this.chatRoomRepository.find({
-      where: { user: user.id },
+      where: { user },
     });
 
     const me = await this.chatRoomRepository.find({
@@ -64,7 +64,7 @@ export class ChatService {
     return result;
   }
 
-  async load({ room, currentUser }) {
+  async load({ room }) {
     const result = await this.chatMessageRepository.find({
       where: { room: room },
       order: { createdAt: 'ASC' },

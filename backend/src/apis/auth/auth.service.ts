@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { createUserInput } from '../user/dto/createUser.input';
+import { CreateUserInput } from '../user/dto/createUser.input';
 import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
 
@@ -46,7 +46,7 @@ export class AuthService {
       if (!req.user.nickname)
         throw new BadRequestException('닉네임 값이 없습니다');
 
-      const createUserInput: createUserInput = {
+      const createUserInput: CreateUserInput = {
         email: req.user.email,
         gender: '성별을 입력해주세요',
         phone: '번호를 입력해주세요',

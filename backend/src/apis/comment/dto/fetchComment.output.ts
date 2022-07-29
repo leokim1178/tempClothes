@@ -2,7 +2,7 @@ import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { Comment } from '../entities/comment.entity';
 
 @ObjectType()
-export class fetchCommentOutput {
+export class FetchCommentOutput {
   @Field(() => [Comment])
   comments: Comment[];
 

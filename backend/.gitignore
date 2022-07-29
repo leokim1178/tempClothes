@@ -4,11 +4,13 @@ schema.gql
 # compiled output
 /dist
 /node_modules
+.DS_Store
+
+# ENV
 .env
 .env.prod
 .env.stage
-.env.dev
-.DS_Store
+.env.local
 
 # gcp
 gcp.json
